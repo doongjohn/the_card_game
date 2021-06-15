@@ -77,9 +77,10 @@ class MatchAction {
 
   // action state
   static StateEmpty = 0;
-  static StatePlanMove = 1;
-  static StatePlanAttack = 2;
-  static StateCounterAttack = 2;
+  static StateView = 1;
+  static StatePlanMove = 2;
+  static StatePlanAttack = 3;
+  static StateCounterAttack = 4;
   static state = MatchAction.StateEmpty;
 
   static init() {
@@ -99,10 +100,7 @@ class MatchAction {
     });
 
     MatchAction.keys.cancel.on('down', () => {
-      Grid.tiles.forEach(tile => {
-        if (tile.state == TileStateSelected.prototype) return;
-        tile.setState(TileStateNormal.prototype)
-      });
+      MatchAction.cancleState();
     });
 
     MatchAction.keys.confirm.on('down', () => {
@@ -236,5 +234,18 @@ class MatchAction {
         });
       }
     });
+  }
+
+  static setState(state) {
+    if (MatchAction.state == state) return;
+    MatchAction.state = state;
+  }
+  static cancleState() {
+    if (MatchAction.state == MatchAction.StateView) {
+      MatchAction.state = MatchAction.StateEmpty;
+      Grid.tiles.forEach(tile => { tile.setState(TileStateNormal.prototype); });
+    } else {
+
+    }
   }
 }

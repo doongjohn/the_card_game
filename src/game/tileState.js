@@ -1,6 +1,4 @@
-class TileState {
-  onStateEnter(self) { }
-  onStateExit(self) { }
+class TileState extends FSMState {
   onHoverEnter(self) {
     self.tileFg.setFillStyle(TileColor.FG.hover.rgb, TileColor.FG.hover.alpha);
   }
@@ -11,7 +9,7 @@ class TileState {
 }
 
 class TileStateNoInteraction extends TileState {
-  onStateEnter(self) {
+  onEnter(self) {
     self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
     self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
   }
@@ -20,7 +18,7 @@ class TileStateNoInteraction extends TileState {
 }
 
 class TileStateSelected extends TileState {
-  onStateEnter(self) {
+  onEnter(self) {
     self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
     self.tileFg.setFillStyle(0xffbe0d, 0.25);
 
@@ -29,7 +27,7 @@ class TileStateSelected extends TileState {
       self.cards.permanent.visual.card.setPosition(-775, -190);
     }
   }
-  onStateExit(self) {
+  onExit(self) {
     if (self.cards.permanent) {
       self.cards.permanent.visual.hideCard();
     }
@@ -39,23 +37,23 @@ class TileStateSelected extends TileState {
 }
 
 class TileStateNormal extends TileState {
-  onStateEnter(self) {
+  onEnter(self) {
     self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
     self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
   }
   onClick(self) {
-    Grid.tiles.forEach(tile => tile.setState(TileStateNormal.prototype));
+    Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
     Match.player.selectedTile = self;
-    Match.player.selectedTile.setState(TileStateSelected.prototype);
+    Match.player.selectedTile.fsm.setState(TileStateSelected);
   }
 }
 
 class TileStateSpawnPermanentSelection extends TileState {
-  onStateEnter(self) {
+  onEnter(self) {
     self.tileBg.setFillStyle(0x25c477, 0.4);
     self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
   }
-  onStateExit(self) {
+  onExit(self) {
     self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
   }
   onClick(self) {
@@ -67,37 +65,37 @@ class TileStateSpawnPermanentSelection extends TileState {
       self.pos.y
     )
 
-    Grid.tiles.forEach(tile => tile.setState(TileStateNormal.prototype));
-    Match.player.selectedTile.setState(TileStateSelected.prototype);
+    Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
+    Match.player.selectedTile.fsm.setState(TileStateSelected);
   }
 }
 
 class TileStateMoveSelection extends TileState {
-  onStateEnter(self) {
+  onEnter(self) {
     self.tileBg.setFillStyle(0x2b5dff, 0.4);
     self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
   }
-  onStateExit(self) {
+  onExit(self) {
     self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
   }
   onClick(self) {
     const permanent = Match.player.selectedTile.cards.permanent;
     permanent.moveTo(self.pos.x, self.pos.y);
 
-    Grid.tiles.forEach(tile => tile.setState(TileStateNormal.prototype));
+    Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
     Match.player.selectedTile.updateCards();
     Match.player.selectedTile = self;
     Match.player.selectedTile.updateCards();
-    Match.player.selectedTile.setState(TileStateSelected.prototype);
+    Match.player.selectedTile.fsm.setState(TileStateSelected);
   }
 }
 
 class TileStateAttackSelection extends TileState {
-  onStateEnter(self) {
+  onEnter(self) {
     self.tileBg.setFillStyle(0xff2b2b, 0.4);
     self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
   }
-  onStateExit(self) {
+  onExit(self) {
     self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
   }
   onClick(self) {
@@ -107,7 +105,7 @@ class TileStateAttackSelection extends TileState {
     Match.player.selectedTile.updateCards();
     self.updateCards();
 
-    Grid.tiles.forEach(tile => tile.setState(TileStateNormal.prototype));
-    Match.player.selectedTile.setState(TileStateSelected.prototype);
+    Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
+    Match.player.selectedTile.fsm.setState(TileStateSelected);
   }
 }

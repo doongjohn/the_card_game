@@ -13,17 +13,22 @@ class Tile {
     this.index = index;
     this.pos = toCoord(this.index);
     this.gameObject = this.initGameObject(size, gapSize);
-
-    this.state = TileState.prototype;
-    this.setState(TileStateNormal.prototype);
     this.cards = {
       permanent: null,
       spell: null,
       land: null
     };
+    
+    this.fsm = new FSM(TileStateNormal);
+    this.fsm.onStateChange = (self) => {
+      this.setHoverFunction(
+        () => this.fsm.curState.onHoverEnter(this),
+        () => this.fsm.curState.onHoverExit(this)
+      );
+    };
 
     this.tileFg.on('pointerdown', () => {
-      this.state.onClick(this);
+      this.fsm.curState.onClick(this);
     });
   }
 
@@ -67,16 +72,5 @@ class Tile {
   setHoverFunction(onHoverEnter, onHoverExit) {
     this.removeHoverFunction();
     this.addHoverFunction(onHoverEnter, onHoverExit);
-  }
-
-  setState(state) {
-    if (this.state == state) return;
-    this.state.onStateExit(this);
-    this.state = state;
-    this.state.onStateEnter(this);
-    this.setHoverFunction(
-      () => this.state.onHoverEnter(this),
-      () => this.state.onHoverExit(this)
-    );
   }
 };
