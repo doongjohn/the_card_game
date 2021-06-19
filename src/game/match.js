@@ -104,6 +104,7 @@ class MatchAction {
     MatchInput.init();
 
     MatchInput.keys.cancel.on('down', () => {
+      console.log('esc pressed!');
       MatchAction.cancleState();
     });
 
@@ -236,7 +237,7 @@ class MatchAction {
 
       Grid.tiles.forEach(tile => {
         if (tile.fsm.curState != TileStateSelected && tile.fsm.curState != TileStateAttackSelection)
-          tile.fsm.setState(TileStateNoInteraction)
+          tile.fsm.setState(TileStateNoInteraction);
       });
     });
   }
@@ -247,11 +248,14 @@ class MatchAction {
   }
   static cancleState() {
     if (MatchAction.state == MatchAction.StateView) {
-      MatchAction.state = MatchAction.StateEmpty;
+      MatchAction.setState(MatchAction.StateEmpty);
       Grid.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
-      console.log("cancle!");
     } else {
-      // TODO
+      MatchAction.setState(MatchAction.StateView);
+      Grid.tiles.forEach(tile => {
+        if (tile.fsm.curState != TileStateSelected)
+          tile.fsm.setState(TileStateNormal);
+      });
     }
   }
 }
