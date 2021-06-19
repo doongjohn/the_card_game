@@ -19,7 +19,7 @@ class Tile {
       land: null
     };
     
-    this.fsm = new FSM(TileStateNormal);
+    this.fsm = new FSM(this, TileStateNormal);
     this.fsm.onStateChange = (self) => {
       this.setHoverFunction(
         () => this.fsm.curState.onHoverEnter(this),
