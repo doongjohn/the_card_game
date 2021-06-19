@@ -12,6 +12,7 @@ class FSM {
   constructor(obj, defaultState) {
     this.obj = obj;
     this.curState = defaultState.prototype;
+    this.curState.onEnter(this.obj);
   }
 
   setState(state) {
