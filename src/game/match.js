@@ -126,7 +126,7 @@ class MatchAction {
         return;
 
       Grid.tiles.forEach(tile => {
-        if (tile.fsm.state == TileStateSelected || tile.cards.permanent) return;
+        if (tile.fsm.curState == TileStateSelected || tile.cards.permanent) return;
         tile.fsm.setState(TileStateMoveSelection)
       });
     });
@@ -154,7 +154,7 @@ class MatchAction {
         return;
 
       Grid.tiles.forEach(tile => {
-        if (tile.fsm.state == TileStateSelected) return;
+        if (tile.fsm.curState == TileStateSelected) return;
         tile.fsm.setState(TileStateNoInteraction)
       });
 
@@ -210,7 +210,7 @@ class MatchAction {
         return;
 
       Grid.tiles.forEach(tile => {
-        if (tile.fsm.state == TileStateSelected) return;
+        if (tile.fsm.curState == TileStateSelected) return;
         tile.fsm.setState(TileStateNoInteraction)
       });
 
@@ -235,7 +235,7 @@ class MatchAction {
 
       if (!targetFound) {
         Grid.tiles.forEach(tile => {
-          if (tile.fsm.state == TileStateSelected) return;
+          if (tile.fsm.curState == TileStateSelected) return;
           tile.fsm.setState(TileStateNormal)
         });
       }

@@ -15,10 +15,10 @@ class FSM {
 
   setState(state) {
     if (state.prototype == this.curState) return;
-    this.curState.onExit(this);
+    this.curState.onExit(this.self);
     this.prevState = this.curState.prototype;
     this.curState = state.prototype;
-    this.curState.onEnter(this);
-    this.onStateChange(this);
+    this.curState.onEnter(this.self);
+    this.onStateChange(this.self);
   }
 }
