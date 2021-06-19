@@ -126,8 +126,8 @@ class MatchAction {
         return;
 
       Grid.tiles.forEach(tile => {
-        if (tile.state == TileStateSelected.prototype || tile.cards.permanent) return;
-        tile.setState(TileStateMoveSelection.prototype)
+        if (tile.fsm.state == TileStateSelected || tile.cards.permanent) return;
+        tile.fsm.setState(TileStateMoveSelection)
       });
     });
 
@@ -154,15 +154,15 @@ class MatchAction {
         return;
 
       Grid.tiles.forEach(tile => {
-        if (tile.state == TileStateSelected.prototype) return;
-        tile.setState(TileStateNoInteraction.prototype)
+        if (tile.fsm.state == TileStateSelected) return;
+        tile.fsm.setState(TileStateNoInteraction)
       });
 
       const selected = Match.player.selectedTile;
 
       function setMoveSelectionTile(x, y) {
         if (!Grid.getPermanentAt(x, y))
-          Grid.getTileAt(x, y) ?.setState(TileStateMoveSelection.prototype);
+          Grid.getTileAt(x, y) ?.fsm.setState(TileStateMoveSelection);
       }
 
       const blockedR = Grid.getPermanentAt(selected.pos.x + 1, selected.pos.y);
@@ -210,8 +210,8 @@ class MatchAction {
         return;
 
       Grid.tiles.forEach(tile => {
-        if (tile.state == TileStateSelected.prototype) return;
-        tile.setState(TileStateNoInteraction.prototype)
+        if (tile.fsm.state == TileStateSelected) return;
+        tile.fsm.setState(TileStateNoInteraction)
       });
 
       let targetFound = false;
@@ -219,7 +219,7 @@ class MatchAction {
       function setAttackSelectionTile(x, y) {
         const target = Grid.getPermanentAt(x, y);
         if (target && target.data.team != selectedTile.cards.permanent.data.team) {
-          Grid.getTileAt(x, y).setState(TileStateAttackSelection.prototype);
+          Grid.getTileAt(x, y).fsm.setState(TileStateAttackSelection);
           targetFound = true;
         }
       }
@@ -235,8 +235,8 @@ class MatchAction {
 
       if (!targetFound) {
         Grid.tiles.forEach(tile => {
-          if (tile.state == TileStateSelected.prototype) return;
-          tile.setState(TileStateNormal.prototype)
+          if (tile.fsm.state == TileStateSelected) return;
+          tile.fsm.setState(TileStateNormal)
         });
       }
     });
@@ -249,7 +249,7 @@ class MatchAction {
   static cancleState() {
     if (MatchAction.state == MatchAction.StateView) {
       MatchAction.state = MatchAction.StateEmpty;
-      Grid.tiles.forEach(tile => { tile.setState(TileStateNormal.prototype); });
+      Grid.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
     } else {
 
     }
