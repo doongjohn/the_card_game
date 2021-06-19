@@ -249,6 +249,7 @@ class MatchAction {
     if (MatchAction.state == MatchAction.StateView) {
       MatchAction.state = MatchAction.StateEmpty;
       Grid.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
+      console.log("cancle!");
     } else {
       // TODO
     }
