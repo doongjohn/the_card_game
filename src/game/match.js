@@ -69,7 +69,7 @@ class Match {
   }
 }
 
-class MatchInput() {
+class MatchInput {
   static keys = null;
 
   static init() {

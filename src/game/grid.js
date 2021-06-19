@@ -32,7 +32,7 @@ class Grid {
   }
 
   static resetBoardState() {
-    Grid.tiles.forEach(tile => tile.setState(TileStateNormal.prototype));
+    Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
   }
 
   static gridToWorldPos(x, y) {
