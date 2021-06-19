@@ -66,7 +66,7 @@ class MatchInput {
 
   static init() {
     MatchInput.keys = Game.scene.input.keyboard.addKeys({
-      cancel: 'escape',
+      cancel: 'esc',
       confirm: 'enter',
       endTurn: 'space',
 
@@ -95,7 +95,6 @@ class MatchAction {
 
   static init() {
     MatchInput.keys.cancel.on('down', () => {
-      console.log('esc pressed!');
       MatchAction.cancleState();
     });
 
@@ -237,6 +236,7 @@ class MatchAction {
     if (MatchAction.state == state) return;
     MatchAction.state = state;
   }
+  
   static cancleState() {
     if (MatchAction.state == MatchAction.StateView) {
       MatchAction.setState(MatchAction.StateEmpty);
