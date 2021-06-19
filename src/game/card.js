@@ -222,9 +222,9 @@ class CardPermanent extends Card {
       // spawn this card on the board
       Match.player.selectedCard = this;
       Grid.tiles.forEach(tile => {
-        if (tile.state == TileStateSelected.prototype || tile.cards.permanent)
+        if (tile.fsm.curState == TileStateSelected.prototype || tile.cards.permanent)
           return;
-        tile.setState(TileStateSpawnPermanentSelection.prototype);
+        tile.fsm.setState(TileStateSpawnPermanentSelection.prototype);
       });
     });
   }

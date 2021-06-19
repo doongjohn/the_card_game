@@ -56,9 +56,7 @@ class Match {
 
     // deselect tile
     Match.player.selectedTile = null;
-    Grid.tiles.forEach(tile => {
-      tile.setState(TileStateNormal.prototype)
-    });
+    Grid.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
 
     // update text
     Match.turnText.text = `P${Match.turn}'s turn`;
