@@ -13,21 +13,15 @@ class Player {
 }
 
 class Match {
-  // players
   static players = [
     new Player(Team.P1),
     new Player(Team.P2)
   ];
-  // current player
-  static player = Match.players[0];
-
-  // current turn
-  static turn = Team.P1;
-
-  // static turnText = null;
+  static player = Match.players[0]; // current player
+  static turn = Team.P1;            // current turn
 
   static init() {
-    // init Match Action
+    MatchInput.init();
     MatchAction.init();
 
     // temp help text
@@ -72,7 +66,7 @@ class MatchInput {
 
   static init() {
     MatchInput.keys = Game.scene.input.keyboard.addKeys({
-      cancel: 'esc',
+      cancel: 'escape',
       confirm: 'enter',
       endTurn: 'space',
 
@@ -100,9 +94,6 @@ class MatchAction {
   static state = MatchAction.StateEmpty;
 
   static init() {
-    // initialize key bindings
-    MatchInput.init();
-
     MatchInput.keys.cancel.on('down', () => {
       console.log('esc pressed!');
       MatchAction.cancleState();
@@ -110,7 +101,7 @@ class MatchAction {
 
     MatchInput.keys.confirm.on('down', () => {
       // TODO
-      console.log('enter key pressed');
+      console.log('enter key pressed!');
     });
 
     MatchInput.keys.endTurn.on('down', () => {
