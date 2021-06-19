@@ -69,23 +69,11 @@ class Match {
   }
 }
 
-// TODO:
-// - manage action state
-// - add action state functions
-class MatchAction {
+class MatchInput() {
   static keys = null;
 
-  // action state
-  static StateEmpty = 0;
-  static StateView = 1;
-  static StatePlanMove = 2;
-  static StatePlanAttack = 3;
-  static StateCounterAttack = 4;
-  static state = MatchAction.StateEmpty;
-
   static init() {
-    // initialize key bindings
-    MatchAction.keys = Game.scene.input.keyboard.addKeys({
+    MatchInput.keys = Game.scene.input.keyboard.addKeys({
       cancel: 'esc',
       confirm: 'enter',
       endTurn: 'space',
@@ -98,21 +86,39 @@ class MatchAction {
       unitMove: 'm',
       unitAttack: 'a',
     });
+  }
+}
 
-    MatchAction.keys.cancel.on('down', () => {
+// TODO:
+// - manage action state
+// - add action state functions
+class MatchAction {
+  // action state
+  static StateEmpty = 0;
+  static StateView = 1;
+  static StatePlanMove = 2;
+  static StatePlanAttack = 3;
+  static StateCounterAttack = 4;
+  static state = MatchAction.StateEmpty;
+
+  static init() {
+    // initialize key bindings
+    MatchInput.init();
+
+    MatchInput.keys.cancel.on('down', () => {
       MatchAction.cancleState();
     });
 
-    MatchAction.keys.confirm.on('down', () => {
+    MatchInput.keys.confirm.on('down', () => {
       // TODO
       console.log('enter key pressed');
     });
 
-    MatchAction.keys.endTurn.on('down', () => {
+    MatchInput.keys.endTurn.on('down', () => {
       Match.nextTurn();
     });
 
-    MatchAction.keys.unitTeleport.on('down', () => {
+    MatchInput.keys.unitTeleport.on('down', () => {
       if (!Match.player.selectedTile)
         return;
 
@@ -125,7 +131,7 @@ class MatchAction {
       });
     });
 
-    MatchAction.keys.unitTap.on('down', () => {
+    MatchInput.keys.unitTap.on('down', () => {
       const selectedTile = Match.player.selectedTile;
       if (!selectedTile.cards.permanent) return;
       if (selectedTile.cards.permanent.isTapped()) {
@@ -135,7 +141,7 @@ class MatchAction {
       }
     });
 
-    MatchAction.keys.unitMove.on('down', () => {
+    MatchInput.keys.unitMove.on('down', () => {
       if (!Match.player.selectedTile)
         return;
 
@@ -191,7 +197,7 @@ class MatchAction {
         setMoveSelectionTile(selected.pos.x - 1, selected.pos.y + 1);
     });
 
-    MatchAction.keys.unitAttack.on('down', () => {
+    MatchInput.keys.unitAttack.on('down', () => {
       if (!Match.player.selectedTile)
         return;
 
