@@ -55,7 +55,7 @@ class CardVisual {
       this.cardObj.play(animKey)
     }
     else {
-      console.error(`anim key does not exists! "${animKey}"`);
+      console.error(`This anim key does not exists! "${animKey}"`);
     }
 
     const bg = Game.spawn.rectangle(

@@ -123,6 +123,8 @@ class MatchAction {
       if (!Match.player.selectedTile.cards.permanent)
         return;
 
+      MatchAction.setState(MatchAction.StatePlanMove);
+
       Grid.tiles.forEach(tile => {
         if (tile.fsm.curState == TileStateSelected || tile.cards.permanent) return;
         tile.fsm.setState(TileStateMoveSelection)
@@ -130,69 +132,74 @@ class MatchAction {
     });
 
     MatchInput.keys.unitTap.on('down', () => {
-      const selectedTile = Match.player.selectedTile;
-      if (!selectedTile.cards.permanent) return;
-      if (selectedTile.cards.permanent.isTapped()) {
-        selectedTile.cards.permanent.untap();
+      if (!Match.player.selectedTile.cards.permanent)
+        return;
+
+      const cards = Match.player.selectedTile.cards;
+      if (cards.permanent.isTapped()) {
+        cards.permanent.untap();
       } else {
-        selectedTile.cards.permanent.tap();
+        cards.permanent.tap();
       }
     });
 
     MatchInput.keys.unitMove.on('down', () => {
-      if (!Match.player.selectedTile)
+      if (!Match.player.selectedTile || !Match.player.selectedTile.cards.permanent)
         return;
-
-      const selectedTile = Match.player.selectedTile;
-
-      if (!selectedTile.cards.permanent || !Match.isThisTurn(selectedTile.cards.permanent))
-        return;
-
-      if (selectedTile.cards.permanent.isTapped())
-        return;
-
-      Grid.tiles.forEach(tile => {
-        if (tile.fsm.curState == TileStateSelected) return;
-        tile.fsm.setState(TileStateNoInteraction)
-      });
 
       const selected = Match.player.selectedTile;
+
+      if (!Match.isThisTurn(selected.cards.permanent) || selected.cards.permanent.isTapped())
+        return;
+      
+      MatchAction.setState(MatchAction.StatePlanMove);
+
+      // make all tiles unselectable
+      Grid.tiles.forEach(tile => {
+        if (tile.fsm.curState != TileStateSelected)
+          tile.fsm.setState(TileStateNoInteraction);
+      });
 
       function setMoveSelectionTile(x, y) {
         if (!Grid.getPermanentAt(x, y))
           Grid.getTileAt(x, y) ?.fsm.setState(TileStateMoveSelection);
       }
 
-      const blockedR = Grid.getPermanentAt(selected.pos.x + 1, selected.pos.y);
-      const blockedL = Grid.getPermanentAt(selected.pos.x - 1, selected.pos.y);
-      const blockedU = Grid.getPermanentAt(selected.pos.x, selected.pos.y - 1);
-      const blockedD = Grid.getPermanentAt(selected.pos.x, selected.pos.y + 1);
+      const u = { x: selected.pos.x, y: selected.pos.y - 1 };
+      const d = { x: selected.pos.x, y: selected.pos.y + 1 };
+      const r = { x: selected.pos.x + 1, y: selected.pos.y };
+      const l = { x: selected.pos.x - 1, y: selected.pos.y };
+
+      const blockedR = Grid.getPermanentAt(r.x, r.y);
+      const blockedL = Grid.getPermanentAt(l.x, l.y);
+      const blockedU = Grid.getPermanentAt(u.x, u.y);
+      const blockedD = Grid.getPermanentAt(d.x, d.y);
 
       if (!blockedR) {
-        setMoveSelectionTile(selected.pos.x + 1, selected.pos.y);
-        setMoveSelectionTile(selected.pos.x + 2, selected.pos.y);
+        setMoveSelectionTile(r.x, r.y);
+        setMoveSelectionTile(r.x + 1, r.y);
       }
       if (!blockedL) {
-        setMoveSelectionTile(selected.pos.x - 1, selected.pos.y);
-        setMoveSelectionTile(selected.pos.x - 2, selected.pos.y);
+        setMoveSelectionTile(l.x, l.y);
+        setMoveSelectionTile(l.x - 1, l.y);
       }
       if (!blockedU) {
-        setMoveSelectionTile(selected.pos.x, selected.pos.y - 1);
-        setMoveSelectionTile(selected.pos.x, selected.pos.y - 2);
+        setMoveSelectionTile(u.x, u.y);
+        setMoveSelectionTile(u.x, u.y - 1);
       }
       if (!blockedD) {
-        setMoveSelectionTile(selected.pos.x, selected.pos.y + 1);
-        setMoveSelectionTile(selected.pos.x, selected.pos.y + 2);
+        setMoveSelectionTile(d.x, d.y);
+        setMoveSelectionTile(d.x, d.y + 1);
       }
 
       if (!blockedR || !blockedU)
-        setMoveSelectionTile(selected.pos.x + 1, selected.pos.y - 1);
+        setMoveSelectionTile(r.x, u.y);
       if (!blockedR || !blockedD)
-        setMoveSelectionTile(selected.pos.x + 1, selected.pos.y + 1);
+        setMoveSelectionTile(r.x, d.y);
       if (!blockedL || !blockedU)
-        setMoveSelectionTile(selected.pos.x - 1, selected.pos.y - 1);
+        setMoveSelectionTile(l.x, u.y);
       if (!blockedL || !blockedD)
-        setMoveSelectionTile(selected.pos.x - 1, selected.pos.y + 1);
+        setMoveSelectionTile(l.x, d.y);
     });
 
     MatchInput.keys.unitAttack.on('down', () => {
@@ -207,36 +214,30 @@ class MatchAction {
       if (selectedTile.cards.permanent.isTapped())
         return;
 
-      Grid.tiles.forEach(tile => {
-        if (tile.fsm.curState == TileStateSelected) return;
-        tile.fsm.setState(TileStateNoInteraction)
-      });
-
-      let targetFound = false;
-
       function setAttackSelectionTile(x, y) {
         const target = Grid.getPermanentAt(x, y);
-        if (target && target.data.team != selectedTile.cards.permanent.data.team) {
+        if (target && target.data.team != selectedTile.cards.permanent.data.team)
           Grid.getTileAt(x, y).fsm.setState(TileStateAttackSelection);
-          targetFound = true;
-        }
       }
 
-      setAttackSelectionTile(selectedTile.pos.x + 1, selectedTile.pos.y);
-      setAttackSelectionTile(selectedTile.pos.x - 1, selectedTile.pos.y);
-      setAttackSelectionTile(selectedTile.pos.x, selectedTile.pos.y - 1);
-      setAttackSelectionTile(selectedTile.pos.x, selectedTile.pos.y + 1);
-      setAttackSelectionTile(selectedTile.pos.x + 1, selectedTile.pos.y - 1);
-      setAttackSelectionTile(selectedTile.pos.x + 1, selectedTile.pos.y + 1);
-      setAttackSelectionTile(selectedTile.pos.x - 1, selectedTile.pos.y - 1);
-      setAttackSelectionTile(selectedTile.pos.x - 1, selectedTile.pos.y + 1);
+      const u = { x: selectedTile.pos.x, y: selectedTile.pos.y - 1 };
+      const d = { x: selectedTile.pos.x, y: selectedTile.pos.y + 1 };
+      const r = { x: selectedTile.pos.x + 1, y: selectedTile.pos.y };
+      const l = { x: selectedTile.pos.x - 1, y: selectedTile.pos.y };
 
-      if (!targetFound) {
-        Grid.tiles.forEach(tile => {
-          if (tile.fsm.curState == TileStateSelected) return;
-          tile.fsm.setState(TileStateNormal)
-        });
-      }
+      setAttackSelectionTile(r.x, r.y);
+      setAttackSelectionTile(l.x, l.y);
+      setAttackSelectionTile(u.x, u.y);
+      setAttackSelectionTile(d.x, d.y);
+      setAttackSelectionTile(r.x, u.y);
+      setAttackSelectionTile(r.x, d.y);
+      setAttackSelectionTile(l.x, u.y);
+      setAttackSelectionTile(l.x, d.y);
+
+      Grid.tiles.forEach(tile => {
+        if (tile.fsm.curState != TileStateSelected && tile.fsm.curState != TileStateAttackSelection)
+          tile.fsm.setState(TileStateNoInteraction)
+      });
     });
   }
 
@@ -249,7 +250,7 @@ class MatchAction {
       MatchAction.state = MatchAction.StateEmpty;
       Grid.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
     } else {
-
+      // TODO
     }
   }
 }

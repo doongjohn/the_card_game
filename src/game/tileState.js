@@ -45,6 +45,7 @@ class TileStateNormal extends TileState {
     Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
     Match.player.selectedTile = obj;
     Match.player.selectedTile.fsm.setState(TileStateSelected);
+    MatchAction.setState(MatchAction.StateView);
   }
 }
 
