@@ -207,7 +207,7 @@ class MatchAction {
 
       function setAttackSelectionTile(x, y) {
         const target = Grid.getPermanentAt(x, y);
-        if (target && target.data.team != selectedTile.cards.permanent.data.team)
+        if (target && !Match.isThisTurn(selectedTile.cards.permanent))
           Grid.getTileAt(x, y).fsm.setState(TileStateAttackSelection);
       }
 
@@ -236,7 +236,7 @@ class MatchAction {
     if (MatchAction.state == state) return;
     MatchAction.state = state;
   }
-  
+
   static cancleState() {
     if (MatchAction.state == MatchAction.StateView) {
       MatchAction.setState(MatchAction.StateEmpty);
