@@ -64,10 +64,13 @@ class TileStateSpawnPermanentSelection extends TileState {
       selectedCard.visual.cardArt.assetNameTrimmed,
       obj.pos.x,
       obj.pos.y
-    )
+    );
 
-    Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
-    Match.player.selectedTile.fsm.setState(TileStateSelected);
+    Grid.tiles.forEach(tile => {
+      if (tile != selectedCard)
+        tile.fsm.setState(TileStateNormal);
+    });
+    MatchAction.setState(MatchAction.StateView);
   }
 }
 
@@ -83,11 +86,17 @@ class TileStateMoveSelection extends TileState {
     const permanent = Match.player.selectedTile.cards.permanent;
     permanent.moveTo(obj.pos.x, obj.pos.y);
 
-    Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
     Match.player.selectedTile.updateCards();
     Match.player.selectedTile = obj;
     Match.player.selectedTile.updateCards();
-    Match.player.selectedTile.fsm.setState(TileStateSelected);
+    Grid.tiles.forEach(tile => {
+      if (tile == Match.player.selectedTile) {
+        tile.fsm.setState(TileStateSelected);
+      } else {
+        tile.fsm.setState(TileStateNormal);
+      }
+    });
+    MatchAction.setState(MatchAction.StateView);
   }
 }
 
@@ -100,13 +109,14 @@ class TileStateAttackSelection extends TileState {
     obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
   }
   onClick(obj) {
-    const permanent = Match.player.selectedTile.cards.permanent;
-    const target = obj.cards.permanent;
-    permanent.doDamage(target);
+    Match.player.selectedTile.cards.permanent.doDamage(obj.cards.permanent);
     Match.player.selectedTile.updateCards();
     obj.updateCards();
 
-    Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
-    Match.player.selectedTile.fsm.setState(TileStateSelected);
+    Grid.tiles.forEach(tile => {
+      if (tile != Match.player.selectedTile)
+        tile.fsm.setState(TileStateNormal);
+    });
+    MatchAction.setState(MatchAction.StateView);
   }
 }
