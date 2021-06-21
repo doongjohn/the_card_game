@@ -1,4 +1,9 @@
 class FSMState {
+  compare() {
+    for (const arg of arguments)
+      if (this == arg.prototype) return true;
+    return false;
+  }
   onEnter(obj) { }
   onExit(obj) { }
 }
@@ -7,7 +12,7 @@ class FSM {
   obj = null;
   prevState = null;
   curState = null;
-  onStateChange = (obj) => {};
+  onStateChange = (obj) => { };
 
   constructor(obj, defaultState) {
     this.obj = obj;
