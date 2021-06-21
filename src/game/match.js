@@ -27,10 +27,10 @@ class Match {
     // temp help text
     const helpText = Game.spawn.text(10, 5,
       `[SPACE]: end turn
-      [P]: teleport
-      [T]: tap / untap
-      [M]: move
-      [A]: attack`, {
+[P]: teleport
+[T]: tap / untap
+[M]: move
+[A]: attack`, {
         color: '#000000',
         font: '20px consolas',
         align: 'left'
