@@ -216,15 +216,14 @@ class CardPermanent extends Card {
   }
 
   initClickEvent() {
+    // spawn this card on the board
     this.visual.card.setSize(CardVisual.width, CardVisual.height);
     this.visual.card.setInteractive();
     this.visual.card.on('pointerdown', () => {
-      // spawn this card on the board
       Match.player.selectedCard = this;
       Grid.tiles.forEach(tile => {
-        if (tile.fsm.curState == TileStateSelected.prototype || tile.cards.permanent)
-          return;
-        tile.fsm.setState(TileStateSpawnPermanentSelection.prototype);
+        if (!tile.fsm.curState.compare(TileStateSelected) && !tile.cards.permanent)
+          tile.fsm.setState(TileStateSpawnPermanentSelection);
       });
     });
   }
