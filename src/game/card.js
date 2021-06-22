@@ -16,13 +16,17 @@ class CardObjData {
   // This data may change because of combat, spells, etc...
 
   pos = { x: 0, y: 0 };
-  moveCount = 2;
+  moveCount = 1;
   tapped = false;
 
   constructor(cardData) {
     this.attack = cardData.attack;
     this.health = cardData.health;
     this.team = cardData.team;
+  }
+
+  resetTurnStart() {
+    this.moveCount = 1;
   }
 
   setPos(x, y) {
@@ -228,13 +232,28 @@ class CardPermanent extends Card {
     });
   }
 
-  moveTo(x, y) {
+  resetTurnStart() {
+    this.objData.resetTurnStart();
+    this.untap();
+  }
+
+  canMove() {
+    return this.objData.moveCount > 0; 
+  }
+  changePos(x, y) {
     // update board
     Grid.permanents[toIndex(this.objData.pos)] = null;
     Grid.permanents[toIndex({ x: x, y: y })] = this;
 
     // update card
     this.objData.setPos(x, y);
+  }
+  moveTo(x, y) {
+    // change position
+    this.changePos(x, y);
+
+    // decrease moveCount
+    this.objData.moveCount--;
 
     // tween movement data
     const speed = 0.35;
@@ -268,6 +287,10 @@ class CardPermanent extends Card {
 
   doDamage(target) {
     target.takeDamage(this.objData.attack);
+  }
+  doAttack(target) {
+    this.doDamage(target);
+    this.tap();
   }
   takeDamage(damage) {
     this.objData.health -= damage;

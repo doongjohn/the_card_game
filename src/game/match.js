@@ -13,10 +13,10 @@ class Player {
 }
 
 class Match {
-  static players = [
+  static players = Object.freeze([
     new Player(Team.P1),
     new Player(Team.P2)
-  ];
+  ]);
   static player = Match.players[0]; // current player
   static turn = Team.P1;            // current turn
 
@@ -54,6 +54,12 @@ class Match {
 
     // update text
     Match.turnText.text = `P${Match.turn}'s turn`;
+
+    // untap permanents
+    Grid.permanents.forEach(permanent => {
+      if (permanent)
+        permanent.resetTurnStart();
+    });
   }
 
   static isThisTurn(permanent) {
@@ -110,8 +116,7 @@ class MatchAction {
   }
 
   static setState(state) {
-    if (MatchAction.state != state)
-      MatchAction.state = state;
+    MatchAction.state = state;
   }
   static cancleState() {
     if (MatchAction.state == MatchAction.StateEmpty)
@@ -135,10 +140,12 @@ class MatchAction {
     // Unit Plan Move
     MatchAction.setState(MatchAction.StatePlanMove);
     Grid.tiles.forEach(tile => {
+      if (tile.fsm.curState.compare(TileStateSelected))
+        return;
       if (tile.cards.permanent)
         tile.fsm.setState(TileStateNoInteraction);
-      else if (!tile.fsm.curState.compare(TileStateSelected))
-        tile.fsm.setState(TileStateMoveSelection);
+      else
+        tile.fsm.setState(TileStateChangePosSelection);
     });
   }
   static onUnitTap() {
@@ -157,7 +164,9 @@ class MatchAction {
       return;
 
     const selected = Match.player.selectedTile;
-    if (!Match.isThisTurn(selected.cards.permanent) || selected.cards.permanent.isTapped())
+    if (!Match.isThisTurn(selected.cards.permanent)
+      || selected.cards.permanent.isTapped()
+      || !selected.cards.permanent.canMove())
       return;
 
     // Unit Plan Move
@@ -195,14 +204,10 @@ class MatchAction {
       setMoveSelectionTile(d.x, d.y + 1);
     }
 
-    if (!blockedR || !blockedU)
-      setMoveSelectionTile(r.x, u.y);
-    if (!blockedR || !blockedD)
-      setMoveSelectionTile(r.x, d.y);
-    if (!blockedL || !blockedU)
-      setMoveSelectionTile(l.x, u.y);
-    if (!blockedL || !blockedD)
-      setMoveSelectionTile(l.x, d.y);
+    if (!blockedR || !blockedU) setMoveSelectionTile(r.x, u.y);
+    if (!blockedR || !blockedD) setMoveSelectionTile(r.x, d.y);
+    if (!blockedL || !blockedU) setMoveSelectionTile(l.x, u.y);
+    if (!blockedL || !blockedD) setMoveSelectionTile(l.x, d.y);
 
     Grid.tiles.forEach((tile) => {
       if (!tile.fsm.curState.compare(TileStateSelected, TileStateMoveSelection))
@@ -238,18 +243,20 @@ class MatchAction {
       const d = { x: selectedTile.pos.x, y: selectedTile.pos.y + 1 };
       const r = { x: selectedTile.pos.x + 1, y: selectedTile.pos.y };
       const l = { x: selectedTile.pos.x - 1, y: selectedTile.pos.y };
-      let found = 0;
-      found += setAttackSelectionTile(r.x, r.y);
-      found += setAttackSelectionTile(l.x, l.y);
-      found += setAttackSelectionTile(u.x, u.y);
-      found += setAttackSelectionTile(d.x, d.y);
-      found += setAttackSelectionTile(r.x, u.y);
-      found += setAttackSelectionTile(r.x, d.y);
-      found += setAttackSelectionTile(l.x, u.y);
-      found += setAttackSelectionTile(l.x, d.y);
-      return found;
+
+      let count = 0;
+      count += setAttackSelectionTile(r.x, r.y);
+      count += setAttackSelectionTile(l.x, l.y);
+      count += setAttackSelectionTile(u.x, u.y);
+      count += setAttackSelectionTile(d.x, d.y);
+      count += setAttackSelectionTile(r.x, u.y);
+      count += setAttackSelectionTile(r.x, d.y);
+      count += setAttackSelectionTile(l.x, u.y);
+      count += setAttackSelectionTile(l.x, d.y);
+      return count;
     }
 
+    // check if there are no enemies near by
     if (!findNearByEnemy()) {
       console.log("[Match] No attack target found.");
       return;

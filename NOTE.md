@@ -7,8 +7,9 @@
 - [x] Implement Tile state
 - [x] Implement Basic Turn
 - [x] Implement Basic Movement
-  - [ ] Implement movement tween
+  - [x] Implement movement tween
 - [x] Implement Basic Attack
+- [ ] Implement Basic Counter Attack
 - [ ] Implement Hand
 - [ ] Implement Card Placement
 - [ ] Implement Deck
