@@ -38,6 +38,9 @@ https://gamedevacademy.org/creating-a-preloading-screen-in-phaser-3/
 **Tween:**  
 https://phaser.io/examples/v3/view/physics/arcade/tween-velocity
 
+**Card flip:**  
+https://youtu.be/u1wNToPU8UY
+
 ## Duelyst ref
 
 **Duelyst Art:**  
