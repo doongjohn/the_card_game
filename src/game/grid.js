@@ -50,6 +50,20 @@ class Grid {
     return Grid.tiles[index];
   }
 
+  static spawnPermanent(team, assetName, x, y) {
+    if (Grid.getPermanentAt(x, y)) {
+      console.log('a permanent already exists there!');
+      return null;
+    }
+
+    const card = new CardPermanent(team, assetName);
+    card.objData.setPos(x, y);
+    card.visual.showCardObj(card.objData);
+
+    Grid.setPermanentAt(x, y, card);
+    Grid.getTileAt(x, y).updateCards();
+    return card;
+  }
   static getPermanentAt(x, y) {
     const index = toIndex({ x: x, y: y });
     if (index < 0 || index >= Grid.size.x * Grid.size.y)
@@ -57,11 +71,11 @@ class Grid {
     return Grid.permanents[index];
   }
   static setPermanentAt(x, y, permanent) {
-    Grid.permanents[toIndex({ x: x, y: y })] = permanent;
+    Grid.permanents[toIndex(x, y)] = permanent;
   }
   static movePermanent(fromX, fromY, toX, toY) {
-    const fromIndex = toIndex({ x: fromX, y: fromY });
-    Grid.permanents[toIndex({ x: toX, y: toY })] = Grid.permanents[fromIndex];
+    const fromIndex = toIndex(fromX, fromY);
+    Grid.permanents[toIndex(toX, toY)] = Grid.permanents[fromIndex];
     Grid.permanents[fromIndex] = null;
   }
   static removePermanentAt(x, y) {
@@ -70,20 +84,6 @@ class Grid {
     Grid.permanents[toIndex({ x: x, y: y })] = null;
     Grid.getTileAt(x, y).updateCards();
     card.destroyCard();
-  }
-  static spawnPermanent(team, assetName, x, y) {
-    if (Grid.getPermanentAt(x, y)) {
-      console.log('a permanent already exists there!');
-      return null;
-    }
-    
-    const card = new CardPermanent(team, assetName);
-    card.objData.setPos(x, y);
-    card.visual.showCardObj(card.objData);
-
-    Grid.setPermanentAt(x, y, card);
-    Grid.getTileAt(x, y).updateCards();
-    return card;
   }
 };
 
@@ -94,10 +94,19 @@ function toCoord(i) {
   return result;
 }
 
-function toIndex(v) {
-  return (v.x < 0 || v.y < 0 || v.x >= Grid.size.x || v.y >= Grid.size.y)
+function toIndex() {
+  if (arguments.length == 1) {
+    const v = arguments[0];
+    return (v.x < 0 || v.y < 0 || v.x >= Grid.size.x || v.y >= Grid.size.y)
+      ? -1
+      : Grid.size.x * v.y + v.x;
+  } else if (arguments.length == 2) {
+    const x = arguments[0];
+    const y = arguments[1];
+    return (x < 0 || y < 0 || x >= Grid.size.x || y >= Grid.size.y)
     ? -1
-    : Grid.size.x * v.y + v.x;
+    : Grid.size.x * y + x;
+  }
 }
 
 function gridAlignCenter(items, gridSize, cellSize) {
