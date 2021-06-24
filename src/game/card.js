@@ -111,23 +111,28 @@ class CardVisual {
 
   showCard() {
     this.card.setVisible(true);
+    return this.card;
   }
   hideCard() {
     this.card.setVisible(false);
+    return this.card;
   }
 
   showCardObj(objData) {
     const pos = Grid.gridToWorldPos(objData.pos.x, objData.pos.y);
     this.cardObj.setVisible(true).setPosition(pos.x, pos.y + 60);
     this.cardObj.flipX = objData.team != Team.P1;
+    return this.this.cardObj;
   }
   hideCardObj() {
     this.cardObj.setVisible(false);
+    return this.this.cardObj;
   }
   updateCardObj(objData) {
     const pos = Grid.gridToWorldPos(objData.pos.x, objData.pos.y);
     this.cardObj.setPosition(pos.x, pos.y + 60);
     this.cardObj.flipX = objData.team != Team.P1;
+    return this.this.cardObj;
   }
 
   initStatsUi(data) {
@@ -240,17 +245,19 @@ class CardPermanent extends Card {
   canMove() {
     return this.objData.moveCount > 0; 
   }
-  changePos(x, y) {
+  changePosTo(x, y) {
     // update board
-    Grid.permanents[toIndex(this.objData.pos)] = null;
-    Grid.permanents[toIndex({ x: x, y: y })] = this;
+    Grid.movePermanent(this.objData.pos.x, this.objData.pos.y, x, y);
 
-    // update card
+    // update data
     this.objData.setPos(x, y);
+
+    // update visual
+    this.visual.updateCardObj(this.objData);
   }
   moveTo(x, y) {
     // change position
-    this.changePos(x, y);
+    Grid.movePermanent(this.objData.pos.x, this.objData.pos.y, x, y);
 
     // decrease moveCount
     this.objData.moveCount--;

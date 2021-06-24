@@ -10,15 +10,18 @@ class TileColor {
 
 class Tile {
   constructor(index, size, gapSize) {
+    // tile data
     this.index = index;
     this.pos = toCoord(this.index);
     this.gameObject = this.initGameObject(size, gapSize);
     this.cards = {
       permanent: null,
       spell: null,
+      rune: null,
       land: null
     };
     
+    // tile state
     this.fsm = new FSM(this, TileStateNormal);
     this.fsm.onStateChange = (obj) => {
       this.setHoverFunction(
@@ -27,6 +30,7 @@ class Tile {
       );
     };
 
+    // tile click event
     this.tileFg.on('pointerdown', () => {
       this.fsm.curState.onClick(this);
     });
@@ -55,22 +59,22 @@ class Tile {
   }
 
   updateCards() {
-    // TODO: add spell and rune
     this.cards.permanent = Grid.getPermanentAt(this.pos.x, this.pos.y);
+    // TODO:
+    // this.cards.spell = Grid.getSpellAt(this.pos.x, this.pos.y);
+    // this.cards.rune = Grid.getRuneAt(this.pos.x, this.pos.y);
+    // this.cards.land = Grid.getLandAt(this.pos.x, this.pos.y);
   }
 
-  removeHoverFunction() {
+  setHoverFunction(onHoverEnter, onHoverExit) {
+    // remove current event
     this.tileFg.removeAllListeners('pointerover');
     this.tileFg.removeAllListeners('pointerout');
     Game.scene.input.removeAllListeners('gameout');
-  }
-  addHoverFunction(onHoverEnter, onHoverExit) {
+
+    // set hover event
     this.tileFg.on('pointerover', onHoverEnter);
     this.tileFg.on('pointerout', onHoverExit);
     Game.scene.input.on('gameout', onHoverExit);
-  }
-  setHoverFunction(onHoverEnter, onHoverExit) {
-    this.removeHoverFunction();
-    this.addHoverFunction(onHoverEnter, onHoverExit);
   }
 };
