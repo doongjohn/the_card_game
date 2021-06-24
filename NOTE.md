@@ -14,6 +14,7 @@
 - [ ] Implement Card Placement
 - [ ] Implement Deck
 - [ ] Implement Card data base
+- [ ] Use proper mouse input
 
 ## Phaser ref
 
