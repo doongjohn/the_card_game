@@ -95,6 +95,7 @@ function toCoord(i) {
 }
 
 function toIndex() {
+  // TODO: update all calls
   if (arguments.length == 1) {
     const v = arguments[0];
     return (v.x < 0 || v.y < 0 || v.x >= Grid.size.x || v.y >= Grid.size.y)
