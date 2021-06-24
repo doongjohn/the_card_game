@@ -101,8 +101,7 @@ class MatchAction {
       MatchAction.cancleState();
     });
     MatchInput.keys.confirm.on('down', () => {
-      // TODO:
-      // maybe unnecessary?
+      // TODO: maybe this key is unnecessary?
       console.log('enter key pressed!');
     });
     MatchInput.keys.endTurn.on('down', () => {
