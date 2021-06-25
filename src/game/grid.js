@@ -44,7 +44,7 @@ class Grid {
   }
 
   static getTileAt(x, y) {
-    const index = toIndex({ x: x, y: y });
+    const index = toIndex(x, y);
     if (index < 0 || index >= Grid.size.x * Grid.size.y)
       return null;
     return Grid.tiles[index];
@@ -65,7 +65,7 @@ class Grid {
     return card;
   }
   static getPermanentAt(x, y) {
-    const index = toIndex({ x: x, y: y });
+    const index = toIndex(x, y);
     if (index < 0 || index >= Grid.size.x * Grid.size.y)
       return null;
     return Grid.permanents[index];
@@ -81,7 +81,7 @@ class Grid {
   static removePermanentAt(x, y) {
     const card = Grid.getPermanentAt(x, y);
     if (!card) return;
-    Grid.permanents[toIndex({ x: x, y: y })] = null;
+    Grid.permanents[toIndex(x, y)] = null;
     Grid.getTileAt(x, y).updateCards();
     card.destroyCard();
   }

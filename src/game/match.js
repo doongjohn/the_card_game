@@ -138,6 +138,8 @@ class MatchAction {
 
     // Unit Plan Move
     MatchAction.setState(MatchAction.StatePlanMove);
+
+    // update tile state
     Grid.tiles.forEach(tile => {
       if (tile.fsm.curState.compare(TileStateSelected))
         return;
@@ -208,6 +210,7 @@ class MatchAction {
     if (!blockedL || !blockedU) setMoveSelectionTile(l.x, u.y);
     if (!blockedL || !blockedD) setMoveSelectionTile(l.x, d.y);
 
+    //  update tile state
     Grid.tiles.forEach((tile) => {
       if (!tile.fsm.curState.compare(TileStateSelected, TileStateMoveSelection))
         tile.fsm.setState(TileStateNoInteraction);
@@ -261,6 +264,7 @@ class MatchAction {
       return;
     }
 
+    // update tile state
     Grid.tiles.forEach((tile) => {
       if (!tile.fsm.curState.compare(TileStateSelected, TileStateAttackSelection))
         tile.fsm.setState(TileStateNoInteraction);
