@@ -96,7 +96,7 @@ class TileStateChangePosSelection extends TileState {
     permanent.changePosTo(obj.pos.x, obj.pos.y);
 
     // update tile cards
-    const selectedTile = Match.player.selectedTile;
+    let selectedTile = Match.player.selectedTile;
     selectedTile.updateCards();
     selectedTile = obj;
     selectedTile.updateCards();

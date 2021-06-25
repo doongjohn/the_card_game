@@ -122,17 +122,17 @@ class CardVisual {
     const pos = Grid.gridToWorldPos(objData.pos.x, objData.pos.y);
     this.cardObj.setVisible(true).setPosition(pos.x, pos.y + 60);
     this.cardObj.flipX = objData.team != Team.P1;
-    return this.this.cardObj;
+    return this.cardObj;
   }
   hideCardObj() {
     this.cardObj.setVisible(false);
-    return this.this.cardObj;
+    return this.cardObj;
   }
   updateCardObj(objData) {
     const pos = Grid.gridToWorldPos(objData.pos.x, objData.pos.y);
     this.cardObj.setPosition(pos.x, pos.y + 60);
     this.cardObj.flipX = objData.team != Team.P1;
-    return this.this.cardObj;
+    return this.cardObj;
   }
 
   initStatsUi(data) {
