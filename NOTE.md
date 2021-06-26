@@ -10,6 +10,7 @@
   - [x] Implement movement tween
 - [x] Implement Basic Attack
 - [ ] Implement Basic Counter Attack
+- [ ] Implement Basic Effect Chain
 - [ ] Implement Basic UI
   - [ ] Detailed Card Info
   - [ ] Hand
@@ -21,6 +22,23 @@
 - [ ] Implement Deck
 - [ ] Implement Card data base
 - [ ] Use proper mouse input
+
+## Reminder
+
+**Attack**  
+`turn player` **Select:** Attack target ->  
+`turn player` **Effect:** On Attack ->  
+`turn player` Deal damage (Attack) ->  
+`turn player` **Effect:** On Deal Damage ->  
+`opps player` Take damage ->  
+`opps player` **Effect:** On Take Damage ->  
+`turn player` Tap ->  
+`opps player` **Choose:** Counter attack ->  
+`opps player` **Effect:** On Attack ->  
+`opps player` Deal damage (Counter attack) ->  
+`opps player` **Effect:** On Deal Damage ->  
+`turn player` **Effect:** On Take Damage ->  
+`opps player` Tap
 
 ## Phaser ref
 
@@ -47,6 +65,9 @@ https://phaser.io/examples/v3/view/physics/arcade/tween-velocity
 
 **Card flip:**  
 https://youtu.be/u1wNToPU8UY
+
+**Camera shake:**  
+https://phaser.io/examples/v3/view/camera/shake
 
 ## Duelyst ref
 

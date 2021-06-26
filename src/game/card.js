@@ -25,7 +25,10 @@ class CardObjData {
     this.team = cardData.team;
   }
 
-  resetTurnStart() {
+  resetOnTurnStart() {
+    // TODO
+  }
+  resetOnUntap() {
     this.moveCount = 1;
   }
 
@@ -169,6 +172,7 @@ class Card {
   }
   untap() {
     this.objData.tapped = false;
+    this.objData.resetOnUntap();
     this.visual.cardObj.resetPipeline();
   }
 }
@@ -240,8 +244,8 @@ class CardPermanent extends Card {
     });
   }
 
-  resetTurnStart() {
-    this.objData.resetTurnStart();
+  resetOnTurnStart() {
+    this.objData.resetOnTurnStart();
     this.untap();
   }
 
