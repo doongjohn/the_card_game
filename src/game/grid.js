@@ -7,21 +7,21 @@ class Grid {
   static tiles = Array(Grid.size.x * Grid.size.y).fill(null);
   static permanents = Array(Grid.size.x * Grid.size.y).fill(null);
 
-  static createBoard() {
+  static initBoard() {
     const bg = Game.spawn.sprite(0, -60, 'BattleMap5').setScale(0.85);
-    Game.add(bg);
+    Layer.bg.add(bg);
 
     // spawn tiles
     const tileGroup = Game.spawn.group();
     for (let i in Grid.tiles) {
       const tile = new Tile(i, Grid.tileSize, Grid.gapSize);
       tileGroup.add(tile.gameObject);
+      Layer.board.add(tile.gameObject);
       Grid.tiles[i] = tile;
     }
 
     // align tiles
     gridAlignCenterGameObject(Grid.tiles, Grid.size, Grid.cellSize);
-    Game.add(Grid.tiles);
 
     // move tiles up
     for (const tile of Grid.tiles)
@@ -31,8 +31,8 @@ class Grid {
     return tileGroup;
   }
 
-  static resetBoardState() {
-    Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
+  static setTileStateAll(state) {
+    Grid.tiles.forEach(tile => tile.fsm.setState(state));
   }
 
   static gridToWorldPos(x, y) {

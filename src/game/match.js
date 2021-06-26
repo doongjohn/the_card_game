@@ -6,9 +6,21 @@ class Team {
 
 class Player {
   constructor(team) {
+    this.team = team;
     this.selectedTile = null;
     this.selectedCard = null;
-    this.team = team;
+    this.deck = [];
+    this.hand = [];
+  }
+
+  addToHand(card) {
+    this.hand.push(card);
+  }
+
+  showHand() {
+    // TODO: show hand like hearthstone
+    const center = Game.spawn.rectangle(0, 400, 100, 100, 0xffffff);
+    Layer.ui.add(center);
   }
 }
 
@@ -17,15 +29,19 @@ class Match {
     new Player(Team.P1),
     new Player(Team.P2)
   ]);
-  static player = Match.players[0]; // current player
-  static turn = Team.P1;            // current turn
+  static turn = Team.P1;
+  static turnPlayer = Match.players[0];
+  static oppsPlayer = Match.players[1];
 
   static init() {
     MatchInput.init();
     MatchAction.init();
 
+    // TEST
+    Match.turnPlayer.showHand();
+
     // temp help text
-    const helpText = Game.spawn.text(10, 5,
+    Game.spawn.text(10, 5,
       `[SPACE]: end turn
 [P]: teleport
 [T]: tap / untap
@@ -43,14 +59,22 @@ class Match {
     }).setOrigin(0.5, 0);
   }
 
+  static isThisTurn(permanent) {
+    return permanent.data.team == Match.turn;
+  }
+
   static nextTurn() {
     // cycle turn
+    Match.oppsPlayer = Match.players[Match.turn];
     Match.turn = (Match.turn % 2) + 1;
-    Match.player = Match.players[Match.turn - 1];
+    Match.turnPlayer = Match.players[Match.turn - 1];
 
-    // deselect tile
-    Match.player.selectedTile = null;
-    Grid.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
+    // deselect all
+    Match.turnPlayer.selectedCard = null;
+    Match.turnPlayer.selectedTile = null;
+
+    // reset tile state
+    Grid.setTileStateAll(TileStateNormal);
 
     // update text
     Match.turnText.text = `P${Match.turn}'s turn`;
@@ -58,12 +82,8 @@ class Match {
     // untap permanents
     Grid.permanents.forEach(permanent => {
       if (permanent)
-        permanent.resetTurnStart();
+        permanent.resetOnTurnStart();
     });
-  }
-
-  static isThisTurn(permanent) {
-    return permanent.data.team == Match.turn;
   }
 }
 
@@ -121,12 +141,13 @@ class MatchAction {
   static cancleState() {
     if (MatchAction.state == MatchAction.StateEmpty)
       return;
+    
     if (MatchAction.state == MatchAction.StateView) {
       Grid.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
       MatchAction.setState(MatchAction.StateEmpty);
     } else {
       Grid.tiles.forEach(tile => {
-        if (tile != Match.player.selectedTile)
+        if (tile != Match.turnPlayer.selectedTile)
           tile.fsm.setState(TileStateNormal);
       });
       MatchAction.setState(MatchAction.StateView);
@@ -134,7 +155,7 @@ class MatchAction {
   }
 
   static onUnitTeleport() {
-    if (!Match.player.selectedTile || !Match.player.selectedTile.cards.permanent)
+    if (!Match.turnPlayer.selectedTile || !Match.turnPlayer.selectedTile.cards.permanent)
       return;
 
     // Unit Plan Move
@@ -144,6 +165,7 @@ class MatchAction {
     Grid.tiles.forEach(tile => {
       if (tile.fsm.curState.compare(TileStateSelected))
         return;
+
       if (tile.cards.permanent)
         tile.fsm.setState(TileStateNoInteraction);
       else
@@ -151,21 +173,20 @@ class MatchAction {
     });
   }
   static onUnitTap() {
-    if (!Match.player.selectedTile.cards.permanent)
+    if (!Match.turnPlayer.selectedTile.cards.permanent)
       return;
 
-    const cards = Match.player.selectedTile.cards;
-    if (cards.permanent.isTapped()) {
-      cards.permanent.untap();
-    } else {
-      cards.permanent.tap();
-    }
+    const permanent = Match.turnPlayer.selectedTile.cards.permanent;
+    if (permanent.isTapped())
+      permanent.untap();
+    else
+      permanent.tap();
   }
   static onUnitMove() {
-    if (!Match.player.selectedTile || !Match.player.selectedTile.cards.permanent)
+    if (!Match.turnPlayer.selectedTile || !Match.turnPlayer.selectedTile.cards.permanent)
       return;
 
-    const selected = Match.player.selectedTile;
+    const selected = Match.turnPlayer.selectedTile;
     if (!Match.isThisTurn(selected.cards.permanent)
       || selected.cards.permanent.isTapped()
       || !selected.cards.permanent.canMove())
@@ -218,14 +239,13 @@ class MatchAction {
     });
   }
   static onUnitAttack() {
-    if (!Match.player.selectedTile)
+    if (!Match.turnPlayer.selectedTile)
       return;
 
-    const selectedTile = Match.player.selectedTile;
+    const selectedTile = Match.turnPlayer.selectedTile;
 
     if (!selectedTile.cards.permanent || !Match.isThisTurn(selectedTile.cards.permanent))
       return;
-
     if (selectedTile.cards.permanent.isTapped())
       return;
 

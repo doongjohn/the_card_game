@@ -17,7 +17,7 @@
   - [ ] End Turn
   - [ ] Commander HP
   - [ ] Mana
-- [ ] Implement Hand
+- [ ] Implement Hand (max 7)
 - [ ] Implement Card Placement
 - [ ] Implement Deck
 - [ ] Implement Card data base
@@ -41,6 +41,9 @@
 `opps player` Tap
 
 ## Phaser ref
+
+**Depth sorting:**  
+https://phaser.discourse.group/t/container-sorting/4479
 
 **Custom font:**  
 https://www.webtips.dev/webtips/phaser/custom-fonts-in-phaser3

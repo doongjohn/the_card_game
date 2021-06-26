@@ -45,8 +45,8 @@ class TileStateNormal extends TileState {
     Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
 
     // select this tile
-    Match.player.selectedTile = obj;
-    Match.player.selectedTile.fsm.setState(TileStateSelected);
+    Match.turnPlayer.selectedTile = obj;
+    Match.turnPlayer.selectedTile.fsm.setState(TileStateSelected);
 
     // update match action state
     MatchAction.setState(MatchAction.StateView);
@@ -63,7 +63,7 @@ class TileStateSpawnPermanentSelection extends TileState {
   }
   onClick(obj) {
     // spawn a selected permanent
-    const selectedCard = Match.player.selectedCard;
+    const selectedCard = Match.turnPlayer.selectedCard;
     Grid.spawnPermanent(
       selectedCard.data.team,
       selectedCard.visual.cardArt.assetNameTrimmed,
@@ -92,15 +92,15 @@ class TileStateChangePosSelection extends TileState {
   }
   onClick(obj) {
     // update pos
-    const permanent = Match.player.selectedTile.cards.permanent;
+    const permanent = Match.turnPlayer.selectedTile.cards.permanent;
     permanent.changePosTo(obj.pos.x, obj.pos.y);
 
     // update selected tile
-    Match.player.selectedTile = obj;
+    Match.turnPlayer.selectedTile = obj;
     
     // update tile state
     Grid.tiles.forEach(tile => {
-      if (tile == Match.player.selectedTile)
+      if (tile == Match.turnPlayer.selectedTile)
         tile.fsm.setState(TileStateSelected);
       else
         tile.fsm.setState(TileStateNormal);
@@ -114,15 +114,15 @@ class TileStateChangePosSelection extends TileState {
 class TileStateMoveSelection extends TileStateChangePosSelection {
   onClick(obj) {
     // update pos
-    const permanent = Match.player.selectedTile.cards.permanent;
+    const permanent = Match.turnPlayer.selectedTile.cards.permanent;
     permanent.moveTo(obj.pos.x, obj.pos.y);
 
     // update selected tile
-    Match.player.selectedTile = obj;
+    Match.turnPlayer.selectedTile = obj;
 
     // update tile state
     Grid.tiles.forEach(tile => {
-      if (tile == Match.player.selectedTile)
+      if (tile == Match.turnPlayer.selectedTile)
         tile.fsm.setState(TileStateSelected);
       else
         tile.fsm.setState(TileStateNormal);
@@ -143,15 +143,15 @@ class TileStateAttackSelection extends TileState {
   }
   onClick(obj) {
     // attcak target permanent
-    Match.player.selectedTile.cards.permanent.doAttack(obj.cards.permanent);
+    Match.turnPlayer.selectedTile.cards.permanent.doAttack(obj.cards.permanent);
 
     // update tile cards
-    Match.player.selectedTile.updateCards();
+    Match.turnPlayer.selectedTile.updateCards();
     obj.updateCards();
 
     // update tile state
     Grid.tiles.forEach(tile => {
-      if (tile != Match.player.selectedTile)
+      if (tile != Match.turnPlayer.selectedTile)
         tile.fsm.setState(TileStateNormal);
     });
 

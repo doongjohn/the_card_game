@@ -18,18 +18,14 @@ class Game {
   }
 
   // alias to world.add
-  static add(gameObject) {
-    if (Array.isArray(gameObject)) {
-      for (let x of gameObject)
-        if (x instanceof Phaser.GameObjects.GameObject)
-          Game.world.add(x);
-        else if (x.gameObject !== undefined)
-          Game.world.add(x.gameObject);
-      return;
+  static addToWorld() {
+    for (let go of arguments) {
+      if (go instanceof Phaser.GameObjects.GameObject)
+        Game.world.add(go);
+      else if (go.gameObject !== undefined)
+        Game.world.add(go.gameObject);
+      else
+        console.error("It's can't be added to the world!");
     }
-    if (gameObject instanceof Phaser.GameObjects.GameObject)
-      Game.world.add(gameObject);
-    else if (gameObject.gameObject !== undefined)
-      Game.world.add(gameObject.gameObject);
   }
 }

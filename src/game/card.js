@@ -103,9 +103,9 @@ class CardVisual {
       cardText
     ]);
 
-    // add objects to world
-    Game.add(this.cardObj);
-    Game.add(this.card);
+    // add objects to layer
+    Layer.permanent.add(this.cardObj);
+    Layer.ui.add(this.card);
 
     // hide all visuals
     this.hideCard();
@@ -223,20 +223,32 @@ class CardPermanent extends Card {
         break;
     }
 
-    // initialzie permanent
+    // init ui
     this.visual.initStatsUi(this.data);
+
+    // init click event
+    this.clickSpawn = true;
     this.initClickEvent();
+
+    // init visual
     this.tweenMovement = null;
   }
 
   initClickEvent() {
-    // spawn this card on the board
     this.visual.card.setSize(CardVisual.width, CardVisual.height);
     this.visual.card.setInteractive();
+
+    // on click
     this.visual.card.on('pointerdown', () => {
-      Match.player.selectedCard = this;
+      if (!this.clickSpawn) return;
+
+      // update selected card
+      Match.turnPlayer.selectedCard = this;
+      
+      // update tile state
       Grid.tiles.forEach(tile => {
         if (!tile.fsm.curState.compare(TileStateSelected) && !tile.cards.permanent)
+          // spawn this card on the board
           tile.fsm.setState(TileStateSpawnPermanentSelection);
       });
 
@@ -250,9 +262,6 @@ class CardPermanent extends Card {
     this.untap();
   }
 
-  canMove() {
-    return this.objData.moveCount > 0;
-  }
   changePosTo(x, y) {
     // update board
     Grid.movePermanent(this.objData.pos.x, this.objData.pos.y, x, y);
@@ -265,6 +274,9 @@ class CardPermanent extends Card {
     
     // update visual
     this.visual.updateCardObj(this.objData);
+  }
+  canMove() {
+    return this.objData.moveCount > 0;
   }
   moveTo(x, y) {
     // update board
@@ -291,7 +303,6 @@ class CardPermanent extends Card {
       repeat: 0,
       ease: 'Linear',
       duration: dist / speed,
-      // useFrames: true,
 
       // tween props
       x: { from: this.visual.cardObj.x, to: pos.x },
@@ -308,15 +319,22 @@ class CardPermanent extends Card {
   }
   doAttack(target) {
     this.doDamage(target);
-    this.tap();
+
+    // TODO: trigger effect
+
+    this.tap(); // TODO: tap after enemy on take damage event is triggered
   }
   takeDamage(damage) {
-    this.objData.health -= damage;
+    // update health
+    this.objData.health = Math.max(this.objData.health - damage, 0);
+
+    // update ui
     this.visual.updateStatsUi(this.objData);
-    if (this.objData.health <= 0) {
-      // TODO:
-      // move this card to the grave yard
+
+    // TODO: trigger effect
+
+    // TODO: move this card to the grave yard
+    if (this.objData.health <= 0)
       Grid.removePermanentAt(this.objData.pos.x, this.objData.pos.y);
-    }
   }
 }
