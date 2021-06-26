@@ -31,10 +31,10 @@ class Match {
 [T]: tap / untap
 [M]: move
 [A]: attack`, {
-        color: '#000000',
-        font: '20px consolas',
-        align: 'left'
-      });
+      color: '#000000',
+      font: '20px consolas',
+      align: 'left'
+    });
 
     Match.turnText = Game.spawn.text(Game.center.x, 10, 'P1\'s turn', {
       color: '#000000',
@@ -93,6 +93,7 @@ class MatchAction {
   static StatePlanMove = 2;
   static StatePlanAttack = 3;
   static StateCounterAttack = 4;
+  static StatePlanPermanentSpawn = 5;
   static state = MatchAction.StateEmpty;
 
   static init() {
@@ -175,7 +176,7 @@ class MatchAction {
 
     function setMoveSelectionTile(x, y) {
       if (!Grid.getPermanentAt(x, y))
-        Grid.getTileAt(x, y) ?.fsm.setState(TileStateMoveSelection);
+        Grid.getTileAt(x, y)?.fsm.setState(TileStateMoveSelection);
     }
 
     const u = { x: selected.pos.x, y: selected.pos.y - 1 };

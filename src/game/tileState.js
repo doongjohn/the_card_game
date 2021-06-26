@@ -95,15 +95,12 @@ class TileStateChangePosSelection extends TileState {
     const permanent = Match.player.selectedTile.cards.permanent;
     permanent.changePosTo(obj.pos.x, obj.pos.y);
 
-    // update tile cards
-    let selectedTile = Match.player.selectedTile;
-    selectedTile.updateCards();
-    selectedTile = obj;
-    selectedTile.updateCards();
+    // update selected tile
+    Match.player.selectedTile = obj;
     
     // update tile state
     Grid.tiles.forEach(tile => {
-      if (tile == selectedTile)
+      if (tile == Match.player.selectedTile)
         tile.fsm.setState(TileStateSelected);
       else
         tile.fsm.setState(TileStateNormal);
@@ -120,15 +117,12 @@ class TileStateMoveSelection extends TileStateChangePosSelection {
     const permanent = Match.player.selectedTile.cards.permanent;
     permanent.moveTo(obj.pos.x, obj.pos.y);
 
-    // update tile cards
-    let selectedTile = Match.player.selectedTile;
-    selectedTile.updateCards();
-    selectedTile = obj;
-    selectedTile.updateCards();
+    // update selected tile
+    Match.player.selectedTile = obj;
 
     // update tile state
     Grid.tiles.forEach(tile => {
-      if (tile == selectedTile)
+      if (tile == Match.player.selectedTile)
         tile.fsm.setState(TileStateSelected);
       else
         tile.fsm.setState(TileStateNormal);

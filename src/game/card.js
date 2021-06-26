@@ -234,6 +234,9 @@ class CardPermanent extends Card {
         if (!tile.fsm.curState.compare(TileStateSelected) && !tile.cards.permanent)
           tile.fsm.setState(TileStateSpawnPermanentSelection);
       });
+
+      // update match action state
+      MatchAction.setState(MatchAction.StatePlanPermanentSpawn);
     });
   }
 
@@ -243,7 +246,7 @@ class CardPermanent extends Card {
   }
 
   canMove() {
-    return this.objData.moveCount > 0; 
+    return this.objData.moveCount > 0;
   }
   changePosTo(x, y) {
     // update board
@@ -256,13 +259,14 @@ class CardPermanent extends Card {
     this.visual.updateCardObj(this.objData);
   }
   moveTo(x, y) {
-    // change position
+    // update board
     Grid.movePermanent(this.objData.pos.x, this.objData.pos.y, x, y);
 
-    // decrease moveCount
+    // update data
     this.objData.moveCount--;
+    this.objData.setPos(x, y);
 
-    // tween movement data
+    // tween visual data
     const speed = 0.35;
     const pos = Grid.gridToWorldPos(x, y);
     pos.y += 60;
@@ -271,10 +275,8 @@ class CardPermanent extends Card {
       (pos.y - this.visual.cardObj.y) ** 2
     );
 
-    // remove previous tween
-    this.tweenMovement ?.remove();
-
-    // tween movement
+    // tween visual
+    this.tweenMovement?.remove();
     this.tweenMovement = Game.scene.tweens.add({
       // tween options
       targets: this.visual.cardObj,

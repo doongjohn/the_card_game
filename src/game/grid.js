@@ -73,10 +73,13 @@ class Grid {
   static setPermanentAt(x, y, permanent) {
     Grid.permanents[toIndex(x, y)] = permanent;
   }
-  static movePermanent(fromX, fromY, toX, toY) {
-    const fromIndex = toIndex(fromX, fromY);
-    Grid.permanents[toIndex(toX, toY)] = Grid.permanents[fromIndex];
-    Grid.permanents[fromIndex] = null;
+  static movePermanent(x, y, targetX, targetY) {
+    const start = toIndex(x, y);
+    const target = toIndex(targetX, targetY);
+    Grid.permanents[target] = Grid.permanents[start];
+    Grid.permanents[start] = null;
+    Grid.tiles[start].updateCards();
+    Grid.tiles[target].updateCards();
   }
   static removePermanentAt(x, y) {
     const card = Grid.getPermanentAt(x, y);

@@ -10,6 +10,12 @@
   - [x] Implement movement tween
 - [x] Implement Basic Attack
 - [ ] Implement Basic Counter Attack
+- [ ] Implement Basic UI
+  - [ ] Detailed Card Info
+  - [ ] Hand
+  - [ ] End Turn
+  - [ ] Commander HP
+  - [ ] Mana
 - [ ] Implement Hand
 - [ ] Implement Card Placement
 - [ ] Implement Deck
