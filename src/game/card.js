@@ -112,6 +112,13 @@ class CardVisual {
     this.hideCardObj();
   }
 
+  // This function is only for debuging
+  // I need to make a grave yard system 
+  destroy() {
+    this.visual.card.destroy();
+    this.visual.cardObj.destroy();
+  }
+
   showCard() {
     this.card.setVisible(true);
     return this.card;
@@ -155,12 +162,6 @@ class Card {
     this.data = data;
     this.objData = new CardObjData(data);
     this.visual = new CardVisual(assetName, data);
-  }
-
-  // this function is only for debuging
-  destroyCard() {
-    this.visual.card.destroy();
-    this.visual.cardObj.destroy();
   }
 
   isTapped() {
@@ -259,6 +260,9 @@ class CardPermanent extends Card {
     // update data
     this.objData.setPos(x, y);
 
+    // remove tween
+    this.tweenMovement?.remove();
+    
     // update visual
     this.visual.updateCardObj(this.objData);
   }
@@ -270,7 +274,7 @@ class CardPermanent extends Card {
     this.objData.moveCount--;
     this.objData.setPos(x, y);
 
-    // tween visual data
+    // tween movement data
     const speed = 0.35;
     const pos = Grid.gridToWorldPos(x, y);
     pos.y += 60;
@@ -279,7 +283,7 @@ class CardPermanent extends Card {
       (pos.y - this.visual.cardObj.y) ** 2
     );
 
-    // tween visual
+    // tween movement
     this.tweenMovement?.remove();
     this.tweenMovement = Game.scene.tweens.add({
       // tween options
@@ -287,6 +291,7 @@ class CardPermanent extends Card {
       repeat: 0,
       ease: 'Linear',
       duration: dist / speed,
+      // useFrames: true,
 
       // tween props
       x: { from: this.visual.cardObj.x, to: pos.x },

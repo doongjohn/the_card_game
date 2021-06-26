@@ -74,19 +74,25 @@ class Grid {
     Grid.permanents[toIndex(x, y)] = permanent;
   }
   static movePermanent(x, y, targetX, targetY) {
-    const start = toIndex(x, y);
+    const from = toIndex(x, y);
     const target = toIndex(targetX, targetY);
-    Grid.permanents[target] = Grid.permanents[start];
-    Grid.permanents[start] = null;
-    Grid.tiles[start].updateCards();
+    Grid.permanents[target] = Grid.permanents[from];
+    Grid.permanents[from] = null;
+    Grid.tiles[from].updateCards();
     Grid.tiles[target].updateCards();
   }
   static removePermanentAt(x, y) {
+    // check permanent
     const card = Grid.getPermanentAt(x, y);
-    if (!card) return;
+    if (!card)
+      return;
+
+    // remove from board
     Grid.permanents[toIndex(x, y)] = null;
     Grid.getTileAt(x, y).updateCards();
-    card.destroyCard();
+
+    // destroy visual
+    card.visual.destroy();
   }
 };
 

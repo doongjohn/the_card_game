@@ -69,6 +69,9 @@ https://youtu.be/u1wNToPU8UY
 **Camera shake:**  
 https://phaser.io/examples/v3/view/camera/shake
 
+**Text input field:**  
+https://phasergames.com/phaser-3-input-text-form-ui-part-1/
+
 ## Duelyst ref
 
 **Duelyst Art:**  
