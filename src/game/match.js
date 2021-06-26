@@ -19,8 +19,23 @@ class Player {
 
   showHand() {
     // TODO: show hand like hearthstone
-    const center = Game.spawn.rectangle(0, 400, 100, 100, 0xffffff);
-    Layer.ui.add(center);
+    const card = new CardPermanent(this.team, 'ZirAnSunforge');
+    this.addToHand(card);
+    const card1 = new CardPermanent(this.team, 'ZirAnSunforge');
+    this.addToHand(card1);
+    const card2 = new CardPermanent(this.team, 'ZirAnSunforge');
+    this.addToHand(card2);
+
+    const width = 150;
+    const y = 515;
+    const xGap = (width / this.hand.length);
+    const xStart = -(width / (this.hand.length / 2)) - (CardVisual.width / 2)
+
+    let i = 1;
+    for (let card of this.hand) {
+      card.visual.showCard().setPosition(xStart + xGap * i, y);
+      ++i;
+    }
   }
 }
 
