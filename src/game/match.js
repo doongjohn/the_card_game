@@ -20,13 +20,13 @@ class Player {
   showHand() {
     // TODO: show hand like hearthstone
     const card0 = new CardPermanent(this.team, 'ZirAnSunforge');
-    const card1 = new CardPermanent(this.team, 'ZirAnSunforge');
+    const card1 = new CardPermanent(this.team, 'RagnoraTheRelentless');
     const card2 = new CardPermanent(this.team, 'ZirAnSunforge');
-    const card3 = new CardPermanent(this.team, 'ZirAnSunforge');
+    const card3 = new CardPermanent(this.team, 'RagnoraTheRelentless');
     const card4 = new CardPermanent(this.team, 'ZirAnSunforge');
-    const card5 = new CardPermanent(this.team, 'ZirAnSunforge');
+    const card5 = new CardPermanent(this.team, 'RagnoraTheRelentless');
     const card6 = new CardPermanent(this.team, 'ZirAnSunforge');
-    const card7 = new CardPermanent(this.team, 'ZirAnSunforge');
+    const card7 = new CardPermanent(this.team, 'RagnoraTheRelentless');
     this.addToHand(card0);
     this.addToHand(card1);
     this.addToHand(card2);
@@ -36,24 +36,24 @@ class Player {
     this.addToHand(card6);
     this.addToHand(card7);
 
-    const maxCard = 6;
-    const maxWidth = (CardVisual.width + 10) * maxCard;
+    const maxCard = 5;
+    const width = CardVisual.width + 10;
+    const maxWidth = width * (maxCard - 1);
     const y = 515;
-    let xStart = 0;
-    let xGap = 0;
-
-    // FIXEME: so many bugs...
-    if (this.hand.length <= maxCard) {
-      xStart = -((CardVisual.width + 10) / 2) * Math.round(this.hand.length / 2);
-      xGap = CardVisual.width + 10;
-    } else {
-      xStart = -(maxWidth / 2) + ((CardVisual.width / 2));
-      xGap = (maxWidth / (this.hand.length + 1));
-    }
+    const { startPos, gap } = this.hand.length < maxCard ?
+      {
+        startPos: -width / 2 * (this.hand.length - 1),
+        gap: width
+      } :
+      {
+        startPos: -maxWidth / 2,
+        gap: maxWidth / (this.hand.length - 1)
+      };
 
     let i = 0;
     for (let card of this.hand) {
-      card.visual.showCard().setPosition(xStart + (xGap * i++), y);
+      card.spawnable = true;
+      card.visual.showCard().setPosition(startPos + (gap * i++), y);
     }
   }
 }
@@ -86,8 +86,10 @@ class Match {
       align: 'left'
     });
 
+    // temp turn text
+    Game.spawn.rectangle(Game.center.x, 10, 200, 100, 0x000000);
     Match.turnText = Game.spawn.text(Game.center.x, 10, 'P1\'s turn', {
-      color: '#000000',
+      color: '#ffffff',
       font: '32px Arial',
       align: 'center'
     }).setOrigin(0.5, 0);
@@ -175,7 +177,7 @@ class MatchAction {
   static cancleState() {
     if (MatchAction.state == MatchAction.StateEmpty)
       return;
-    
+
     if (MatchAction.state == MatchAction.StateView) {
       Grid.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
       MatchAction.setState(MatchAction.StateEmpty);
