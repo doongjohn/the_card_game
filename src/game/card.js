@@ -38,6 +38,15 @@ class CardObjData {
   }
 }
 
+// TODO: refactor cardvisual
+class CardPaper {
+
+}
+
+class BoardObj {
+  
+}
+
 class CardVisual {
   static width = 250;
   static height = 350;
@@ -102,6 +111,10 @@ class CardVisual {
       cardName,
       cardText
     ]);
+
+    // make interactable
+    this.card.setSize(CardVisual.width, CardVisual.height);
+    this.card.setInteractive();
 
     // add objects to layer
     Layer.permanent.add(this.cardObj);
@@ -223,32 +236,53 @@ class CardPermanent extends Card {
         break;
     }
 
-    // init ui
-    this.visual.initStatsUi(this.data);
+    // init data
+    this.spawnable = false;
 
-    // init click event
-    this.clickSpawn = true;
-    this.initClickEvent();
+    // init pointer event
+    this.initHover();
+    this.initClickInfo();
+    this.initClickSpawn();
 
     // init visual
+    this.visual.initStatsUi(this.data);
     this.tweenMovement = null;
   }
 
-  initClickEvent() {
-    this.visual.card.setSize(CardVisual.width, CardVisual.height);
-    this.visual.card.setInteractive();
-
-    // on click
+  initHover() {
+    this.visual.card.on('pointerover', () => {
+      Layer.ui.moveUp(this.visual.card);
+      this.visual.card.y -= 200;
+      this.visual.card.setScale(1.2);
+    });
+    this.visual.card.on('pointerout', () => {
+      Layer.ui.moveDown(this.visual.card);
+      this.visual.card.y += 200;
+      this.visual.card.setScale(1);
+    });
+  }
+  initClickInfo() {
     this.visual.card.on('pointerdown', () => {
-      if (!this.clickSpawn) return;
-
-      // update selected card
-      Match.turnPlayer.selectedCard = this;
+      // TODO: show card info
       
+      // deselect tile
+      Match.turnPlayer.selectedTile = null;
+      Grid.setTileStateAll(TileStateNormal);
+      
+      // update selected card
+      if (Match.turnPlayer.selectedCard && !Match.turnPlayer.selectedCard.spawnable)
+        Match.turnPlayer.selectedCard.visual.hideCard();
+      Match.turnPlayer.selectedCard = this;
+    });
+  }
+  initClickSpawn() {
+    this.visual.card.on('pointerdown', () => {
+      if (!this.spawnable) return;
+
       // update tile state
       Grid.tiles.forEach(tile => {
-        if (!tile.fsm.curState.compare(TileStateSelected) && !tile.cards.permanent)
-          // spawn this card on the board
+        // spawn this card on the board
+        if (!tile.cards.permanent)
           tile.fsm.setState(TileStateSpawnPermanentSelection);
       });
 
@@ -271,7 +305,7 @@ class CardPermanent extends Card {
 
     // remove tween
     this.tweenMovement?.remove();
-    
+
     // update visual
     this.visual.updateCardObj(this.objData);
   }
