@@ -1,6 +1,6 @@
 class Grid {
   static size = new Phaser.Math.Vector2(11, 7);
-  static gapSize = new Phaser.Math.Vector2(10, 10);
+  static gapSize = new Phaser.Math.Vector2(5, 5);
   static tileSize = new Phaser.Math.Vector2(100, 100);
   static cellSize = this.tileSize.clone().add(this.gapSize);
 
@@ -8,7 +8,7 @@ class Grid {
   static permanents = Array(Grid.size.x * Grid.size.y).fill(null);
 
   static initBoard() {
-    const bg = Game.spawn.sprite(0, -60, 'BattleMap5').setScale(0.85);
+    const bg = Game.spawn.sprite(0, -100, 'BattleMap5').setScale(0.85);
     Layer.bg.add(bg);
 
     // spawn tiles
@@ -25,7 +25,7 @@ class Grid {
 
     // move tiles up
     for (const tile of Grid.tiles)
-      tile.gameObject.y -= 55;
+      tile.gameObject.y -= 80;
 
     // return tile group
     return tileGroup;
