@@ -19,39 +19,41 @@ class Player {
 
   showHand() {
     // TODO: show hand like hearthstone
-    const card = new CardPermanent(this.team, 'ZirAnSunforge');
-    this.addToHand(card);
+    const card0 = new CardPermanent(this.team, 'ZirAnSunforge');
     const card1 = new CardPermanent(this.team, 'ZirAnSunforge');
-    this.addToHand(card1);
     const card2 = new CardPermanent(this.team, 'ZirAnSunforge');
-    this.addToHand(card2);
     const card3 = new CardPermanent(this.team, 'ZirAnSunforge');
-    this.addToHand(card3);
     const card4 = new CardPermanent(this.team, 'ZirAnSunforge');
-    this.addToHand(card4);
     const card5 = new CardPermanent(this.team, 'ZirAnSunforge');
-    this.addToHand(card5);
     const card6 = new CardPermanent(this.team, 'ZirAnSunforge');
+    const card7 = new CardPermanent(this.team, 'ZirAnSunforge');
+    this.addToHand(card0);
+    this.addToHand(card1);
+    this.addToHand(card2);
+    this.addToHand(card3);
+    this.addToHand(card4);
+    this.addToHand(card5);
     this.addToHand(card6);
+    this.addToHand(card7);
 
-    const width = (CardVisual.width + 10) * 7;
+    const maxCard = 6;
+    const maxWidth = (CardVisual.width + 10) * maxCard;
     const y = 515;
-    let xGap = 0;
     let xStart = 0;
-    if (this.hand.length < 8) {
+    let xGap = 0;
+
+    // FIXEME: so many bugs...
+    if (this.hand.length <= maxCard) {
+      xStart = -((CardVisual.width + 10) / 2) * Math.round(this.hand.length / 2);
       xGap = CardVisual.width + 10;
     } else {
-
-    }
-    if (this.hand.length % 2) {
-      xStart = -CardVisual.width * Math.floor(this.hand.length / 2);
-    } else {
-      xStart = -(CardVisual.width / 2) * Math.floor(this.hand.length / 2);
+      xStart = -(maxWidth / 2) + ((CardVisual.width / 2));
+      xGap = (maxWidth / (this.hand.length + 1));
     }
 
     let i = 0;
     for (let card of this.hand) {
-      card.visual.showCard().setPosition(xStart + xGap * i++, y);
+      card.visual.showCard().setPosition(xStart + (xGap * i++), y);
     }
   }
 }
