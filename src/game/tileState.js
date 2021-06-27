@@ -55,11 +55,8 @@ class TileStateNormal extends TileState {
 
 class TileStateSpawnPermanentSelection extends TileState {
   onEnter(obj) {
-    obj.tileBg.setFillStyle(0x25c477, 0.4);
+    obj.tileBg.setFillStyle(0x259c51, 0.4);
     obj.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
-  }
-  onExit(obj) {
-    obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
   }
   onClick(obj) {
     // spawn a selected permanent
@@ -91,11 +88,8 @@ class TileStateChangePosSelection extends TileState {
     obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
   }
   onClick(obj) {
-    // update pos
-    const permanent = Match.turnPlayer.selectedTile.cards.permanent;
-    permanent.changePosTo(obj.pos.x, obj.pos.y);
-
     // update selected tile
+    Match.turnPlayer.selectedTile.cards.permanent.changePosTo(obj.pos.x, obj.pos.y);
     Match.turnPlayer.selectedTile = obj;
     
     // update tile state
@@ -113,11 +107,8 @@ class TileStateChangePosSelection extends TileState {
 
 class TileStateMoveSelection extends TileStateChangePosSelection {
   onClick(obj) {
-    // update pos
-    const permanent = Match.turnPlayer.selectedTile.cards.permanent;
-    permanent.moveTo(obj.pos.x, obj.pos.y);
-
     // update selected tile
+    Match.turnPlayer.selectedTile.cards.permanent.moveTo(obj.pos.x, obj.pos.y);
     Match.turnPlayer.selectedTile = obj;
 
     // update tile state
