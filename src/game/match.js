@@ -25,16 +25,33 @@ class Player {
     this.addToHand(card1);
     const card2 = new CardPermanent(this.team, 'ZirAnSunforge');
     this.addToHand(card2);
+    const card3 = new CardPermanent(this.team, 'ZirAnSunforge');
+    this.addToHand(card3);
+    const card4 = new CardPermanent(this.team, 'ZirAnSunforge');
+    this.addToHand(card4);
+    const card5 = new CardPermanent(this.team, 'ZirAnSunforge');
+    this.addToHand(card5);
+    const card6 = new CardPermanent(this.team, 'ZirAnSunforge');
+    this.addToHand(card6);
 
-    const width = 150;
+    const width = (CardVisual.width + 10) * 7;
     const y = 515;
-    const xGap = (width / this.hand.length);
-    const xStart = -(width / (this.hand.length / 2)) - (CardVisual.width / 2)
+    let xGap = 0;
+    let xStart = 0;
+    if (this.hand.length < 8) {
+      xGap = CardVisual.width + 10;
+    } else {
 
-    let i = 1;
+    }
+    if (this.hand.length % 2) {
+      xStart = -CardVisual.width * Math.floor(this.hand.length / 2);
+    } else {
+      xStart = -(CardVisual.width / 2) * Math.floor(this.hand.length / 2);
+    }
+
+    let i = 0;
     for (let card of this.hand) {
-      card.visual.showCard().setPosition(xStart + xGap * i, y);
-      ++i;
+      card.visual.showCard().setPosition(xStart + xGap * i++, y);
     }
   }
 }
