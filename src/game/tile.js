@@ -20,15 +20,14 @@ class Tile {
       rune: null,
       land: null
     };
-    
+
     // tile state
-    this.fsm = new FSM(this, TileStateNormal);
-    this.fsm.onStateChange = (obj) => {
+    this.fsm = new FSM(this, TileStateNormal, (obj) => {
       this.setHoverFunction(
         () => this.fsm.curState.onHoverEnter(obj),
         () => this.fsm.curState.onHoverExit(obj)
-      );
-    };
+      )
+    });
 
     // tile click event
     this.tileFg.on('pointerdown', () => {
