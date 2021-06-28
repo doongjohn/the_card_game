@@ -1,161 +1,191 @@
 class CardData {
-  // This class stores the base stat/info of a card.
-  // This data should not change.
-
-  constructor({ name, text, health, attack, team } = {}) {
+  constructor({ team, name, text, health, attack, maxMoveCount = 1 } = {}) {
+    this.team = team;
     this.name = name;
     this.text = text;
     this.health = health;
     this.attack = attack;
-    this.team = team;
+    this.maxMoveCount = maxMoveCount;
   }
 }
 
-class CardObjData {
-  // This class stores the current stat/info of a card.
-  // This data may change because of combat, spells, etc...
-
-  pos = { x: 0, y: 0 };
-  moveCount = 1;
-  tapped = false;
-
+class BoardObjData {
   constructor(cardData) {
+    this.team = cardData.team;
     this.attack = cardData.attack;
     this.health = cardData.health;
-    this.team = cardData.team;
+    this.maxMoveCount = cardData.maxMoveCount;
+    this.moveCount = 0;
+    this.tapped = false;
+    this.pos = { x: 0, y: 0 };
   }
 
-  resetOnTurnStart() {
-    // TODO
-  }
   resetOnUntap() {
-    this.moveCount = 1;
+    this.moveCount = 0;
+  }
+  resetOnTurnStart() {
+    this.untap();
   }
 
+  tap() {
+    this.tapped = true;
+  }
+  untap() {
+    this.tapped = false;
+    this.resetOnUntap();
+  }
+
+  canMove() {
+    return this.moveCount < this.maxMoveCount;
+  }
   setPos(x, y) {
     this.pos.x = x;
     this.pos.y = y;
   }
 }
 
-// TODO: refactor cardvisual
-class CardPaper {
-
-}
-
 class BoardObj {
-  
+  constructor(assetName, cardData) {
+    // data
+    this.data = new BoardObjData(cardData);
+
+    // create sprite
+    this.cardArt = new SpriteCardArt(0, 0, `CardArt:${assetName}`, assetName);
+    this.cardArt.setScale(1.6).setOrigin(0.5, 1);
+
+    // play animation
+    const animKey_Idle = `CardArt:Idle:${assetName}`;
+    if (Game.scene.anims.exists(animKey_Idle))
+      this.cardArt.play(animKey_Idle);
+    else
+      console.error(`This anim key does not exists! "${animKey_Idle}"`);
+
+    // add to layer
+    Layer.permanent.add(this.cardArt);
+
+    // hide
+    this.hide();
+  }
+
+  destroy() {
+    this.cardArt.destroy();
+  }
+
+  show() {
+    this.cardArt.setVisible(true);
+    return this.cardArt;
+  }
+  hide() {
+    this.cardArt.setVisible(false);
+    return this.cardArt;
+  }
+
+  tap() {
+    this.data.tap();
+    this.cardArt.setPipeline(Game.pipeline.grayScale);
+  }
+  untap() {
+    this.data.untap();
+    this.cardArt.resetPipeline();
+  }
+
+  canMove() {
+    return this.data.canMove();
+  }
+  setPos(x, y) {
+    this.data.setPos(x, y);
+    const worldPos = Board.gridToWorldPos(x, y);
+    this.cardArt.setPosition(worldPos.x, worldPos.y + 60);
+  }
 }
 
-class CardVisual {
+class CardPaper {
   static width = 250;
   static height = 350;
   static bgColor = 0x1e2a42;
-
-  static textBgMargin = 6;
-  static textBgWidth = CardVisual.width - (CardVisual.textBgMargin * 2);
-  static textBgHeight = 160;
-  static textBgColor = 0x182236;
+  static textBg = {
+    margin: 6,
+    width: CardPaper.width - 6 * 2,
+    height: 160,
+    color: 0x182236
+  };
 
   constructor(assetName, data) {
-    const cardArtName = `CardArt:${assetName}`;
-    this.cardArt = new SpriteCardArt(0, 0, cardArtName, assetName);
-    this.cardObj = new SpriteCardArt(0, 0, cardArtName, assetName);
+    // create sprite
+    this.cardArt = new SpriteCardArt(0, 0, `CardArt:${assetName}`, assetName);
     this.cardArt.setScale(1.6).setOrigin(0.5, 1);
-    this.cardObj.setScale(1.6).setOrigin(0.5, 1);
 
     // play animation
-    const animKey = `CardArt:Idle:${assetName}`;
-    if (Game.scene.anims.exists(animKey)) {
-      this.cardArt.play(animKey);
-      this.cardObj.play(animKey)
-    }
-    else {
-      console.error(`This anim key does not exists! "${animKey}"`);
-    }
+    const animKey_Idle = `CardArt:Idle:${assetName}`;
+    if (Game.scene.anims.exists(animKey_Idle))
+      this.cardArt.play(animKey_Idle);
+    else
+      console.error(`This anim key does not exists! "${animKey_Idle}"`);
 
-    const bg = Game.spawn.rectangle(
+    // card bg
+    this.bg = Game.spawn.rectangle(
       0, 0,
-      CardVisual.width,
-      CardVisual.height,
-      CardVisual.bgColor
-    ).setStrokeStyle(3, CardVisual.textBgColor, 1);
+      CardPaper.width,
+      CardPaper.height,
+      CardPaper.bgColor
+    ).setStrokeStyle(3, CardPaper.textBg.color, 1);
 
-    const textBg = Game.spawn.rectangle(
-      0, CardVisual.height / 2 - CardVisual.textBgMargin,
-      CardVisual.textBgWidth,
-      CardVisual.textBgHeight,
-      CardVisual.textBgColor
-    ).setOrigin(0.5, 1);
-
-    const cardName = Game.spawn.text(0, 0, data.name, {
+    // card name
+    this.cardName = Game.spawn.text(0, 0, data.name, {
       font: '18px Arial',
       align: 'center'
     }).setOrigin(0.5, 1);
 
-    const cardText = Game.spawn.text(
-      CardVisual.textBgMargin - (CardVisual.textBgWidth / 2), 15,
+    // text area bg
+    this.textBg = Game.spawn.rectangle(
+      0, CardPaper.height / 2 - CardPaper.textBg.margin,
+      CardPaper.textBg.width,
+      CardPaper.textBg.height,
+      CardPaper.textBg.color
+    ).setOrigin(0.5, 1);
+
+    // card text
+    this.cardText = Game.spawn.text(
+      CardPaper.textBg.margin - (CardPaper.textBg.width / 2), 15,
       data.text,
       {
         font: '16px Arial',
         align: 'left',
-        wordWrap: { width: CardVisual.textBgWidth - CardVisual.textBgMargin }
+        wordWrap: { width: CardPaper.textBg.width - CardPaper.textBg.margin }
       }
     );
 
-    // container for this card
-    this.card = Game.spawn.container(0, 0, [
-      bg,
-      textBg,
+    // container for this card paper
+    this.visual = Game.spawn.container(0, 0, [
+      this.bg,
       this.cardArt,
-      cardName,
-      cardText
+      this.cardName,
+      this.textBg,
+      this.cardText
     ]);
 
     // make interactable
-    this.card.setSize(CardVisual.width, CardVisual.height);
-    this.card.setInteractive();
+    this.visual.setSize(CardPaper.width, CardPaper.height);
+    this.visual.setInteractive();
 
-    // add objects to layer
-    Layer.permanent.add(this.cardObj);
-    Layer.ui.add(this.card);
+    // add to layer
+    Layer.ui.add(this.visual);
 
-    // hide all visuals
-    this.hideCard();
-    this.hideCardObj();
+    // hide
+    this.hide();
   }
 
-  // This function is only for debuging
-  // I need to make a grave yard system 
   destroy() {
-    this.visual.card.destroy();
-    this.visual.cardObj.destroy();
+    this.visual.destroy();
   }
 
-  showCard() {
-    this.card.setVisible(true);
-    return this.card;
+  show() {
+    this.visual.setVisible(true);
+    return this.visual;
   }
-  hideCard() {
-    this.card.setVisible(false);
-    return this.card;
-  }
-
-  showCardObj(objData) {
-    const pos = Grid.gridToWorldPos(objData.pos.x, objData.pos.y);
-    this.cardObj.setVisible(true).setPosition(pos.x, pos.y + 60);
-    this.cardObj.flipX = objData.team != Team.P1;
-    return this.cardObj;
-  }
-  hideCardObj() {
-    this.cardObj.setVisible(false);
-    return this.cardObj;
-  }
-  updateCardObj(objData) {
-    const pos = Grid.gridToWorldPos(objData.pos.x, objData.pos.y);
-    this.cardObj.setPosition(pos.x, pos.y + 60);
-    this.cardObj.flipX = objData.team != Team.P1;
-    return this.cardObj;
+  hide() {
+    this.visual.setVisible(false);
+    return this.visual;
   }
 
   initStatsUi(data) {
@@ -163,7 +193,7 @@ class CardVisual {
       font: '18px Arial',
       align: 'left'
     }).setOrigin(0, 1);
-    this.card.add(this.statsTxt);
+    this.visual.add(this.statsTxt);
   }
   updateStatsUi(data) {
     this.statsTxt.text = `⛨: ${data.health} ⚔: ${data.attack}`;
@@ -173,21 +203,7 @@ class CardVisual {
 class Card {
   constructor(assetName, data) {
     this.data = data;
-    this.objData = new CardObjData(data);
-    this.visual = new CardVisual(assetName, data);
-  }
-
-  isTapped() {
-    return this.objData.tapped;
-  }
-  tap() {
-    this.objData.tapped = true;
-    this.visual.cardObj.setPipeline(Game.pipeline.grayScale);
-  }
-  untap() {
-    this.objData.tapped = false;
-    this.objData.resetOnUntap();
-    this.visual.cardObj.resetPipeline();
+    this.cardPaper = new CardPaper(assetName, data);
   }
 }
 
@@ -197,90 +213,94 @@ class CardPermanent extends Card {
     switch (assetName) {
       case 'RagnoraTheRelentless':
         super(assetName, new CardData({
+          team: team,
           name: 'Ragnora The Relentless',
           text: 'This card is STRONG!',
           health: 40,
           attack: 2,
-          team: team
         }));
         break;
 
       case 'ArgeonHighmayne':
         super(assetName, new CardData({
+          team: team,
           name: 'Argeon Highmayne',
           text: 'Yay, kill me.',
           health: 40,
           attack: 2,
-          team: team
         }));
         break;
 
       case 'ZirAnSunforge':
         super(assetName, new CardData({
+          team: team,
           name: 'Zir\'An Sunforge',
           text: 'Fuck Lyonar',
           health: 99,
           attack: 5,
-          team: team
         }));
         break;
 
       case 'RazorcragGolem':
         super(assetName, new CardData({
+          team: team,
           name: 'Razorcrag Golem',
           text: 'This card sucks. wow wow wow wow wowowowowowo.',
           health: 3,
           attack: 2,
-          team: team
         }));
         break;
     }
 
     // init data
+    this.boardObj = new BoardObj(assetName, this.data);
     this.spawnable = false;
 
     // init pointer event
     this.initHover();
-    this.initClickInfo();
-    this.initClickSpawn();
+    this.initClickShowInfo();
+    this.initClickSpawnBoardObj();
+
+    // init ui
+    this.cardPaper.initStatsUi(this.data);
 
     // init visual
-    this.visual.initStatsUi(this.data);
     this.tweenMovement = null;
   }
 
   initHover() {
-    this.visual.card.on('pointerover', () => {
-      Layer.ui.moveUp(this.visual.card);
-      this.visual.card.y -= 200;
-      this.visual.card.setScale(1.2);
+    // scale up on hover
+    this.cardPaper.visual.on('pointerover', () => {
+      Layer.ui.moveUp(this.cardPaper.visual);
+      this.cardPaper.visual.y -= 200;
+      this.cardPaper.visual.setScale(1.2);
     });
-    this.visual.card.on('pointerout', () => {
-      Layer.ui.moveDown(this.visual.card);
-      this.visual.card.y += 200;
-      this.visual.card.setScale(1);
+    this.cardPaper.visual.on('pointerout', () => {
+      Layer.ui.moveDown(this.cardPaper.visual);
+      this.cardPaper.visual.y += 200;
+      this.cardPaper.visual.setScale(1);
     });
   }
-  initClickInfo() {
-    this.visual.card.on('pointerdown', () => {
+  initClickShowInfo() {
+    this.cardPaper.visual.on('pointerdown', () => {
       // TODO: show card info
-      
+
       // deselect tile
       Match.turnPlayer.selectedTile = null;
-      Grid.setTileStateAll(TileStateNormal);
-      
+      Board.setTileStateAll(TileStateNormal);
+
       // update selected card
       if (Match.turnPlayer.selectedCard && !Match.turnPlayer.selectedCard.spawnable)
-        Match.turnPlayer.selectedCard.visual.hideCard();
+        Match.turnPlayer.selectedCard.cardPaper.hide();
       Match.turnPlayer.selectedCard = this;
     });
   }
-  initClickSpawn() {
-    this.visual.card.on('pointerdown', () => {
+  initClickSpawnBoardObj() {
+    this.cardPaper.visual.on('pointerdown', () => {
       if (!this.spawnable) return;
 
       // update tile state
-      Grid.tiles.forEach(tile => {
+      Board.tiles.forEach(tile => {
         // spawn this card on the board
         if (!tile.cards.permanent)
           tile.fsm.setState(TileStateSpawnPermanentSelection);
@@ -291,56 +311,61 @@ class CardPermanent extends Card {
     });
   }
 
-  resetOnTurnStart() {
-    this.objData.resetOnTurnStart();
-    this.untap();
+  spawnBoardObj() {
+
   }
 
+  resetOnTurnStart() {
+    this.boardObj.data.resetOnTurnStart();
+  }
+
+  tapped() {
+    return this.boardObj.data.tapped;
+  }
+  tap() {
+    this.boardObj.tap();
+  }
+  untap() {
+    this.boardObj.untap();
+  }
+
+  canMove() {
+    return this.boardObj.canMove();
+  }
   changePosTo(x, y) {
     // update board
-    Grid.movePermanent(this.objData.pos.x, this.objData.pos.y, x, y);
+    Board.movePermanent(this.boardObj.data.pos.x, this.boardObj.data.pos.y, x, y);
 
-    // update data
-    this.objData.setPos(x, y);
-
-    // remove tween
+    // remove tween and update board obj
     this.tweenMovement?.remove();
-
-    // update visual
-    this.visual.updateCardObj(this.objData);
-  }
-  canMove() {
-    return this.objData.moveCount > 0;
+    this.boardObj.setPos(x, y);
   }
   moveTo(x, y) {
     // update board
-    Grid.movePermanent(this.objData.pos.x, this.objData.pos.y, x, y);
+    Board.movePermanent(this.boardObj.data.pos.x, this.boardObj.data.pos.y, x, y);
 
     // update data
-    this.objData.moveCount--;
-    this.objData.setPos(x, y);
+    this.boardObj.data.moveCount++;
+    this.boardObj.data.setPos(x, y);
 
     // tween movement data
     const speed = 0.35;
-    const pos = Grid.gridToWorldPos(x, y);
+    const pos = Board.gridToWorldPos(x, y);
     pos.y += 60;
-    const dist = Math.sqrt(
-      (pos.x - this.visual.cardObj.x) ** 2 +
-      (pos.y - this.visual.cardObj.y) ** 2
-    );
+    const dist = Phaser.Math.Distance.BetweenPoints(pos, this.boardObj.cardArt);
 
     // tween movement
     this.tweenMovement?.remove();
     this.tweenMovement = Game.scene.tweens.add({
       // tween options
-      targets: this.visual.cardObj,
+      targets: this.boardObj.cardArt,
       repeat: 0,
       ease: 'Linear',
       duration: dist / speed,
 
       // tween props
-      x: { from: this.visual.cardObj.x, to: pos.x },
-      y: { from: this.visual.cardObj.y, to: pos.y },
+      x: { from: this.boardObj.cardArt.x, to: pos.x },
+      y: { from: this.boardObj.cardArt.y, to: pos.y },
 
       // on tween complete
       onCompleteParams: [this],
@@ -349,26 +374,24 @@ class CardPermanent extends Card {
   }
 
   doDamage(target) {
-    target.takeDamage(this.objData.attack);
+    target.takeDamage(this.boardObj.data.attack);
   }
   doAttack(target) {
     this.doDamage(target);
-
     // TODO: trigger effect
-
     this.tap(); // TODO: tap after enemy on take damage event is triggered
   }
   takeDamage(damage) {
     // update health
-    this.objData.health = Math.max(this.objData.health - damage, 0);
+    this.boardObj.data.health = Math.max(this.boardObj.data.health - damage, 0);
 
     // update ui
-    this.visual.updateStatsUi(this.objData);
+    this.cardPaper.updateStatsUi(this.boardObj.data);
 
     // TODO: trigger effect
 
     // TODO: move this card to the grave yard
-    if (this.objData.health <= 0)
-      Grid.removePermanentAt(this.objData.pos.x, this.objData.pos.y);
+    if (this.boardObj.data.health <= 0)
+      Board.removePermanentAt(this.boardObj.data.pos.x, this.boardObj.data.pos.y);
   }
 }
