@@ -58,11 +58,11 @@ class Tile {
   }
 
   updateCards() {
-    this.cards.permanent = Grid.getPermanentAt(this.pos.x, this.pos.y);
+    this.cards.permanent = Board.getPermanentAt(this.pos.x, this.pos.y);
     // TODO:
-    // this.cards.spell = Grid.getSpellAt(this.pos.x, this.pos.y);
-    // this.cards.rune = Grid.getRuneAt(this.pos.x, this.pos.y);
-    // this.cards.land = Grid.getLandAt(this.pos.x, this.pos.y);
+    // this.cards.spell = Board.getSpellAt(this.pos.x, this.pos.y);
+    // this.cards.rune = Board.getRuneAt(this.pos.x, this.pos.y);
+    // this.cards.land = Board.getLandAt(this.pos.x, this.pos.y);
   }
 
   setHoverFunction(onHoverEnter, onHoverExit) {
