@@ -20,9 +20,9 @@ class MainScene extends Phaser.Scene {
     Match.init();
 
     // init board
-    Grid.initBoard();
-    Grid.spawnPermanent(Team.P1, 'ZirAnSunforge', 1, 3);
-    Grid.spawnPermanent(Team.P2, 'RagnoraTheRelentless', 9, 3);
+    Board.init();
+    Board.spawnPermanent(Team.P1, 'ZirAnSunforge', 1, 3);
+    Board.spawnPermanent(Team.P2, 'RagnoraTheRelentless', 9, 3);
   }
 
   // update(time, delta) {
