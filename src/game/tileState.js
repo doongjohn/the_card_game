@@ -24,12 +24,12 @@ class TileStateSelected extends TileState {
 
     // show card on the screen
     if (obj.cards.permanent)
-      obj.cards.permanent.visual.showCard().setPosition(-775, -190);
+      obj.cards.permanent.cardPaper.show().setPosition(-775, -190);
   }
   onExit(obj) {
     // hide card on the screen
     if (obj.cards.permanent)
-      obj.cards.permanent.visual.hideCard();
+      obj.cards.permanent.cardPaper.hide();
   }
   onHoverEnter(obj) { }
   onHoverExit(obj) { }
@@ -42,7 +42,7 @@ class TileStateNormal extends TileState {
   }
   onClick(obj) {
     // update tile state
-    Grid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
+    Board.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
 
     // select this tile
     Match.turnPlayer.selectedTile = obj;
@@ -61,15 +61,15 @@ class TileStateSpawnPermanentSelection extends TileState {
   onClick(obj) {
     // spawn a selected permanent
     const selectedCard = Match.turnPlayer.selectedCard;
-    Grid.spawnPermanent(
+    Board.spawnPermanent(
       selectedCard.data.team,
-      selectedCard.visual.cardArt.assetNameTrimmed,
+      selectedCard.cardPaper.cardArt.assetNameTrimmed,
       obj.pos.x,
       obj.pos.y
     );
 
     // update tile state
-    Grid.tiles.forEach(tile => {
+    Board.tiles.forEach(tile => {
       if (!tile.fsm.curState.compare(TileStateSelected))
         tile.fsm.setState(TileStateNormal);
     });
@@ -93,7 +93,7 @@ class TileStateChangePosSelection extends TileState {
     Match.turnPlayer.selectedTile = obj;
     
     // update tile state
-    Grid.tiles.forEach(tile => {
+    Board.tiles.forEach(tile => {
       if (tile == Match.turnPlayer.selectedTile)
         tile.fsm.setState(TileStateSelected);
       else
@@ -112,7 +112,7 @@ class TileStateMoveSelection extends TileStateChangePosSelection {
     Match.turnPlayer.selectedTile = obj;
 
     // update tile state
-    Grid.tiles.forEach(tile => {
+    Board.tiles.forEach(tile => {
       if (tile == Match.turnPlayer.selectedTile)
         tile.fsm.setState(TileStateSelected);
       else
@@ -141,7 +141,7 @@ class TileStateAttackSelection extends TileState {
     obj.updateCards();
 
     // update tile state
-    Grid.tiles.forEach(tile => {
+    Board.tiles.forEach(tile => {
       if (tile != Match.turnPlayer.selectedTile)
         tile.fsm.setState(TileStateNormal);
     });
