@@ -7,17 +7,16 @@ class Team {
 class Player {
   constructor(team) {
     this.team = team;
-    this.selectedTile = null;
-    this.selectedCard = null;
     this.deck = [];
     this.hand = [];
+    this.selectedTile = null;
+    this.selectedCard = null;
   }
 
   addToHand(card) {
     this.hand.push(card);
   }
-
-  showHand() {
+  updateHand() {
     // TODO: show hand like hearthstone
     const card0 = new CardPermanent(this.team, 'ZirAnSunforge');
     const card1 = new CardPermanent(this.team, 'RagnoraTheRelentless');
@@ -37,7 +36,7 @@ class Player {
     this.addToHand(card7);
 
     const maxCard = 5;
-    const width = CardVisual.width + 10;
+    const width = CardPaper.width + 10;
     const maxWidth = width * (maxCard - 1);
     const y = 515;
     const { startPos, gap } = this.hand.length < maxCard ?
@@ -50,10 +49,11 @@ class Player {
         gap: maxWidth / (this.hand.length - 1)
       };
 
+    // align cards
     let i = 0;
     for (let card of this.hand) {
       card.spawnable = true;
-      card.visual.showCard().setPosition(startPos + (gap * i++), y);
+      card.cardPaper.show().setPosition(startPos + (gap * i++), y);
     }
   }
 }
@@ -72,7 +72,7 @@ class Match {
     MatchAction.init();
 
     // TEST
-    Match.turnPlayer.showHand();
+    Match.turnPlayer.updateHand();
 
     // temp help text
     Game.spawn.text(10, 5,
@@ -110,13 +110,13 @@ class Match {
     Match.turnPlayer.selectedTile = null;
 
     // reset tile state
-    Grid.setTileStateAll(TileStateNormal);
+    Board.setTileStateAll(TileStateNormal);
 
     // update text
     Match.turnText.text = `P${Match.turn}'s turn`;
 
     // untap permanents
-    Grid.permanents.forEach(permanent => {
+    Board.permanents.forEach(permanent => {
       if (permanent)
         permanent.resetOnTurnStart();
     });
@@ -179,10 +179,10 @@ class MatchAction {
       return;
 
     if (MatchAction.state == MatchAction.StateView) {
-      Grid.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
+      Board.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
       MatchAction.setState(MatchAction.StateEmpty);
     } else {
-      Grid.tiles.forEach(tile => {
+      Board.tiles.forEach(tile => {
         if (tile != Match.turnPlayer.selectedTile)
           tile.fsm.setState(TileStateNormal);
       });
@@ -198,7 +198,7 @@ class MatchAction {
     MatchAction.setState(MatchAction.StatePlanMove);
 
     // update tile state
-    Grid.tiles.forEach(tile => {
+    Board.tiles.forEach(tile => {
       if (tile.fsm.curState.compare(TileStateSelected))
         return;
 
@@ -213,7 +213,7 @@ class MatchAction {
       return;
 
     const permanent = Match.turnPlayer.selectedTile.cards.permanent;
-    if (permanent.isTapped())
+    if (permanent.tapped())
       permanent.untap();
     else
       permanent.tap();
@@ -224,7 +224,7 @@ class MatchAction {
 
     const selected = Match.turnPlayer.selectedTile;
     if (!Match.isThisTurn(selected.cards.permanent)
-      || selected.cards.permanent.isTapped()
+      || selected.cards.permanent.tapped()
       || !selected.cards.permanent.canMove())
       return;
 
@@ -232,8 +232,8 @@ class MatchAction {
     MatchAction.setState(MatchAction.StatePlanMove);
 
     function setMoveSelectionTile(x, y) {
-      if (!Grid.getPermanentAt(x, y))
-        Grid.getTileAt(x, y)?.fsm.setState(TileStateMoveSelection);
+      if (!Board.getPermanentAt(x, y))
+        Board.getTileAt(x, y)?.fsm.setState(TileStateMoveSelection);
     }
 
     const u = { x: selected.pos.x, y: selected.pos.y - 1 };
@@ -241,10 +241,10 @@ class MatchAction {
     const r = { x: selected.pos.x + 1, y: selected.pos.y };
     const l = { x: selected.pos.x - 1, y: selected.pos.y };
 
-    const blockedR = Grid.getPermanentAt(r.x, r.y);
-    const blockedL = Grid.getPermanentAt(l.x, l.y);
-    const blockedU = Grid.getPermanentAt(u.x, u.y);
-    const blockedD = Grid.getPermanentAt(d.x, d.y);
+    const blockedR = Board.getPermanentAt(r.x, r.y);
+    const blockedL = Board.getPermanentAt(l.x, l.y);
+    const blockedU = Board.getPermanentAt(u.x, u.y);
+    const blockedD = Board.getPermanentAt(d.x, d.y);
 
     if (!blockedR) {
       setMoveSelectionTile(r.x, r.y);
@@ -269,7 +269,7 @@ class MatchAction {
     if (!blockedL || !blockedD) setMoveSelectionTile(l.x, d.y);
 
     //  update tile state
-    Grid.tiles.forEach((tile) => {
+    Board.tiles.forEach((tile) => {
       if (!tile.fsm.curState.compare(TileStateSelected, TileStateMoveSelection))
         tile.fsm.setState(TileStateNoInteraction);
     });
@@ -282,16 +282,16 @@ class MatchAction {
 
     if (!selectedTile.cards.permanent || !Match.isThisTurn(selectedTile.cards.permanent))
       return;
-    if (selectedTile.cards.permanent.isTapped())
+    if (selectedTile.cards.permanent.tapped())
       return;
 
     // Unit Plan Attack
     MatchAction.setState(MatchAction.StatePlanAttack);
 
     function setAttackSelectionTile(x, y) {
-      const target = Grid.getPermanentAt(x, y);
+      const target = Board.getPermanentAt(x, y);
       if (target && target.data.team != selectedTile.cards.permanent.data.team) {
-        Grid.getTileAt(x, y).fsm.setState(TileStateAttackSelection);
+        Board.getTileAt(x, y).fsm.setState(TileStateAttackSelection);
         return 1;
       }
       return 0;
@@ -322,7 +322,7 @@ class MatchAction {
     }
 
     // update tile state
-    Grid.tiles.forEach((tile) => {
+    Board.tiles.forEach((tile) => {
       if (!tile.fsm.curState.compare(TileStateSelected, TileStateAttackSelection))
         tile.fsm.setState(TileStateNoInteraction);
     });
