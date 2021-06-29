@@ -51,7 +51,7 @@ class Player {
 
     // align cards
     let i = 0;
-    for (let card of this.hand) {
+    for (const card of this.hand) {
       card.spawnable = true;
       card.cardPaper.show().setPosition(startPos + (gap * i++), y);
     }

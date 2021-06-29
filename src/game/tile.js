@@ -26,7 +26,7 @@ class Tile {
       this.setHoverFunction(
         () => this.fsm.curState.onHoverEnter(obj),
         () => this.fsm.curState.onHoverExit(obj)
-      )
+      );
     });
 
     // tile click event

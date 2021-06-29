@@ -1,4 +1,6 @@
-// Effect type
+// TODO: make effect system
+
+// Effect types
 // - Activated
 // - Quick
 // - Continues
@@ -7,28 +9,27 @@
 // - Trigger
 
 class EffectChain {
-    constructor() {
-        this.effects = [];
-    }
+  constructor() {
+    this.effects = [];
+  }
 }
 
 class Effect {
-    static onDealDamage = [];
-    static onTakeDamage = [];
-    // add more...
+  static onDealDamage = [];
+  static onTakeDamage = [];
 }
 
 class EffectAction {
-    static onDealDamage() {
-        // show all avaliable cards make them selectable
-        for (let fx of Effect.onDealDamage) {
-            console.log(fx);
-        }
+  static onDealDamage() {
+    // print all avaliable cards make them selectable
+    for (const fx of Effect.onDealDamage) {
+      console.log(fx);
     }
-    static onTakeDamage() {
-        // show all avaliable cards make them selectable
-        for (let fx of Effect.onTakeDamage) {
-            console.log(fx);
-        }
+  }
+  static onTakeDamage() {
+    // print all avaliable cards make them selectable
+    for (const fx of Effect.onTakeDamage) {
+      console.log(fx);
     }
+  }
 }

@@ -1,4 +1,10 @@
 class TileState extends FSMState {
+  onHoverEnterBasic(obj) {
+    // TODO: set currently hoverd tile to this
+  }
+  onHoverExitBasic(obj) {
+    // TODO: set currently hoverd tile to null
+  }
   onHoverEnter(obj) {
     obj.tileFg.setFillStyle(TileColor.FG.hover.rgb, TileColor.FG.hover.alpha);
   }
@@ -20,7 +26,7 @@ class TileStateNoInteraction extends TileState {
 class TileStateSelected extends TileState {
   onEnter(obj) {
     obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
-    obj.tileFg.setFillStyle(0xffbe0d, 0.25); // yellow fg color
+    obj.tileFg.setFillStyle(0xffbe0d, 0.25);
 
     // show card on the screen
     if (obj.cards.permanent)
@@ -60,13 +66,7 @@ class TileStateSpawnPermanentSelection extends TileState {
   }
   onClick(obj) {
     // spawn a selected permanent
-    const selectedCard = Match.turnPlayer.selectedCard;
-    Board.spawnPermanent(
-      selectedCard.data.team,
-      selectedCard.cardPaper.cardArt.assetNameTrimmed,
-      obj.pos.x,
-      obj.pos.y
-    );
+    Board.spawnPermanent(Match.turnPlayer.selectedCard, obj.pos.x, obj.pos.y);
 
     // update tile state
     Board.tiles.forEach(tile => {
@@ -89,7 +89,7 @@ class TileStateChangePosSelection extends TileState {
   }
   onClick(obj) {
     // update selected tile
-    Match.turnPlayer.selectedTile.cards.permanent.changePosTo(obj.pos.x, obj.pos.y);
+    Match.turnPlayer.selectedTile.cards.permanent.setPos(obj.pos.x, obj.pos.y);
     Match.turnPlayer.selectedTile = obj;
     
     // update tile state

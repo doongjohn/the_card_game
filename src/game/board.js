@@ -8,15 +8,18 @@ class Board {
   static permanents = Array(Board.size.x * Board.size.y).fill(null);
 
   static init() {
+    // spawn a background image
     const bg = Game.spawn.sprite(0, -100, 'BattleMap5').setScale(0.85);
     Layer.bg.add(bg);
 
-    // spawn tiles
-    const tileGroup = Game.spawn.group();
-    for (let i in Board.tiles) {
+    for (const i in Board.tiles) {
+      // spawn a tile
       const tile = new Tile(i, Board.tileSize, Board.gapSize);
-      tileGroup.add(tile.gameObject);
+      
+      // add to layer
       Layer.board.add(tile.gameObject);
+
+      // update array
       Board.tiles[i] = tile;
     }
 
@@ -26,29 +29,23 @@ class Board {
     // move tiles up
     for (const tile of Board.tiles)
       tile.gameObject.y -= 80;
-
-    // return tile group
-    return tileGroup;
   }
 
   static gridToWorldPos(x, y) {
     const tile = Board.getTileAt(x, y);
-    return {
-      x: tile.gameObject.x,
-      y: tile.gameObject.y
-    };
+    return { x: tile.gameObject.x, y: tile.gameObject.y };
   }
 
-  static occupied(x, y) {
-    // TODO: check more cards. (spells, runes, etc)
-    return Board.getPermanentAt(x, y);
+  static occupied(x, y, arrays) {
+    const index = toIndex(x, y);
+    for (const array of arrays)
+      if (array[index]) return true;
+    return false;
   }
 
   static getTileAt(x, y) {
     const index = toIndex(x, y);
-    if (index < 0 || index >= Board.size.x * Board.size.y)
-      return null;
-    return Board.tiles[index];
+    return (index < 0 || index >= Board.size.x * Board.size.y) ? null : Board.tiles[index];
   }
   static setTileStateAll(state) {
     Board.tiles.forEach(tile => tile.fsm.setState(state));
@@ -56,26 +53,20 @@ class Board {
 
   static getPermanentAt(x, y) {
     const index = toIndex(x, y);
-    if (index < 0 || index >= Board.size.x * Board.size.y)
-      return null;
-    return Board.permanents[index];
+    return (index < 0 || index >= Board.size.x * Board.size.y) ? null : Board.permanents[index];
   }
-  static spawnPermanent(team, assetName, x, y) {
-    if (Board.occupied(x, y)) {
-      console.log("you can't spawn there! (tile is occupied)");
-      return null;
+  static spawnPermanent(card, x, y) {
+    if (Board.occupied(x, y, [Board.permanents])) {
+      console.log("Can't spawn a permanent here! (this tile is occupied)");
+      return;
     }
 
-    // create card
-    const card = new CardPermanent(team, assetName);
-    card.boardObj.setPos(x, y);
-    card.boardObj.show();
+    // spawn board obj
+    card.spawnBoardObj(x, y);
 
     // update array
     Board.permanents[toIndex(x, y)] = card;
     Board.tiles[toIndex(x, y)].updateCards();
-
-    return card;
   }
   static movePermanent(x, y, targetX, targetY) {
     const from = toIndex(x, y);
@@ -132,7 +123,7 @@ function gridAlignCenter(items, gridSize, cellSize) {
   let xIndex = 0;
   let yIndex = 0;
 
-  for (let item of items) {
+  for (const item of items) {
     if (item == null)
       continue;
 
@@ -159,7 +150,7 @@ function gridAlignCenterGameObject(items, gridSize, cellSize) {
   let xIndex = 0;
   let yIndex = 0;
 
-  for (let item of items) {
+  for (const item of items) {
     if (item == null)
       continue;
 

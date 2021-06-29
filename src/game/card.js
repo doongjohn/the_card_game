@@ -1,5 +1,14 @@
 class CardData {
-  constructor({ team, name, text, health, attack, maxMoveCount = 1 } = {}) {
+  constructor({
+    assetName,
+    team,
+    name,
+    text,
+    health,
+    attack,
+    maxMoveCount = 1
+  } = {}) {
+    this.assetName = assetName;
     this.team = team;
     this.name = name;
     this.text = text;
@@ -45,26 +54,22 @@ class BoardObjData {
 }
 
 class BoardObj {
-  constructor(assetName, cardData) {
+  constructor(cardData) {
     // data
     this.data = new BoardObjData(cardData);
 
     // create sprite
-    this.cardArt = new SpriteCardArt(0, 0, `CardArt:${assetName}`, assetName);
+    this.cardArt = new SpriteCardArt(0, 0, `CardArt:${cardData.assetName}`, cardData.assetName);
     this.cardArt.setScale(1.6).setOrigin(0.5, 1);
 
     // play animation
-    const animKey_Idle = `CardArt:Idle:${assetName}`;
-    if (Game.scene.anims.exists(animKey_Idle))
-      this.cardArt.play(animKey_Idle);
-    else
-      console.error(`This anim key does not exists! "${animKey_Idle}"`);
+    Game.tryPlayAnimation(this.cardArt, `CardArt:Idle:${cardData.assetName}`);
 
     // add to layer
     Layer.permanent.add(this.cardArt);
 
-    // hide
-    this.hide();
+    // set team
+    this.setTeam(this.data.team);
   }
 
   destroy() {
@@ -78,6 +83,11 @@ class BoardObj {
   hide() {
     this.cardArt.setVisible(false);
     return this.cardArt;
+  }
+
+  setTeam(team) {
+    this.data.team = team;
+    this.cardArt.flipX = team != Team.P1;
   }
 
   tap() {
@@ -110,17 +120,11 @@ class CardPaper {
     color: 0x182236
   };
 
-  constructor(assetName, data) {
+  constructor(cardData) {
     // create sprite
-    this.cardArt = new SpriteCardArt(0, 0, `CardArt:${assetName}`, assetName);
+    this.cardArt = new SpriteCardArt(0, 0, `CardArt:${cardData.assetName}`, cardData.assetName);
     this.cardArt.setScale(1.6).setOrigin(0.5, 1);
-
-    // play animation
-    const animKey_Idle = `CardArt:Idle:${assetName}`;
-    if (Game.scene.anims.exists(animKey_Idle))
-      this.cardArt.play(animKey_Idle);
-    else
-      console.error(`This anim key does not exists! "${animKey_Idle}"`);
+    Game.tryPlayAnimation(this.cardArt, `CardArt:Idle:${cardData.assetName}`);
 
     // card bg
     this.bg = Game.spawn.rectangle(
@@ -131,7 +135,7 @@ class CardPaper {
     ).setStrokeStyle(3, CardPaper.textBg.color, 1);
 
     // card name
-    this.cardName = Game.spawn.text(0, 0, data.name, {
+    this.cardName = Game.spawn.text(0, 0, cardData.name, {
       font: '18px Arial',
       align: 'center'
     }).setOrigin(0.5, 1);
@@ -147,7 +151,7 @@ class CardPaper {
     // card text
     this.cardText = Game.spawn.text(
       CardPaper.textBg.margin - (CardPaper.textBg.width / 2), 15,
-      data.text,
+      cardData.text,
       {
         font: '16px Arial',
         align: 'left',
@@ -188,22 +192,22 @@ class CardPaper {
     return this.visual;
   }
 
-  initStatsUi(data) {
-    this.statsTxt = Game.spawn.text(-115, -145, `⛨: ${data.health} ⚔: ${data.attack}`, {
+  initStatsUi(cardData) {
+    this.statsTxt = Game.spawn.text(-115, -145, `⛨: ${cardData.health} ⚔: ${cardData.attack}`, {
       font: '18px Arial',
       align: 'left'
     }).setOrigin(0, 1);
     this.visual.add(this.statsTxt);
   }
-  updateStatsUi(data) {
-    this.statsTxt.text = `⛨: ${data.health} ⚔: ${data.attack}`;
+  updateStatsUi(cardData) {
+    this.statsTxt.text = `⛨: ${cardData.health} ⚔: ${cardData.attack}`;
   }
 }
 
 class Card {
-  constructor(assetName, data) {
+  constructor(data) {
     this.data = data;
-    this.cardPaper = new CardPaper(assetName, data);
+    this.cardPaper = new CardPaper(data);
   }
 }
 
@@ -212,7 +216,8 @@ class CardPermanent extends Card {
     // TODO: use a data base (json file?)
     switch (assetName) {
       case 'RagnoraTheRelentless':
-        super(assetName, new CardData({
+        super(new CardData({
+          assetName: assetName,
           team: team,
           name: 'Ragnora The Relentless',
           text: 'This card is STRONG!',
@@ -222,7 +227,8 @@ class CardPermanent extends Card {
         break;
 
       case 'ArgeonHighmayne':
-        super(assetName, new CardData({
+        super(new CardData({
+          assetName: assetName,
           team: team,
           name: 'Argeon Highmayne',
           text: 'Yay, kill me.',
@@ -232,7 +238,8 @@ class CardPermanent extends Card {
         break;
 
       case 'ZirAnSunforge':
-        super(assetName, new CardData({
+        super(new CardData({
+          assetName: assetName,
           team: team,
           name: 'Zir\'An Sunforge',
           text: 'Fuck Lyonar',
@@ -242,7 +249,8 @@ class CardPermanent extends Card {
         break;
 
       case 'RazorcragGolem':
-        super(assetName, new CardData({
+        super(new CardData({
+          assetName: assetName,
           team: team,
           name: 'Razorcrag Golem',
           text: 'This card sucks. wow wow wow wow wowowowowowo.',
@@ -253,8 +261,8 @@ class CardPermanent extends Card {
     }
 
     // init data
-    this.boardObj = new BoardObj(assetName, this.data);
     this.spawnable = false;
+    this.boardObj = null;
 
     // init pointer event
     this.initHover();
@@ -311,8 +319,18 @@ class CardPermanent extends Card {
     });
   }
 
-  spawnBoardObj() {
-
+  spawnBoardObj(x, y) {
+    if (this.boardObj) {
+      console.warn("This card has already spawned a board object.");
+      return this.boardObj;
+    }
+    this.boardObj = new BoardObj(this.data);
+    this.boardObj.setPos(x, y);
+    return this.boardObj;
+  }
+  destroyBoardObj() {
+    this.boardObj?.destroy();
+    this.boardObj = null;
   }
 
   resetOnTurnStart() {
@@ -332,7 +350,7 @@ class CardPermanent extends Card {
   canMove() {
     return this.boardObj.canMove();
   }
-  changePosTo(x, y) {
+  setPos(x, y) {
     // update board
     Board.movePermanent(this.boardObj.data.pos.x, this.boardObj.data.pos.y, x, y);
 
