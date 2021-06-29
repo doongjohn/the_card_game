@@ -25,7 +25,7 @@ class SpriteManager {
 
   static CardArt = {
     cardArtLoad(data) {
-      for (let x of data) {
+      for (const x of data) {
         Game.scene.load.spritesheet(
           x.name, `assets/card_art/${x.fileName}`, {
             frameWidth: x.width,
@@ -35,7 +35,7 @@ class SpriteManager {
     },
 
     cardArtCreateAnim(data) {
-      for (let x of data) {
+      for (const x of data) {
         Game.scene.anims.create({
           key: x.key,
           frames: Game.scene.anims.generateFrameNumbers(x.name, {
@@ -99,4 +99,3 @@ class SpriteManager {
     }
   };
 }
-
