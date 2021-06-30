@@ -90,6 +90,10 @@ class BoardObj {
     this.cardArt.flipX = team != Team.P1;
   }
 
+  resetOnTurnStart() {
+    this.untap();
+  }
+
   tap() {
     this.data.tap();
     this.cardArt.setPipeline(Game.pipeline.grayScale);
@@ -334,7 +338,7 @@ class CardPermanent extends Card {
   }
 
   resetOnTurnStart() {
-    this.boardObj.data.resetOnTurnStart();
+    this.boardObj.resetOnTurnStart();
   }
 
   tapped() {

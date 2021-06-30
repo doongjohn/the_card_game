@@ -15,7 +15,7 @@ class Board {
     for (const i in Board.tiles) {
       // spawn a tile
       const tile = new Tile(i, Board.tileSize, Board.gapSize);
-      
+
       // add to layer
       Layer.board.add(tile.gameObject);
 
@@ -75,7 +75,7 @@ class Board {
     // swap permanent
     Board.permanents[target] = Board.permanents[from];
     Board.permanents[from] = null;
-    
+
     // update tile
     Board.tiles[from].updateCards();
     Board.tiles[target].updateCards();
@@ -110,8 +110,8 @@ function toIndex() {
     const x = arguments[0];
     const y = arguments[1];
     return (x < 0 || y < 0 || x >= Board.size.x || y >= Board.size.y)
-    ? -1
-    : Board.size.x * y + x;
+      ? -1
+      : Board.size.x * y + x;
   }
 }
 

@@ -15,14 +15,18 @@ class MainScene extends Phaser.Scene {
 
     // init layer
     Layer.init();
-    
+
     // init match
     Match.init();
 
+    // init commanders
+    const commanderP1 = new CardPermanent(Team.P1, 'ZirAnSunforge');
+    const commanderP2 = new CardPermanent(Team.P2, 'RagnoraTheRelentless');
+
     // init board
     Board.init();
-    Board.spawnPermanent(Team.P1, 'ZirAnSunforge', 1, 3);
-    Board.spawnPermanent(Team.P2, 'RagnoraTheRelentless', 9, 3);
+    Board.spawnPermanent(commanderP1, 1, 3);
+    Board.spawnPermanent(commanderP2, 9, 3);
   }
 
   // update(time, delta) {
