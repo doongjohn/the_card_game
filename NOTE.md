@@ -13,7 +13,7 @@
 - [ ] Implement Basic Effect Chain
 - [ ] Implement Basic UI
   - [ ] Detailed Card Info
-  - [ ] Hand
+  - [x] Hand
   - [ ] End Turn
   - [ ] Commander HP
   - [ ] Mana

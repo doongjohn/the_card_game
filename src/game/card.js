@@ -358,7 +358,7 @@ class CardPermanent extends Card {
     // update board
     Board.movePermanent(this.boardObj.data.pos.x, this.boardObj.data.pos.y, x, y);
 
-    // remove tween and update board obj
+    // remove tween and move board obj
     this.tweenMovement?.remove();
     this.boardObj.setPos(x, y);
   }
@@ -399,18 +399,17 @@ class CardPermanent extends Card {
     target.takeDamage(this.boardObj.data.attack);
   }
   doAttack(target) {
+    EffectAction.onDealDamage();
     this.doDamage(target);
-    // TODO: trigger effect
     this.tap(); // TODO: tap after enemy on take damage event is triggered
   }
   takeDamage(damage) {
     // update health
     this.boardObj.data.health = Math.max(this.boardObj.data.health - damage, 0);
-
-    // update ui
     this.cardPaper.updateStatsUi(this.boardObj.data);
 
-    // TODO: trigger effect
+    // run effect
+    EffectAction.onTakeDamage();
 
     // TODO: move this card to the grave yard
     if (this.boardObj.data.health <= 0)

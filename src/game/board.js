@@ -112,6 +112,8 @@ function toIndex() {
     return (x < 0 || y < 0 || x >= Board.size.x || y >= Board.size.y)
       ? -1
       : Board.size.x * y + x;
+  } else {
+    console.error("argument must represent x, y!");
   }
 }
 

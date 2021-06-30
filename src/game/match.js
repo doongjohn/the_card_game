@@ -16,8 +16,18 @@ class Player {
   addToHand(card) {
     this.hand.push(card);
   }
-  updateHand() {
-    // TODO: show hand like hearthstone
+  showHandUi() {
+    for (const card of this.hand) {
+      card.cardPaper.show();
+    }
+  }
+  hideHandUi() {
+    for (const card of this.hand) {
+      card.cardPaper.hide();
+    }
+  }
+  updateHandUi() {
+    // TODO: add tween
     const card0 = new CardPermanent(this.team, 'ZirAnSunforge');
     const card1 = new CardPermanent(this.team, 'RagnoraTheRelentless');
     const card2 = new CardPermanent(this.team, 'ZirAnSunforge');
@@ -72,7 +82,13 @@ class Match {
     MatchAction.init();
 
     // TEST
-    Match.turnPlayer.updateHand();
+    Match.turnPlayer.updateHandUi();
+    Match.oppsPlayer.updateHandUi();
+    Match.oppsPlayer.hideHandUi();
+
+    // TODO: Effect Test
+    // const logWhenAttack = new Effect();
+    // EffectCallback.add("onDealDamage");
 
     // temp help text
     Game.spawn.text(10, 5,
@@ -100,26 +116,25 @@ class Match {
   }
 
   static nextTurn() {
+    // deselect all
+    Match.turnPlayer.selectedCard = null;
+    Match.turnPlayer.selectedTile = null;
+
     // cycle turn
     Match.oppsPlayer = Match.players[Match.turn];
     Match.turn = (Match.turn % 2) + 1;
     Match.turnPlayer = Match.players[Match.turn - 1];
 
-    // deselect all
-    Match.turnPlayer.selectedCard = null;
-    Match.turnPlayer.selectedTile = null;
+    // update ui
+    Match.turnText.text = `P${Match.turn}'s turn`;
+    Match.oppsPlayer.hideHandUi();
+    Match.turnPlayer.showHandUi();
+
+    // untap permanents
+    Board.permanents.forEach(permanent => permanent?.resetOnTurnStart());
 
     // reset tile state
     Board.setTileStateAll(TileStateNormal);
-
-    // update text
-    Match.turnText.text = `P${Match.turn}'s turn`;
-
-    // untap permanents
-    Board.permanents.forEach(permanent => {
-      if (permanent)
-        permanent.resetOnTurnStart();
-    });
   }
 }
 
