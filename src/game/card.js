@@ -36,14 +36,6 @@ class BoardObjData {
     this.untap();
   }
 
-  tap() {
-    this.tapped = true;
-  }
-  untap() {
-    this.tapped = false;
-    this.resetOnUntap();
-  }
-
   canMove() {
     return this.moveCount < this.maxMoveCount;
   }
@@ -76,6 +68,11 @@ class BoardObj {
     this.cardArt.destroy();
   }
 
+  setTeam(team) {
+    this.data.team = team;
+    this.cardArt.flipX = team != Team.P1;
+  }
+
   show() {
     this.cardArt.setVisible(true);
     return this.cardArt;
@@ -85,21 +82,17 @@ class BoardObj {
     return this.cardArt;
   }
 
-  setTeam(team) {
-    this.data.team = team;
-    this.cardArt.flipX = team != Team.P1;
-  }
-
   resetOnTurnStart() {
     this.untap();
   }
 
   tap() {
-    this.data.tap();
+    this.data.tapped = true;
     this.cardArt.setPipeline(Game.pipeline.grayScale);
   }
   untap() {
-    this.data.untap();
+    this.data.tapped = false;
+    this.data.resetOnUntap();
     this.cardArt.resetPipeline();
   }
 
@@ -326,10 +319,10 @@ class CardPermanent extends Card {
   spawnBoardObj(x, y) {
     if (this.boardObj) {
       console.warn("This card has already spawned a board object.");
-      return this.boardObj;
+    } else {
+      this.boardObj = new BoardObj(this.data);
+      this.boardObj.setPos(x, y);
     }
-    this.boardObj = new BoardObj(this.data);
-    this.boardObj.setPos(x, y);
     return this.boardObj;
   }
   destroyBoardObj() {
@@ -356,7 +349,7 @@ class CardPermanent extends Card {
   }
   setPos(x, y) {
     // update board
-    Board.movePermanent(this.boardObj.data.pos.x, this.boardObj.data.pos.y, x, y);
+    Board.movePermanentAt(this.boardObj.data.pos.x, this.boardObj.data.pos.y, x, y);
 
     // remove tween and move board obj
     this.tweenMovement?.remove();
@@ -364,7 +357,7 @@ class CardPermanent extends Card {
   }
   moveTo(x, y) {
     // update board
-    Board.movePermanent(this.boardObj.data.pos.x, this.boardObj.data.pos.y, x, y);
+    Board.movePermanentAt(this.boardObj.data.pos.x, this.boardObj.data.pos.y, x, y);
 
     // update data
     this.boardObj.data.moveCount++;
@@ -396,22 +389,22 @@ class CardPermanent extends Card {
   }
 
   doDamage(target) {
-    target.takeDamage(this.boardObj.data.attack);
+    target.takeDamage(this, this.boardObj.data.attack);
   }
   doAttack(target) {
-    EffectAction.onDealDamage();
+    EffectAction.onDealDamage(this, target);
     this.doDamage(target);
     this.tap(); // TODO: tap after enemy on take damage event is triggered
   }
-  takeDamage(damage) {
+  takeDamage(attacker, damage) {
     // update health
     this.boardObj.data.health = Math.max(this.boardObj.data.health - damage, 0);
     this.cardPaper.updateStatsUi(this.boardObj.data);
 
     // run effect
-    EffectAction.onTakeDamage();
+    EffectAction.onTakeDamage(this, attacker);
 
-    // TODO: move this card to the grave yard
+    // TODO: move this card to the graveyard
     if (this.boardObj.data.health <= 0)
       Board.removePermanentAt(this.boardObj.data.pos.x, this.boardObj.data.pos.y);
   }

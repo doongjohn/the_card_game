@@ -1,34 +1,33 @@
 class Board {
+  // board settings
   static size = new Phaser.Math.Vector2(11, 7);
   static gapSize = new Phaser.Math.Vector2(5, 5);
   static tileSize = new Phaser.Math.Vector2(100, 100);
   static cellSize = this.tileSize.clone().add(this.gapSize);
 
+  // board array
   static tiles = Array(Board.size.x * Board.size.y).fill(null);
   static permanents = Array(Board.size.x * Board.size.y).fill(null);
 
   static init() {
-    // spawn a background image
+    // background image
     const bg = Game.spawn.sprite(0, -100, 'BattleMap5').setScale(0.85);
     Layer.bg.add(bg);
 
+    // spawn tiles
     for (const i in Board.tiles) {
-      // spawn a tile
       const tile = new Tile(i, Board.tileSize, Board.gapSize);
-
-      // add to layer
       Layer.board.add(tile.gameObject);
-
-      // update array
       Board.tiles[i] = tile;
     }
 
     // align tiles
     gridAlignCenterGameObject(Board.tiles, Board.size, Board.cellSize);
+    Board.tiles.forEach(tile => tile.gameObject.y -= 80);
 
-    // move tiles up
-    for (const tile of Board.tiles)
-      tile.gameObject.y -= 80;
+    // spawn commanders
+    Board.spawnPermanentAt(1, 3, Match.turnPlayer.commander);
+    Board.spawnPermanentAt(9, 3, Match.oppsPlayer.commander);
   }
 
   static gridToWorldPos(x, y) {
@@ -48,14 +47,15 @@ class Board {
     return (index < 0 || index >= Board.size.x * Board.size.y) ? null : Board.tiles[index];
   }
   static setTileStateAll(state) {
-    Board.tiles.forEach(tile => tile.fsm.setState(state));
+    for (const tile of Board.tiles)
+      tile.fsm.setState(state);
   }
 
   static getPermanentAt(x, y) {
     const index = toIndex(x, y);
     return (index < 0 || index >= Board.size.x * Board.size.y) ? null : Board.permanents[index];
   }
-  static spawnPermanent(card, x, y) {
+  static spawnPermanentAt(x, y, card) {
     if (Board.occupied(x, y, [Board.permanents])) {
       console.log("Can't spawn a permanent here! (this tile is occupied)");
       return;
@@ -68,17 +68,17 @@ class Board {
     Board.permanents[toIndex(x, y)] = card;
     Board.tiles[toIndex(x, y)].updateCards();
   }
-  static movePermanent(x, y, targetX, targetY) {
-    const from = toIndex(x, y);
-    const target = toIndex(targetX, targetY);
+  static movePermanentAt(x, y, newX, newY) {
+    const curPos = toIndex(x, y);
+    const newPos = toIndex(newX, newY);
 
     // swap permanent
-    Board.permanents[target] = Board.permanents[from];
-    Board.permanents[from] = null;
+    Board.permanents[newPos] = Board.permanents[curPos];
+    Board.permanents[curPos] = null;
 
     // update tile
-    Board.tiles[from].updateCards();
-    Board.tiles[target].updateCards();
+    Board.tiles[curPos].updateCards();
+    Board.tiles[newPos].updateCards();
   }
   static removePermanentAt(x, y) {
     // check permanent
@@ -94,10 +94,10 @@ class Board {
   }
 };
 
-function toCoord(i) {
-  const result = new Phaser.Math.Vector2(-1, -1);
-  result.y = Math.floor(i / Board.size.x);
-  result.x = i - result.y * Board.size.x;
+function toCoord(index) {
+  const result = { x: -1, y: -1 };
+  result.y = Math.floor(index / Board.size.x);
+  result.x = index - result.y * Board.size.x;
   return result;
 }
 function toIndex() {
@@ -106,14 +106,13 @@ function toIndex() {
     return (v.x < 0 || v.y < 0 || v.x >= Board.size.x || v.y >= Board.size.y)
       ? -1
       : Board.size.x * v.y + v.x;
-  } else if (arguments.length == 2) {
+  }
+  if (arguments.length == 2) {
     const x = arguments[0];
     const y = arguments[1];
     return (x < 0 || y < 0 || x >= Board.size.x || y >= Board.size.y)
       ? -1
       : Board.size.x * y + x;
-  } else {
-    console.error("argument must represent x, y!");
   }
 }
 
@@ -126,8 +125,7 @@ function gridAlignCenter(items, gridSize, cellSize) {
   let yIndex = 0;
 
   for (const item of items) {
-    if (item == null)
-      continue;
+    if (item == null) continue;
 
     item.setPosition(curX, curY);
     if (xIndex < gridSize.x - 1) {

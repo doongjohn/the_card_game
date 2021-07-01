@@ -66,7 +66,7 @@ class TileStateSpawnPermanentSelection extends TileState {
   }
   onClick(obj) {
     // spawn a selected permanent
-    Board.spawnPermanent(Match.turnPlayer.selectedCard, obj.pos.x, obj.pos.y);
+    Board.spawnPermanentAt(obj.pos.x, obj.pos.y, Match.turnPlayer.selectedCard);
 
     // update tile state
     Board.tiles.forEach(tile => {
@@ -91,7 +91,7 @@ class TileStateChangePosSelection extends TileState {
     // update selected tile
     Match.turnPlayer.selectedTile.cards.permanent.setPos(obj.pos.x, obj.pos.y);
     Match.turnPlayer.selectedTile = obj;
-    
+
     // update tile state
     Board.tiles.forEach(tile => {
       if (tile == Match.turnPlayer.selectedTile)

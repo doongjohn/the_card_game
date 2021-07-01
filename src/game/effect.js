@@ -1,18 +1,25 @@
 // TODO: make effect system
 
-// Effect types
-// - Activated
-// - Quick
-// - Continues
-// - Lingering
-// - Mandatory Trigger
-// - Trigger
+class EffectType {
+  static Activated = 0;
+  static MandatoryTrigger = 1;
+  static Trigger = 2;
+  static Quick = 3;
+  static Continues = 4;
+  static Lingering = 5;
+}
 
 class Effect {
-  constructor(card, func) {
-    this.card = card;
-    this.func = func;
+  constructor(type, card, action) {
     this.index = 0;
+    this.type = type;
+    this.card = card;
+    this.action = function(self) {
+      if (self == this.card) {
+        console.log(`<Effect:onDealDamage> Player${Match.turn}'s "${self.data.name}"`);
+        action(...arguments);
+      }
+    };
   }
 
   setIndex(i) {
@@ -21,17 +28,27 @@ class Effect {
 }
 
 class EffectCallback {
+  // TODO: use linked list
   static onDealDamage = [];
   static onTakeDamage = [];
 
-  add(when, effect) {
+  static add(when, effect) {
     const array = EffectCallback[when];
     effect.setIndex(array.length);
     array.push(effect);
   }
-  remove(when, effect) {
+  static remove(when, effect) {
     const array = EffectCallback[when];
     array.splice(effect.index, 1);
+  }
+  static find(when, effect) {
+    const array = EffectCallback[when];
+    let i = 0;
+    for (const fx of array) {
+      if (fx == effect) return i;
+      ++i;
+    }
+    return -1;
   }
 }
 
@@ -42,16 +59,14 @@ class EffectChain {
 }
 
 class EffectAction {
-  static onDealDamage() {
-    // print all avaliable cards make them selectable
+  static onDealDamage(self, target) {
     for (const fx of EffectCallback.onDealDamage) {
-      fx.func();
+      fx.action(self, target);
     }
   }
-  static onTakeDamage() {
-    // print all avaliable cards make them selectable
+  static onTakeDamage(self, attacker) {
     for (const fx of EffectCallback.onTakeDamage) {
-      fx.func();
+      fx.action(self, attacker);
     }
   }
 }

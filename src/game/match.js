@@ -7,6 +7,7 @@ class Team {
 class Player {
   constructor(team) {
     this.team = team;
+    this.commander = null;
     this.deck = [];
     this.hand = [];
     this.selectedTile = null;
@@ -69,28 +70,37 @@ class Player {
 }
 
 class Match {
-  static players = Object.freeze([
-    new Player(Team.P1),
-    new Player(Team.P2)
-  ]);
   static turn = Team.P1;
-  static turnPlayer = Match.players[0];
-  static oppsPlayer = Match.players[1];
+  static player1 = new Player(Team.P1);
+  static player2 = new Player(Team.P2);
+  static players = [Match.player1, Match.player2];
+  static turnPlayer = Match.player1;
+  static oppsPlayer = Match.player2;
+
+  static graveyard = [];
 
   static init() {
     MatchInput.init();
     MatchAction.init();
 
-    // TEST
+    // init commanders
+    Match.player1.commander = new CardPermanent(Team.P1, 'ZirAnSunforge');
+    Match.player2.commander = new CardPermanent(Team.P2, 'RagnoraTheRelentless');
+
+    // TEST: hand ui
     Match.turnPlayer.updateHandUi();
     Match.oppsPlayer.updateHandUi();
     Match.oppsPlayer.hideHandUi();
 
-    // TODO: Effect Test
-    // const logWhenAttack = new Effect();
-    // EffectCallback.add("onDealDamage");
+    // TEST: test effect
+    const onDealDamageEffectP1 = new Effect(
+      EffectType.MandatoryTrigger,
+      Match.turnPlayer.commander,
+      (self, target) => console.log(`I hit "${target.data.name}"`)
+    );
+    EffectCallback.add("onDealDamage", onDealDamageEffectP1);
 
-    // temp help text
+    // TEMP: help text
     Game.spawn.text(10, 5,
       `[SPACE]: end turn
 [P]: teleport
@@ -102,7 +112,7 @@ class Match {
       align: 'left'
     });
 
-    // temp turn text
+    // TEMP: turn text
     Game.spawn.rectangle(Game.center.x, 10, 200, 100, 0x000000);
     Match.turnText = Game.spawn.text(Game.center.x, 10, 'P1\'s turn', {
       color: '#ffffff',
@@ -121,14 +131,14 @@ class Match {
     Match.turnPlayer.selectedTile = null;
 
     // cycle turn
-    Match.oppsPlayer = Match.players[Match.turn];
+    Match.oppsPlayer = Match.turnPlayer;
     Match.turn = (Match.turn % 2) + 1;
     Match.turnPlayer = Match.players[Match.turn - 1];
 
     // update ui
     Match.turnText.text = `P${Match.turn}'s turn`;
-    Match.oppsPlayer.hideHandUi();
     Match.turnPlayer.showHandUi();
+    Match.oppsPlayer.hideHandUi();
 
     // untap permanents
     Board.permanents.forEach(permanent => permanent?.resetOnTurnStart());
