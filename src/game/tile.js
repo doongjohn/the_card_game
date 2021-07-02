@@ -59,7 +59,7 @@ class Tile {
 
   updateCards() {
     this.cards.permanent = Board.getPermanentAt(this.pos.x, this.pos.y);
-    // TODO:
+    // TODO: update all cards
     // this.cards.spell = Board.getSpellAt(this.pos.x, this.pos.y);
     // this.cards.rune = Board.getRuneAt(this.pos.x, this.pos.y);
     // this.cards.land = Board.getLandAt(this.pos.x, this.pos.y);

@@ -394,7 +394,7 @@ class CardPermanent extends Card {
   doAttack(target) {
     EffectAction.onDealDamage(this, target);
     this.doDamage(target);
-    this.tap(); // TODO: tap after enemy on take damage event is triggered
+    this.tap();
   }
   takeDamage(attacker, damage) {
     // update health
