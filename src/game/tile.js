@@ -9,29 +9,29 @@ class TileColor {
 }
 
 class Tile {
+  static hoveringTile = null;
+
   constructor(index, size, gapSize) {
-    // tile data
-    this.index = index;
-    this.pos = toCoord(this.index);
     this.gameObject = this.initGameObject(size, gapSize);
+    this.index = index;
+    this.pos = toCoord(index);
     this.cards = {
       permanent: null,
       spell: null,
       rune: null,
       land: null
     };
-
-    // tile state
     this.fsm = new FSM(this, TileStateNormal, (obj) => {
-      this.setHoverFunction(
-        () => this.fsm.curState.onHoverEnter(obj),
-        () => this.fsm.curState.onHoverExit(obj)
-      );
-    });
-
-    // tile click event
-    this.tileFg.on('pointerdown', () => {
-      this.fsm.curState.onClick(this);
+      obj.setHoverEnter(() => {
+        Tile.hoveringTile = obj;
+        obj.fsm.curState.onHoverEnter(obj);
+      });
+      obj.setHoverExit(() => {
+        Tile.hoveringTile = null;
+        obj.fsm.curState.onHoverExit(obj);
+      });
+      if (Tile.hoveringTile == obj)
+        Tile.hoveringTile.fsm.curState.onHoverEnter(obj);
     });
   }
 
@@ -49,12 +49,9 @@ class Tile {
       size.y + gapSize.y,
       TileColor.FG.rgb,
       TileColor.FG.alpha
-    ).setInteractive();
+    ).setInteractive().on('pointerdown', () => this.fsm.curState.onClick(this));
 
-    return Game.spawn.container(0, 0, [
-      this.tileBg,
-      this.tileFg
-    ]);
+    return Game.spawn.container(0, 0, [this.tileBg, this.tileFg]);
   }
 
   updateCards() {
@@ -65,15 +62,14 @@ class Tile {
     // this.cards.land = Board.getLandAt(this.pos.x, this.pos.y);
   }
 
-  setHoverFunction(onHoverEnter, onHoverExit) {
-    // remove current event
+  setHoverEnter(func) {
     this.tileFg.removeAllListeners('pointerover');
+    this.tileFg.on('pointerover', func);
+  }
+  setHoverExit(func) {
     this.tileFg.removeAllListeners('pointerout');
+    this.tileFg.on('pointerout', func);
     Game.scene.input.removeAllListeners('gameout');
-
-    // set hover event
-    this.tileFg.on('pointerover', onHoverEnter);
-    this.tileFg.on('pointerout', onHoverExit);
-    Game.scene.input.on('gameout', onHoverExit);
+    Game.scene.input.on('gameout', func);
   }
 };

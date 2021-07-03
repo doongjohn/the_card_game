@@ -1,10 +1,4 @@
 class TileState extends FSMState {
-  onHoverEnterBasic(obj) {
-    // TODO: set currently hoverd tile to this
-  }
-  onHoverExitBasic(obj) {
-    // TODO: set currently hoverd tile to null
-  }
   onHoverEnter(obj) {
     obj.tileFg.setFillStyle(TileColor.FG.hover.rgb, TileColor.FG.hover.alpha);
   }
@@ -29,13 +23,21 @@ class TileStateSelected extends TileState {
     obj.tileFg.setFillStyle(0xffbe0d, 0.25);
 
     // show card on the screen
-    if (obj.cards.permanent)
-      obj.cards.permanent.cardPaper.show().setPosition(-775, -190);
+    // if (obj.cards.permanent)
+    //   obj.cards.permanent.cardPaper.show().setPosition(-775, -190);
+
+    if (obj.cards.permanent) {
+      CardInfoUI.show();
+      CardInfoUI.updateInfo(obj.cards.permanent.data);
+    }
   }
   onExit(obj) {
     // hide card on the screen
+    // if (obj.cards.permanent)
+    //   obj.cards.permanent.cardPaper.hide();
+
     if (obj.cards.permanent)
-      obj.cards.permanent.cardPaper.hide();
+      CardInfoUI.hide();
   }
   onHoverEnter(obj) { }
   onHoverExit(obj) { }

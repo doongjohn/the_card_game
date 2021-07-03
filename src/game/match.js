@@ -92,6 +92,9 @@ class Match {
     Match.oppsPlayer.updateHandUi();
     Match.oppsPlayer.hideHandUi();
 
+    // init card info ui
+    new CardInfoUI;
+
     // TEST: test effect
     const onDealDamageEffectP1 = new Effect(
       EffectType.MandatoryTrigger,
