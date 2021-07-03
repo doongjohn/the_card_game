@@ -19,17 +19,18 @@ class CardInfoUI {
       }
     ).setOrigin(0.5, 1);
 
-    this.visual = Game.spawn.container(-775, -190 [
+    this.visual = Game.spawn.container(0, 0 [
       this.bg,
       this.cardName
     ]);
+    this.visual.setPosition(-775, -190);
     Game.addToWorld(this.visual);
 
     CardInfoUI.instance = this;
   }
 
   static updateInfo(cardData) {
-    this.cardName.text = cardData.name;
+    CardInfoUI.instance.cardName.setText(cardData.name);
   }
 
   static show() {
