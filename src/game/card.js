@@ -270,26 +270,25 @@ class CardPermanent extends Card {
     this.cardPaper.initStatsUi(this.data);
 
     // init visual
+    this.originalIndex = 0;
     this.tweenMovement = null;
   }
 
   initHover() {
-    // scale up on hover
+    // TODO: make card selection better
     this.cardPaper.visual.on('pointerover', () => {
-      Layer.ui.moveUp(this.cardPaper.visual);
+      this.originalIndex = Layer.ui.list.indexOf(this.cardPaper.visual);
+      Layer.ui.bringToTop(this.cardPaper.visual);
       this.cardPaper.visual.y -= 200;
-      this.cardPaper.visual.setScale(1.2);
     });
     this.cardPaper.visual.on('pointerout', () => {
-      Layer.ui.moveDown(this.cardPaper.visual);
+      Layer.ui.moveTo(this.cardPaper.visual, this.originalIndex);
       this.cardPaper.visual.y += 200;
-      this.cardPaper.visual.setScale(1);
     });
   }
   initClickShowInfo() {
+    // TODO: show card info
     this.cardPaper.visual.on('pointerdown', () => {
-      // TODO: show card info
-
       // deselect tile
       Match.turnPlayer.selectedTile = null;
       Board.setTileStateAll(TileStateNormal);

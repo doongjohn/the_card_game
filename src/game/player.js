@@ -24,6 +24,9 @@ class Player {
       new CardPermanent(this.team, 'ZirAnSunforge'),
       new CardPermanent(this.team, 'RagnoraTheRelentless'),
       new CardPermanent(this.team, 'ZirAnSunforge'),
+      new CardPermanent(this.team, 'ZirAnSunforge'),
+      new CardPermanent(this.team, 'ZirAnSunforge'),
+      new CardPermanent(this.team, 'ZirAnSunforge'),
     );
   }
   addToHand() {
