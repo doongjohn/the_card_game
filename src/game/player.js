@@ -32,10 +32,20 @@ class Player {
     else
       this.hand.push(arguments[0]);
   }
-  showHandUi() {
-    for (const card of this.hand) {
-      card.cardPaper.show();
+  removeFromHand(card) {
+    let i = 0;
+    for (const c of this.hand) {
+      if (card == c) {
+        this.hand[i].cardPaper.hide();
+        this.hand.splice(i, 1);
+        break;
+      }
+      ++i;
     }
+  }
+  showHandUi() {
+    for (const card of this.hand)
+      card.cardPaper.show();
   }
   hideHandUi() {
     for (const card of this.hand)
