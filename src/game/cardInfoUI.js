@@ -21,14 +21,22 @@ class CardInfoUI {
       }
     ).setOrigin(0.5, 1);
 
-    CardInfoUI.visual = Game.spawn.container(0, 0 [
+    CardInfoUI.visual = Game.spawn.group().addMultiple([
       CardInfoUI.bg,
       CardInfoUI.cardName
     ]);
-    CardInfoUI.visual.setPosition(-775, -190);
-    CardInfoUI.hide();
 
-    Layer.ui.add(CardInfoUI.visual);
+    CardInfoUI.visual.getChildren().forEach(el => {
+      el.x -= 775;
+      el.y -= 190;
+    });
+
+    Layer.ui.add([
+      CardInfoUI.bg,
+      CardInfoUI.cardName
+    ]);
+
+    CardInfoUI.hide();
   }
 
   static updateInfo(cardData) {
