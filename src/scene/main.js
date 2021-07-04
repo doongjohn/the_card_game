@@ -4,13 +4,11 @@ class MainScene extends Phaser.Scene {
   }
 
   preload() {
-    // load assets
     SpriteManager.BoardBG.load();
     SpriteManager.CardArt.load();
   }
 
   create() {
-    // create animations
     SpriteManager.CardArt.createAnims();
 
     Layer.init();

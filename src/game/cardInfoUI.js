@@ -1,46 +1,62 @@
 // TODO: make card info ui
 class CardInfoUI {
+  static width = 350;
+  static height = 500;
+
   static bg = null;
   static cardName = null;
+  static cardStats = null;
   static visual = null;
 
   static init() {
     CardInfoUI.bg = Game.spawn.rectangle(
       0, 0,
-      CardPaper.width, CardPaper.height,
-      0xffffff
+      CardInfoUI.width, CardInfoUI.height,
+      0x182236
     ).setOrigin(0.5, 0);
 
     CardInfoUI.cardName = Game.spawn.text(
       0, 30,
-      "cardData.name",
+      "card name",
       {
-        font: '16px Arial',
-        color: 'black',
+        font: '20px Play',
         align: 'center',
       }
     ).setOrigin(0.5, 1);
 
+    CardInfoUI.cardStats = Game.spawn.text(
+      -CardInfoUI.width / 2 + 10, 60,
+      `⛨: - ⚔: -`,
+      {
+        font: '18px Play',
+        align: 'left'
+      }).setOrigin(0, 1);
+
+    CardInfoUI.cardExplain = Game.spawn.text(
+      -CardInfoUI.width / 2 + 10, 90,
+      `blah blah`,
+      {
+        font: '18px Play',
+        align: 'left'
+      }).setOrigin(0, 1);
+
     CardInfoUI.visual = Game.spawn.group().addMultiple([
       CardInfoUI.bg,
-      CardInfoUI.cardName
+      CardInfoUI.cardName,
+      CardInfoUI.cardStats,
+      CardInfoUI.cardExplain,
     ]);
 
-    CardInfoUI.visual.getChildren().forEach(el => {
-      el.x -= 775;
-      el.y -= 190;
-    });
-
-    Layer.ui.add([
-      CardInfoUI.bg,
-      CardInfoUI.cardName
-    ]);
-
+    CardInfoUI.visual.incXY(-765, -300);
     CardInfoUI.hide();
+
+    // add to layer
+    Layer.ui.add(CardInfoUI.visual.getChildren());
   }
 
   static updateInfo(cardData) {
     CardInfoUI.cardName.setText(cardData.name);
+    CardInfoUI.cardStats.setText(`⛨: ${cardData.health} ⚔: ${cardData.attack}`);
   }
 
   static show() {

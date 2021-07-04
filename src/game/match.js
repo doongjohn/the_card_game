@@ -1,74 +1,3 @@
-class Team {
-  static None = 0;
-  static P1 = 1;
-  static P2 = 2;
-}
-
-class Player {
-  constructor(team) {
-    this.team = team;
-    this.commander = null;
-    this.deck = [];
-    this.hand = [];
-    this.selectedTile = null;
-    this.selectedCard = null;
-  }
-
-  addToHand(card) {
-    this.hand.push(card);
-  }
-  showHandUi() {
-    for (const card of this.hand) {
-      card.cardPaper.show();
-    }
-  }
-  hideHandUi() {
-    for (const card of this.hand) {
-      card.cardPaper.hide();
-    }
-  }
-  updateHandUi() {
-    // TODO: add tween
-    const card0 = new CardPermanent(this.team, 'ZirAnSunforge');
-    const card1 = new CardPermanent(this.team, 'RagnoraTheRelentless');
-    const card2 = new CardPermanent(this.team, 'ZirAnSunforge');
-    const card3 = new CardPermanent(this.team, 'RagnoraTheRelentless');
-    const card4 = new CardPermanent(this.team, 'ZirAnSunforge');
-    const card5 = new CardPermanent(this.team, 'RagnoraTheRelentless');
-    const card6 = new CardPermanent(this.team, 'ZirAnSunforge');
-    const card7 = new CardPermanent(this.team, 'RagnoraTheRelentless');
-    this.addToHand(card0);
-    this.addToHand(card1);
-    this.addToHand(card2);
-    this.addToHand(card3);
-    this.addToHand(card4);
-    this.addToHand(card5);
-    this.addToHand(card6);
-    this.addToHand(card7);
-
-    const maxCard = 5;
-    const width = CardPaper.width + 10;
-    const maxWidth = width * (maxCard - 1);
-    const y = 515;
-    const { startPos, gap } = this.hand.length < maxCard ?
-      {
-        startPos: -width / 2 * (this.hand.length - 1),
-        gap: width
-      } :
-      {
-        startPos: -maxWidth / 2,
-        gap: maxWidth / (this.hand.length - 1)
-      };
-
-    // align cards
-    let i = 0;
-    for (const card of this.hand) {
-      card.spawnable = true;
-      card.cardPaper.show().setPosition(startPos + (gap * i++), y);
-    }
-  }
-}
-
 class Match {
   static turn = Team.P1;
   static player1 = new Player(Team.P1);
@@ -77,6 +6,8 @@ class Match {
   static turnPlayer = Match.player1;
   static oppsPlayer = Match.player2;
 
+  // TODO: make a card manager
+  static boardarea = [];
   static graveyard = [];
 
   static init() {
@@ -87,13 +18,17 @@ class Match {
     Match.player1.commander = new CardPermanent(Team.P1, 'ZirAnSunforge');
     Match.player2.commander = new CardPermanent(Team.P2, 'RagnoraTheRelentless');
 
-    // TEST: hand ui
+    // init card info ui
+    CardInfoUI.init();
+
+    // TEST: init players hand
+    Match.player1.initHand();
+    Match.player2.initHand();
+
+    // init hand ui
     Match.turnPlayer.updateHandUi();
     Match.oppsPlayer.updateHandUi();
     Match.oppsPlayer.hideHandUi();
-
-    // init card info ui
-    CardInfoUI.init();
 
     // TEST: test effect
     const onDealDamageEffectP1 = new Effect(

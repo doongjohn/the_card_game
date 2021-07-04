@@ -133,7 +133,7 @@ class CardPaper {
 
     // card name
     this.cardName = Game.spawn.text(0, 0, cardData.name, {
-      font: '18px Arial',
+      font: '18px Play',
       align: 'center'
     }).setOrigin(0.5, 1);
 
@@ -150,7 +150,7 @@ class CardPaper {
       CardPaper.textBg.margin - (CardPaper.textBg.width / 2), 15,
       cardData.text,
       {
-        font: '16px Arial',
+        font: '16px Play',
         align: 'left',
         wordWrap: { width: CardPaper.textBg.width - CardPaper.textBg.margin }
       }
@@ -191,7 +191,7 @@ class CardPaper {
 
   initStatsUi(cardData) {
     this.statsTxt = Game.spawn.text(-115, -145, `⛨: ${cardData.health} ⚔: ${cardData.attack}`, {
-      font: '18px Arial',
+      font: '18px Play',
       align: 'left'
     }).setOrigin(0, 1);
     this.visual.add(this.statsTxt);
