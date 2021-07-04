@@ -75,11 +75,9 @@ class BoardObj {
 
   show() {
     this.cardArt.setVisible(true);
-    return this.cardArt;
   }
   hide() {
     this.cardArt.setVisible(false);
-    return this.cardArt;
   }
 
   resetOnTurnStart() {
@@ -174,6 +172,8 @@ class CardPaper {
 
     // hide
     this.hide();
+
+    this.tween = null;
   }
 
   destroy() {
@@ -182,11 +182,9 @@ class CardPaper {
 
   show() {
     this.visual.setVisible(true);
-    return this.visual;
   }
   hide() {
     this.visual.setVisible(false);
-    return this.visual;
   }
 
   initStatsUi(cardData) {
@@ -352,6 +350,7 @@ class CardPermanent extends Card {
 
     // remove tween and move board obj
     this.tweenMovement?.remove();
+    this.tweenMovement = null;
     this.boardObj.setPos(x, y);
   }
   moveTo(x, y) {
@@ -383,8 +382,11 @@ class CardPermanent extends Card {
 
       // on tween complete
       onCompleteParams: [this],
-      onComplete: function (tween) { tween.remove(); },
-    })
+      onComplete: function (tween) {
+        tween.remove();
+        this.tweenMovement = null;
+      },
+    });
   }
 
   doDamage(target) {

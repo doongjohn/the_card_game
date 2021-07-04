@@ -33,12 +33,13 @@ class CardInfoUI {
       }).setOrigin(0, 1);
 
     CardInfoUI.cardExplain = Game.spawn.text(
-      -CardInfoUI.width / 2 + 10, 90,
-      `blah blah`,
+      -CardInfoUI.width / 2 + 10, 70,
+      `blah blah blah blah blah blah blah blah blah blah blah blah`,
       {
         font: '18px Play',
-        align: 'left'
-      }).setOrigin(0, 1);
+        align: 'left',
+        wordWrap: { width: CardInfoUI.width - 10 }
+      }).setOrigin(0, 0);
 
     CardInfoUI.visual = Game.spawn.group().addMultiple([
       CardInfoUI.bg,
@@ -57,6 +58,7 @@ class CardInfoUI {
   static updateInfo(card) {
     CardInfoUI.cardName.setText(card.data.name);
     CardInfoUI.cardStats.setText(`⛨: ${card.boardObj.data.health} ⚔: ${card.boardObj.data.attack}`);
+    CardInfoUI.cardExplain.setText(card.data.text);
   }
 
   static show() {
