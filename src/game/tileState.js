@@ -23,8 +23,8 @@ class TileStateSelected extends TileState {
     obj.tileFg.setFillStyle(0xffbe0d, 0.25);
 
     if (obj.cards.permanent) {
+      CardInfoUI.updateInfo(obj.cards.permanent);
       CardInfoUI.show();
-      CardInfoUI.updateInfo(obj.cards.permanent.data);
     }
   }
   onExit(obj) {
