@@ -22,20 +22,12 @@ class TileStateSelected extends TileState {
     obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
     obj.tileFg.setFillStyle(0xffbe0d, 0.25);
 
-    // show card on the screen
-    // if (obj.cards.permanent)
-    //   obj.cards.permanent.cardPaper.show().setPosition(-775, -190);
-
     if (obj.cards.permanent) {
       CardInfoUI.show();
       CardInfoUI.updateInfo(obj.cards.permanent.data);
     }
   }
   onExit(obj) {
-    // hide card on the screen
-    // if (obj.cards.permanent)
-    //   obj.cards.permanent.cardPaper.hide();
-
     if (obj.cards.permanent)
       CardInfoUI.hide();
   }

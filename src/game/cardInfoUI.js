@@ -1,15 +1,17 @@
 // TODO: make card info ui
 class CardInfoUI {
-  static instance = null;
+  static bg = null;
+  static cardName = null;
+  static visual = null;
 
-  constructor() {
-    this.bg = Game.spawn.rectangle(
+  static init() {
+    CardInfoUI.bg = Game.spawn.rectangle(
       0, 0,
       CardPaper.width, CardPaper.height,
       0xffffff
     ).setOrigin(0.5, 0);
 
-    this.cardName = Game.spawn.text(
+    CardInfoUI.cardName = Game.spawn.text(
       0, 30,
       "cardData.name",
       {
@@ -19,24 +21,24 @@ class CardInfoUI {
       }
     ).setOrigin(0.5, 1);
 
-    this.visual = Game.spawn.container(0, 0 [
-      this.bg,
-      this.cardName
+    CardInfoUI.visual = Game.spawn.container(0, 0 [
+      CardInfoUI.bg,
+      CardInfoUI.cardName
     ]);
-    this.visual.setPosition(-775, -190);
-    Game.addToWorld(this.visual);
+    CardInfoUI.visual.setPosition(-775, -190);
+    CardInfoUI.hide();
 
-    CardInfoUI.instance = this;
+    Layer.ui.add(CardInfoUI.visual);
   }
 
   static updateInfo(cardData) {
-    CardInfoUI.instance.cardName.setText(cardData.name);
+    CardInfoUI.cardName.setText(cardData.name);
   }
 
   static show() {
-    CardInfoUI.instance.visual.setVisible(true);
+    CardInfoUI.visual.setVisible(true);
   }
   static hide() {
-    CardInfoUI.instance.visual.setVisible(false);
+    CardInfoUI.visual.setVisible(false);
   }
 }
