@@ -55,7 +55,6 @@ class Player {
       card.cardPaper.hide();
   }
   updateHandUi() {
-    // TODO: add tween
     const maxCard = 5;
     const width = CardPaper.width + 10;
     const maxWidth = width * (maxCard - 1);
@@ -74,7 +73,33 @@ class Player {
     let i = 0;
     for (const card of this.hand) {
       card.spawnable = true;
-      card.cardPaper.show().setPosition(startPos + (gap * i++), y);
+      card.cardPaper.show();
+
+      // set tween
+      // FIXEME: hovering blocks tween
+      if (card.cardPaper.tween) {
+        card.cardPaper.tween.remove();
+        card.cardPaper.tween = null;
+      } else {
+        card.cardPaper.tween = Game.scene.tweens.add({
+          // tween options
+          targets: card.cardPaper.visual,
+          repeat: 0,
+          ease: 'Cubic.Out',
+          duration: 200,
+
+          // tween props
+          x: { from: card.cardPaper.visual.x, to: startPos + (gap * i++) },
+          y: { from: card.cardPaper.visual.y, to: y },
+
+          // on tween complete
+          onCompleteParams: [this],
+          onComplete: function (tween) {
+            tween.remove();
+            card.cardPaper.tween = null;
+          },
+        });
+      }
     }
   }
 }
