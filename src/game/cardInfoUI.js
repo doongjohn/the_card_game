@@ -54,9 +54,9 @@ class CardInfoUI {
     Layer.ui.add(CardInfoUI.visual.getChildren());
   }
 
-  static updateInfo(cardData) {
-    CardInfoUI.cardName.setText(cardData.name);
-    CardInfoUI.cardStats.setText(`⛨: ${cardData.health} ⚔: ${cardData.attack}`);
+  static updateInfo(card) {
+    CardInfoUI.cardName.setText(card.data.name);
+    CardInfoUI.cardStats.setText(`⛨: ${card.boardObj.data.health} ⚔: ${card.boardObj.data.attack}`);
   }
 
   static show() {
