@@ -12,12 +12,12 @@ class Board {
   static init() {
     // background image
     const bg = Game.spawn.sprite(0, -100, 'BattleMap5').setScale(0.85);
-    Layer.bg.add(bg);
+    Game.addToWorld(bg, Layer.BG);
 
     // spawn tiles
     for (const i in Board.tiles) {
       const tile = new Tile(i, Board.tileSize, Board.gapSize);
-      Layer.board.add(tile.gameObject);
+      Game.addToWorld(tile.gameObject, Layer.Board);
       Board.tiles[i] = tile;
     }
 

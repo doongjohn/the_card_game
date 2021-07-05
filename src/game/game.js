@@ -18,14 +18,26 @@ class Game {
   }
 
   // alias to Game.world.add
-  static addToWorld() {
-    for (const thing of arguments) {
-      if (thing instanceof Phaser.GameObjects.GameObject)
+  static addToWorld(things, layer) {
+    function add(thing, layer) {
+      if (thing instanceof Phaser.GameObjects.GameObject) {
         Game.world.add(thing);
-      else if (thing.gameObject !== undefined)
+        layer.add(thing);
+        return;
+      }
+      if (thing.gameObject !== undefined) {
         Game.world.add(thing.gameObject);
-      else
-        console.error("It's can't be added to the world!");
+        layer.add(thing.gameObject);
+        return;
+      }
+      console.error("It can't be added to the world! (not a gameobject?)");
+    }
+
+    if (Array.isArray(things)) {
+      for (const thing of things)
+        add(thing, layer);
+    } else {
+      add(things, layer);
     }
   }
 

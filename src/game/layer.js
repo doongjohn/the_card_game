@@ -1,20 +1,13 @@
+// FIXEME: display bug!
 class Layer {
-    static bg = null;
-    static board = null;
-    static permanent = null;
-    static ui = null;
-
-    static init() {
-        Layer.bg = Game.spawn.container().setDepth(0);
-        Layer.board = Game.spawn.container().setDepth(1);
-        Layer.permanent = Game.spawn.container().setDepth(2);
-        Layer.ui = Game.spawn.container().setDepth(3);
-
-        Game.addToWorld(
-            Layer.bg,
-            Layer.board,
-            Layer.permanent,
-            Layer.ui
-        );
-    }
+  static init() {
+    Layer.BG =
+      Game.spawn.layer().setDepth(0);
+    Layer.Board =
+      Game.spawn.layer().setDepth(1);
+    Layer.Permanent =
+      Game.spawn.layer().setDepth(2);
+    Layer.UI =
+      Game.spawn.layer().setDepth(3);
+  }
 }
