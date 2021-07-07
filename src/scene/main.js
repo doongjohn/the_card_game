@@ -1,5 +1,3 @@
-
-
 class MainScene extends Phaser.Scene {
   init() {
     Game.init(this);
