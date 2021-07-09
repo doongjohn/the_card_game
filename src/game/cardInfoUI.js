@@ -52,7 +52,7 @@ class CardInfoUI {
     CardInfoUI.hide();
 
     // add to layer
-    Game.addToWorld(CardInfoUI.visual.getChildren(), Layer.UI);
+    Game.addToWorld(Layer.UI, CardInfoUI.visual.getChildren());
   }
 
   static updateInfo(card) {

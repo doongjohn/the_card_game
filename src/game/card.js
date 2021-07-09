@@ -58,7 +58,7 @@ class BoardObj {
     Game.tryPlayAnimation(this.cardArt, `CardArt:Idle:${cardData.assetName}`);
 
     // add to layer
-    Game.addToWorld(this.cardArt, Layer.Permanent);
+    Game.addToWorld(Layer.Permanent, this.cardArt);
 
     // set team
     this.setTeam(this.data.team);
@@ -168,7 +168,7 @@ class CardPaper {
     this.visual.setInteractive();
 
     // add to layer
-    Game.addToWorld(this.visual, Layer.UI);
+    Game.addToWorld(Layer.UI, this.visual);
 
     // hide
     this.hide();
@@ -275,12 +275,12 @@ class CardPermanent extends Card {
   initHover() {
     // TODO: make card selection better
     this.cardPaper.visual.on('pointerover', () => {
-      this.originalIndex = Layer.UI.getIndex(this.cardPaper.visual);
-      Layer.UI.bringToTop(this.cardPaper.visual);
+      this.originalIndex = Layer.getIndex(Layer.UI, this.cardPaper.visual);
+      Layer.bringToTop(Layer.UI, this.cardPaper.visual);
       this.cardPaper.visual.y -= 200;
     });
     this.cardPaper.visual.on('pointerout', () => {
-      Layer.UI.moveTo(this.cardPaper.visual, this.originalIndex);
+      Layer.moveTo(Layer.UI, this.cardPaper.visual, this.originalIndex);
       this.cardPaper.visual.y += 200;
     });
   }

@@ -10,7 +10,6 @@ class Game {
     Game.scene = scene;
     Game.mainCam = scene.cameras.main;
     Game.center = new Phaser.Math.Vector2(Game.mainCam.centerX, Game.mainCam.centerY);
-    Game.world = scene.add.container(Game.center.x, Game.center.y);
     Game.spawn = scene.add;
     Game.pipeline = {
       grayScale: scene.renderer.pipelines.get('Gray')
@@ -18,26 +17,22 @@ class Game {
   }
 
   // alias to Game.world.add
-  static addToWorld(things, layer) {
-    function add(thing, layer) {
-      if (thing instanceof Phaser.GameObjects.GameObject) {
-        Game.world.add(thing);
-        layer.add(thing);
-        return;
+  static addToWorld(layer, objs) {
+    function add(layer, obj) {
+      if (obj instanceof Phaser.GameObjects.GameObject) {
+        Layer.add(layer, obj);
+      } else if (obj.gameObject !== undefined) {
+        Layer.add(layer, obj.gameObject);
+      } else {
+        console.error("It can't be added to the world! (not a gameobject?)");
       }
-      if (thing.gameObject !== undefined) {
-        Game.world.add(thing.gameObject);
-        layer.add(thing.gameObject);
-        return;
-      }
-      console.error("It can't be added to the world! (not a gameobject?)");
     }
 
-    if (Array.isArray(things)) {
-      for (const thing of things)
-        add(thing, layer);
+    if (Array.isArray(objs)) {
+      for (const obj of objs)
+        add(layer, obj);
     } else {
-      add(things, layer);
+      add(layer, objs);
     }
   }
 
