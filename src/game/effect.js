@@ -7,6 +7,10 @@ class EffectType {
   static Quick = 3;
   static Continues = 4;
   static Lingering = 5;
+
+  static toString(num) {
+    return Object.getOwnPropertyNames(EffectType)[num + 4];
+  }
 }
 
 class Effect {
@@ -16,7 +20,7 @@ class Effect {
     this.card = card;
     this.action = function(self) {
       if (self == this.card) {
-        console.log(`<Effect:onDealDamage> Player${Match.turn}'s "${self.data.name}"`);
+        console.log(`<Effect:${EffectType.toString(this.type)}> Player${Match.turn}'s "${self.data.name}"`);
         action(...arguments);
       }
     };
