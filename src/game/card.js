@@ -164,7 +164,7 @@ class CardPaper {
     ]);
 
     // make interactable
-    this.visual.setSize(CardPaper.width, CardPaper.height);
+    this.visual.setSize(CardPaper.width + 10, CardPaper.height);
     this.visual.setInteractive();
 
     // add to layer
@@ -273,16 +273,15 @@ class CardPermanent extends Card {
   }
 
   initHover() {
-    // TODO: make card selection better
     this.cardPaper.visual.on('pointerover', () => {
       this.originalIndex = Layer.getIndex(Layer.UI, this.cardPaper.visual);
       Layer.bringToTop(Layer.UI, this.cardPaper.visual);
-      this.cardPaper.visual.y -= 200;
+      this.cardPaper.visual.y -= 180;
       Match.turnPlayer.handUI.focusCard(this);
     });
     this.cardPaper.visual.on('pointerout', () => {
       Layer.moveTo(Layer.UI, this.cardPaper.visual, this.originalIndex);
-      this.cardPaper.visual.y += 200;
+      this.cardPaper.visual.y += 180;
       Match.turnPlayer.handUI.update();
     });
   }

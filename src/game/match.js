@@ -113,18 +113,12 @@ class MatchAction {
   static state = MatchAction.StateEmpty;
 
   static init() {
-    MatchInput.keys.cancel.on('down', () => {
-      // cancel current match action state
-      MatchAction.cancleState();
-    });
+    MatchInput.keys.cancel.on('down', MatchAction.cancleState);
     MatchInput.keys.confirm.on('down', () => {
       // TODO: maybe this key is unnecessary?
       console.log('enter key pressed!');
     });
-    MatchInput.keys.endTurn.on('down', () => {
-      // continue to next turn
-      Match.nextTurn();
-    });
+    MatchInput.keys.endTurn.on('down', Match.nextTurn);
     MatchInput.keys.unitTeleport.on('down', MatchAction.onUnitTeleport);
     MatchInput.keys.unitTap.on('down', MatchAction.onUnitTap);
     MatchInput.keys.unitMove.on('down', MatchAction.onUnitMove);
@@ -137,15 +131,11 @@ class MatchAction {
   static cancleState() {
     if (MatchAction.state == MatchAction.StateEmpty)
       return;
-
     if (MatchAction.state == MatchAction.StateView) {
       Board.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
       MatchAction.setState(MatchAction.StateEmpty);
     } else {
-      Board.tiles.forEach(tile => {
-        if (tile != Match.turnPlayer.selectedTile)
-          tile.fsm.setState(TileStateNormal);
-      });
+      Board.tiles.forEach(tile => { if (tile != Match.turnPlayer.selectedTile) tile.fsm.setState(TileStateNormal) });
       MatchAction.setState(MatchAction.StateView);
     }
   }
@@ -161,7 +151,6 @@ class MatchAction {
     Board.tiles.forEach(tile => {
       if (tile.fsm.curState.compare(TileStateSelected))
         return;
-
       if (tile.cards.permanent)
         tile.fsm.setState(TileStateNoInteraction);
       else

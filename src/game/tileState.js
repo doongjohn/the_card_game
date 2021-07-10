@@ -57,6 +57,14 @@ class TileStateSpawnPermanentSelection extends TileState {
   onEnter(obj) {
     obj.tileBg.setFillStyle(0x259c51, 0.4);
     obj.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
+
+    // show card info
+    CardInfoUI.updateInfo(Match.turnPlayer.selectedCard);
+    CardInfoUI.show();
+  }
+  onExit(obj) {
+    // hide card info
+    CardInfoUI.hide();
   }
   onClick(obj) {
     // spawn a selected permanent

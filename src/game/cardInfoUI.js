@@ -57,7 +57,11 @@ class CardInfoUI {
 
   static updateInfo(card) {
     CardInfoUI.cardName.setText(card.data.name);
-    CardInfoUI.cardStats.setText(`⛨: ${card.boardObj.data.health} ⚔: ${card.boardObj.data.attack}`);
+    if (card.boardObj) {
+      CardInfoUI.cardStats.setText(`⛨: ${card.boardObj.data.health} ⚔: ${card.boardObj.data.attack}`);
+    } else {
+      CardInfoUI.cardStats.setText(`⛨: ${card.data.health} ⚔: ${card.data.attack}`);
+    }
     CardInfoUI.cardExplain.setText(card.data.text);
   }
 

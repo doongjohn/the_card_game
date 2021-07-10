@@ -139,14 +139,15 @@ class HandUI {
       startPos: -this.maxWidth / 2,
       gap: this.maxWidth / (this.hand.length - 1)
     };
-
-    function tweenCard(card, i, offset) {
+    const offset = this.width - gap;
+    for (let i = this.hand.indexOf(card) + 1; i < this.hand.length; ++i) {
+      const card = this.hand[i];
       card.cardPaper.tween?.remove();
       card.cardPaper.tween = Game.scene.tweens.add({
         // tween options
         targets: card.cardPaper.visual,
         repeat: 0,
-        ease: 'Cubic.Out',
+        ease: 'Sine.Out',
         duration: 200,
 
         // tween props
@@ -160,11 +161,5 @@ class HandUI {
         },
       });
     }
-
-    const index = this.hand.indexOf(card);
-    for (let i = 0; i < index; ++i)
-      tweenCard(this.hand[i], i, -250 / 2);
-    for (let i = index + 1; i < this.hand.length; ++i)
-      tweenCard(this.hand[i], i, 250 / 2);
   }
 }
