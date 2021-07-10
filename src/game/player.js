@@ -65,6 +65,19 @@ class HandUI {
     this.maxWidth = this.width * (HandUI.maxCard - 1);
   }
 
+  // TODO:
+  getAlignData() {
+    return this.hand.length <= HandUI.maxCard ?
+      {
+        startPos: -this.width / 2 * (this.hand.length - 1),
+        gap: this.width
+      } :
+      {
+        startPos: -this.maxWidth / 2,
+        gap: this.maxWidth / (this.hand.length - 1)
+      };
+  }
+
   init() {
     const { startPos, gap } = this.hand.length <= HandUI.maxCard ?
       {
@@ -109,8 +122,6 @@ class HandUI {
     for (const card of this.hand) {
       card.spawnable = true;
       card.cardPaper.show();
-
-      // set tween
       card.cardPaper.tween?.remove();
       card.cardPaper.tween = Game.scene.tweens.add({
         // tween options
