@@ -19,21 +19,18 @@ class Game {
   // alias to Game.world.add
   static addToWorld(layer, objs) {
     function add(layer, obj) {
-      if (obj instanceof Phaser.GameObjects.GameObject) {
+      if (obj instanceof Phaser.GameObjects.GameObject)
         Layer.add(layer, obj);
-      } else if (obj.gameObject !== undefined) {
+      else if (obj.gameObject !== undefined)
         Layer.add(layer, obj.gameObject);
-      } else {
+      else
         console.error("It can't be added to the world! (not a gameobject?)");
-      }
     }
 
-    if (Array.isArray(objs)) {
-      for (const obj of objs)
-        add(layer, obj);
-    } else {
+    if (Array.isArray(objs))
+      for (const obj of objs) add(layer, obj);
+    else
       add(layer, objs);
-    }
   }
 
   static tryPlayAnimation(thing, key) {

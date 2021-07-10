@@ -278,10 +278,12 @@ class CardPermanent extends Card {
       this.originalIndex = Layer.getIndex(Layer.UI, this.cardPaper.visual);
       Layer.bringToTop(Layer.UI, this.cardPaper.visual);
       this.cardPaper.visual.y -= 200;
+      Match.turnPlayer.handUI.focusCard(this);
     });
     this.cardPaper.visual.on('pointerout', () => {
       Layer.moveTo(Layer.UI, this.cardPaper.visual, this.originalIndex);
       this.cardPaper.visual.y += 200;
+      Match.turnPlayer.handUI.update();
     });
   }
   initClickShowInfo() {

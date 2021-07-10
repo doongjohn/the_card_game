@@ -1,4 +1,4 @@
-// FIXEME: display bug!
+// NOTE: Why does phaser hate nested continer?
 class Layer {
   static BG = 0;
   static Board = 1;
@@ -7,18 +7,17 @@ class Layer {
 
   static init() {
     Layer.roots = [];
-    Layer.layers = [];
     for (let i = 0; i < 4; ++i) {
-      Layer.roots.push(Game.spawn.container(Game.center.x, Game.center.y));
-      Layer.layers.push(Game.spawn.layer().setDepth(i));
+      Layer.roots.push(Game.spawn.container(Game.center.x, Game.center.y).setDepth(i));
     }
   }
+
   static add(layer, obj) {
-    Layer.layers[layer].add(obj);
     Layer.roots[layer].add(obj);
   }
+
   static getIndex(layer, obj) {
-    Layer.roots[layer].getIndex(obj);
+    return Layer.roots[layer].getIndex(obj);
   }
   static bringToTop(layer, obj) {
     Layer.roots[layer].bringToTop(obj);

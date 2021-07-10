@@ -24,11 +24,7 @@ class Match {
     // TEST: init players hand
     Match.player1.initHand();
     Match.player2.initHand();
-
-    // init hand ui
-    Match.turnPlayer.updateHandUi();
-    Match.oppsPlayer.updateHandUi();
-    Match.oppsPlayer.hideHandUi();
+    Match.oppsPlayer.handUI.hide();
 
     // TEST: test effect
     const onDealDamageEffectP1 = new Effect(
@@ -75,8 +71,8 @@ class Match {
 
     // update ui
     Match.turnText.text = `P${Match.turn}'s turn`;
-    Match.turnPlayer.showHandUi();
-    Match.oppsPlayer.hideHandUi();
+    Match.turnPlayer.handUI.show();
+    Match.oppsPlayer.handUI.hide();
 
     // untap permanents
     Board.permanents.forEach(permanent => permanent?.resetOnTurnStart());
