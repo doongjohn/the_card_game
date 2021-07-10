@@ -71,6 +71,7 @@ class Match {
 
     // update ui
     Match.turnText.text = `P${Match.turn}'s turn`;
+    Match.turnPlayer.handUI.update();
     Match.turnPlayer.handUI.show();
     Match.oppsPlayer.handUI.hide();
 
