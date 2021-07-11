@@ -35,3 +35,30 @@ class UserActionData {
     UserAction.state = this.state;
   }
 }
+
+class UserInput {
+  static init() {
+    UserInput.keys = Game.scene.input.keyboard.addKeys({
+      // test input
+      undo: 'u',
+      unitTeleport: 'p',
+      unitTap: 't',
+
+      // game input
+      confirm: 'enter',
+      cancel: 'esc',
+      endTurn: 'space',
+      unitMove: 'm',
+      unitAttack: 'a',
+    });
+
+    UserInput.keys.undo.on('down', () => UserAction.undo());
+    UserInput.keys.unitTeleport.on('down', MatchAction.onUnitTeleport);
+    UserInput.keys.unitTap.on('down', MatchAction.onUnitTap);
+
+    UserInput.keys.cancel.on('down', () => new CmdCancel().execute());
+    UserInput.keys.endTurn.on('down', () => new CmdEndTurn().execute());
+    UserInput.keys.unitMove.on('down', MatchAction.onUnitMove);
+    UserInput.keys.unitAttack.on('down', MatchAction.onUnitAttack);
+  }
+}

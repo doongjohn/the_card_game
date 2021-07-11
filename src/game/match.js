@@ -11,7 +11,8 @@ class Match {
   static graveyard = [];
 
   static init() {
-    MatchInput.init();
+    // init input
+    UserInput.init();
 
     // init commanders
     // TODO: track commanders hp and determine the game result
@@ -66,33 +67,6 @@ class MatchData {
     Match.turn = this.turn;
     Match.turnPlayer = this.turnPlayer;
     Match.oppsPlayer = this.oppsPlayer;
-  }
-}
-
-class MatchInput {
-  static init() {
-    MatchInput.keys = Game.scene.input.keyboard.addKeys({
-      // test input
-      undo: 'u',
-      unitTeleport: 'p',
-      unitTap: 't',
-
-      // game input
-      confirm: 'enter',
-      cancel: 'esc',
-      endTurn: 'space',
-      unitMove: 'm',
-      unitAttack: 'a',
-    });
-
-    MatchInput.keys.undo.on('down', () => UserAction.undo());
-    MatchInput.keys.unitTeleport.on('down', MatchAction.onUnitTeleport);
-    MatchInput.keys.unitTap.on('down', MatchAction.onUnitTap);
-
-    MatchInput.keys.cancel.on('down', () => new CmdCancel().execute());
-    MatchInput.keys.endTurn.on('down', () => new CmdEndTurn().execute());
-    MatchInput.keys.unitMove.on('down', MatchAction.onUnitMove);
-    MatchInput.keys.unitAttack.on('down', MatchAction.onUnitAttack);
   }
 }
 
