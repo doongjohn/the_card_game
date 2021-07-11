@@ -54,61 +54,56 @@ class Match {
       align: 'center'
     }).setOrigin(0.5, 0);
   }
+}
 
-  static isThisTurn(permanent) {
-    return permanent.data.team == Match.turn;
+class MatchData {
+  constructor() {
+    this.turn = Match.turn;
+    this.turnPlayer = Match.turnPlayer;
+    this.oppsPlayer = Match.oppsPlayer;
+  }
+  restore() {
+    Match.turn = this.turn;
+    Match.turnPlayer = this.turnPlayer;
+    Match.oppsPlayer = this.oppsPlayer;
   }
 }
 
 class MatchInput {
   static init() {
     MatchInput.keys = Game.scene.input.keyboard.addKeys({
-      cancel: 'esc',
-      confirm: 'enter',
-
       // test input
+      undo: 'u',
       unitTeleport: 'p',
       unitTap: 't',
 
       // game input
+      confirm: 'enter',
+      cancel: 'esc',
       endTurn: 'space',
       unitMove: 'm',
       unitAttack: 'a',
     });
 
-    // MatchInput.keys.confirm.on('down', () => {
-    //   // TODO: maybe this key is unnecessary?
-    //   console.log('enter key pressed!');
-    // });
-    MatchInput.keys.cancel.on('down', () => new UserCancel().execute());
-    MatchInput.keys.endTurn.on('down', () => new UserEndTurn().execute());
+    MatchInput.keys.undo.on('down', () => UserAction.undo());
     MatchInput.keys.unitTeleport.on('down', MatchAction.onUnitTeleport);
     MatchInput.keys.unitTap.on('down', MatchAction.onUnitTap);
+
+    MatchInput.keys.cancel.on('down', () => new CmdCancel().execute());
+    MatchInput.keys.endTurn.on('down', () => new CmdEndTurn().execute());
     MatchInput.keys.unitMove.on('down', MatchAction.onUnitMove);
     MatchInput.keys.unitAttack.on('down', MatchAction.onUnitAttack);
   }
 }
 
+// TODO: rafactor these functions to command pattern
 class MatchAction {
-  static StateEmpty = 0;
-  static StateView = 1;
-  static StatePlanMove = 2;
-  static StatePlanAttack = 3;
-  static StateCounterAttack = 4;
-  static StatePlanPermanentSpawn = 5;
-  static state = MatchAction.StateEmpty;
-  static commands = [];
-
-  static setState(state) {
-    MatchAction.state = state;
-  }
-
   static onUnitTeleport() {
     if (!Match.turnPlayer.selectedTile || !Match.turnPlayer.selectedTile.cards.permanent)
       return;
 
     // Unit Plan Move
-    MatchAction.setState(MatchAction.StatePlanMove);
+    UserAction.setState(UserAction.StatePlanMove);
 
     // update tile state
     Board.tiles.forEach(tile => {
@@ -135,13 +130,13 @@ class MatchAction {
       return;
 
     const selected = Match.turnPlayer.selectedTile;
-    if (!Match.isThisTurn(selected.cards.permanent)
+    if (!selected.cards.permanent.isMyTurn()
       || selected.cards.permanent.tapped()
       || !selected.cards.permanent.canMove())
       return;
 
     // Unit Plan Move
-    MatchAction.setState(MatchAction.StatePlanMove);
+    UserAction.setState(UserAction.StatePlanMove);
 
     function setMoveSelectionTile(x, y) {
       if (!Board.getPermanentAt(x, y))
@@ -192,13 +187,13 @@ class MatchAction {
 
     const selectedTile = Match.turnPlayer.selectedTile;
 
-    if (!selectedTile.cards.permanent || !Match.isThisTurn(selectedTile.cards.permanent))
+    if (!selectedTile.cards.permanent || !selectedTile.cards.permanent.isMyTurn())
       return;
     if (selectedTile.cards.permanent.tapped())
       return;
 
     // Unit Plan Attack
-    MatchAction.setState(MatchAction.StatePlanAttack);
+    UserAction.setState(UserAction.StatePlanAttack);
 
     function setAttackSelectionTile(x, y) {
       const target = Board.getPermanentAt(x, y);

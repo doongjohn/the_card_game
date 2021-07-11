@@ -310,8 +310,12 @@ class CardPermanent extends Card {
       });
 
       // update match action state
-      MatchAction.setState(MatchAction.StatePlanPermanentSpawn);
+      UserAction.setState(UserAction.StatePlanPermanentSpawn);
     });
+  }
+
+  isMyTurn() {
+    return this.data.team == Match.turn;
   }
 
   spawnBoardObj(x, y) {

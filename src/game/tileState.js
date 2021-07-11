@@ -49,7 +49,7 @@ class TileStateNormal extends TileState {
     Match.turnPlayer.selectedTile.fsm.setState(TileStateSelected);
 
     // update match action state
-    MatchAction.setState(MatchAction.StateView);
+    UserAction.setState(UserAction.StateView);
   }
 }
 
@@ -80,7 +80,7 @@ class TileStateSpawnPermanentSelection extends TileState {
     });
 
     // update match action state
-    MatchAction.setState(MatchAction.StateView);
+    UserAction.setState(UserAction.StateView);
   }
 }
 
@@ -106,7 +106,7 @@ class TileStateChangePosSelection extends TileState {
     });
 
     // update match action state
-    MatchAction.setState(MatchAction.StateView);
+    UserAction.setState(UserAction.StateView);
   }
 }
 
@@ -125,7 +125,7 @@ class TileStateMoveSelection extends TileStateChangePosSelection {
     });
 
     // update match action state
-    MatchAction.setState(MatchAction.StateView);
+    UserAction.setState(UserAction.StateView);
   }
 }
 
@@ -152,6 +152,6 @@ class TileStateAttackSelection extends TileState {
     });
 
     // update match action state
-    MatchAction.setState(MatchAction.StateView);
+    UserAction.setState(UserAction.StateView);
   }
 }
