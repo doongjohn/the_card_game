@@ -1,27 +1,37 @@
 # DEV Note
 
-## TODO:
+## TODO (short term):
 
 - [x] Implement Sprite loading
+  - [ ] Implement async Sprite loading (maybe not?)
 - [x] Implement Sprite animation
 - [x] Implement Tile state
 - [x] Implement Basic Turn
 - [x] Implement Basic Movement
   - [x] Implement movement tween
-- [x] Implement Basic Attack
-- [ ] Implement Basic Counter Attack
-- [ ] Implement Basic Effect Chain
-- [ ] Implement Basic UI
-  - [ ] Detailed Card Info
-  - [x] Hand
+- [x] Implement Attack
+- [ ] Implement Counter Attack
+- [ ] Implement Effect (partially done)
+- [ ] Implement Effect Chain
+- [ ] Implement UI
+  - [x] Detailed Card Info
+  - [x] Hand (improvement is needed)
   - [ ] End Turn
   - [ ] Commander HP
   - [ ] Mana
-- [ ] Implement Hand (max 7)
-- [ ] Implement Card Placement
-- [ ] Implement Deck
+- [x] Implement Hand
+- [x] Implement Card Placement
 - [ ] Implement Card data base
-- [ ] Use proper mouse input
+- [ ] Implement Deck
+- [ ] Implement Command pattern (work in progress)
+- [ ] upgrade mouse input (seperate right / left click)
+
+## TODO (long term):
+
+- [ ] Add proper original arts
+- [ ] Implement multiplayer
+- [ ] Add game replay
+- [ ] Add spectator mode
 
 ## Reminder
 

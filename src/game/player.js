@@ -12,11 +12,10 @@ class Player {
     this.hand = [];
     this.selectedTile = null;
     this.selectedCard = null;
-
     this.handUI = new HandUI(this);
   }
 
-  initHand() {
+  handInit() {
     this.hand.push(
       new CardPermanent(this.team, 'RagnoraTheRelentless'),
       new CardPermanent(this.team, 'ZirAnSunforge'),
@@ -28,18 +27,18 @@ class Player {
       new CardPermanent(this.team, 'ZirAnSunforge'),
       new CardPermanent(this.team, 'ZirAnSunforge'),
       new CardPermanent(this.team, 'ZirAnSunforge'),
-      new CardPermanent(this.team, 'ZirAnSunforge'),
+      new CardPermanent(this.team, 'RagnoraTheRelentless'),
     );
     this.handUI.init();
   }
-  addToHand() {
+  handAdd() {
     if (arguments.length > 1)
       this.hand.push(...arguments);
     else
       this.hand.push(arguments[0]);
     this.handUI.update();
   }
-  removeFromHand(card) {
+  handRemove(card) {
     let i = 0;
     for (const c of this.hand) {
       if (card == c) {
@@ -65,7 +64,6 @@ class HandUI {
     this.maxWidth = this.width * (HandUI.maxCard - 1);
   }
 
-  // TODO:
   getAlignData() {
     return this.hand.length <= HandUI.maxCard ?
       {
@@ -79,17 +77,8 @@ class HandUI {
   }
 
   init() {
-    const { startPos, gap } = this.hand.length <= HandUI.maxCard ?
-      {
-        startPos: -this.width / 2 * (this.hand.length - 1),
-        gap: this.width
-      } :
-      {
-        startPos: -this.maxWidth / 2,
-        gap: this.maxWidth / (this.hand.length - 1)
-      };
-
     // align cards
+    const { startPos, gap } = this.getAlignData();
     let i = 0;
     for (const card of this.hand) {
       card.spawnable = true;
@@ -107,17 +96,8 @@ class HandUI {
       card.cardPaper.hide();
   }
   update() {
-    const { startPos, gap } = this.hand.length <= HandUI.maxCard ?
-      {
-        startPos: -this.width / 2 * (this.hand.length - 1),
-        gap: this.width
-      } :
-      {
-        startPos: -this.maxWidth / 2,
-        gap: this.maxWidth / (this.hand.length - 1)
-      };
-
     // align cards
+    const { startPos, gap } = this.getAlignData();
     let i = 0;
     for (const card of this.hand) {
       card.spawnable = true;
@@ -151,7 +131,9 @@ class HandUI {
       gap: this.maxWidth / (this.hand.length - 1)
     };
     const offset = this.width - gap;
-    for (let i = this.hand.indexOf(card) + 1; i < this.hand.length; ++i) {
+    const startIndex = this.hand.indexOf(card) + 1;
+
+    for (let i = startIndex; i < this.hand.length; ++i) {
       const card = this.hand[i];
       card.cardPaper.tween?.remove();
       card.cardPaper.tween = Game.scene.tweens.add({

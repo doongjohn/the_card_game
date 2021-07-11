@@ -12,19 +12,15 @@ class Match {
 
   static init() {
     MatchInput.init();
-    MatchAction.init();
 
     // init commanders
+    // TODO: track commanders hp and determine the game result
     Match.player1.commander = new CardPermanent(Team.P1, 'ZirAnSunforge');
     Match.player2.commander = new CardPermanent(Team.P2, 'RagnoraTheRelentless');
 
-    // init card info ui
-    CardInfoUI.init();
-
     // TEST: init players hand
-    Match.player1.initHand();
-    Match.player2.initHand();
-    Match.oppsPlayer.handUI.hide();
+    Match.player1.handInit();
+    Match.player2.handInit();
 
     // TEST: test effect
     const onDealDamageEffectP1 = new Effect(
@@ -34,7 +30,12 @@ class Match {
     );
     EffectCallback.add("onDealDamage", onDealDamageEffectP1);
 
-    // TEMP: help text
+    // init ui
+    CardInfoUI.init();
+    Match.turnPlayer.handUI.show();
+    Match.oppsPlayer.handUI.hide();
+
+    // TEMP UI: help text
     Game.spawn.text(10, 5,
       `[SPACE]: end turn
 [P]: teleport
@@ -45,8 +46,7 @@ class Match {
       font: '20px consolas',
       align: 'left'
     });
-
-    // TEMP: turn text
+    // TEMP UI: turn text
     Game.spawn.rectangle(Game.center.x, 10, 200, 100, 0x000000);
     Match.turnText = Game.spawn.text(Game.center.x, 10, 'P1\'s turn', {
       color: '#ffffff',
@@ -58,48 +58,34 @@ class Match {
   static isThisTurn(permanent) {
     return permanent.data.team == Match.turn;
   }
-
-  static nextTurn() {
-    // deselect all
-    Match.turnPlayer.selectedCard = null;
-    Match.turnPlayer.selectedTile = null;
-
-    // cycle turn
-    Match.oppsPlayer = Match.turnPlayer;
-    Match.turn = (Match.turn % 2) + 1;
-    Match.turnPlayer = Match.players[Match.turn - 1];
-
-    // update ui
-    Match.turnText.text = `P${Match.turn}'s turn`;
-    Match.turnPlayer.handUI.update();
-    Match.turnPlayer.handUI.show();
-    Match.oppsPlayer.handUI.hide();
-
-    // untap permanents
-    Board.permanents.forEach(permanent => permanent?.resetOnTurnStart());
-
-    // reset tile state
-    Board.setTileStateAll(TileStateNormal);
-  }
 }
 
 class MatchInput {
-  static keys = null;
-
   static init() {
     MatchInput.keys = Game.scene.input.keyboard.addKeys({
       cancel: 'esc',
       confirm: 'enter',
 
-      // test command
+      // test input
       unitTeleport: 'p',
       unitTap: 't',
 
-      // game command
+      // game input
       endTurn: 'space',
       unitMove: 'm',
       unitAttack: 'a',
     });
+
+    // MatchInput.keys.confirm.on('down', () => {
+    //   // TODO: maybe this key is unnecessary?
+    //   console.log('enter key pressed!');
+    // });
+    MatchInput.keys.cancel.on('down', () => new UserCancel().execute());
+    MatchInput.keys.endTurn.on('down', () => new UserEndTurn().execute());
+    MatchInput.keys.unitTeleport.on('down', MatchAction.onUnitTeleport);
+    MatchInput.keys.unitTap.on('down', MatchAction.onUnitTap);
+    MatchInput.keys.unitMove.on('down', MatchAction.onUnitMove);
+    MatchInput.keys.unitAttack.on('down', MatchAction.onUnitAttack);
   }
 }
 
@@ -111,33 +97,10 @@ class MatchAction {
   static StateCounterAttack = 4;
   static StatePlanPermanentSpawn = 5;
   static state = MatchAction.StateEmpty;
-
-  static init() {
-    MatchInput.keys.cancel.on('down', MatchAction.cancleState);
-    MatchInput.keys.confirm.on('down', () => {
-      // TODO: maybe this key is unnecessary?
-      console.log('enter key pressed!');
-    });
-    MatchInput.keys.endTurn.on('down', Match.nextTurn);
-    MatchInput.keys.unitTeleport.on('down', MatchAction.onUnitTeleport);
-    MatchInput.keys.unitTap.on('down', MatchAction.onUnitTap);
-    MatchInput.keys.unitMove.on('down', MatchAction.onUnitMove);
-    MatchInput.keys.unitAttack.on('down', MatchAction.onUnitAttack);
-  }
+  static commands = [];
 
   static setState(state) {
     MatchAction.state = state;
-  }
-  static cancleState() {
-    if (MatchAction.state == MatchAction.StateEmpty)
-      return;
-    if (MatchAction.state == MatchAction.StateView) {
-      Board.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
-      MatchAction.setState(MatchAction.StateEmpty);
-    } else {
-      Board.tiles.forEach(tile => { if (tile != Match.turnPlayer.selectedTile) tile.fsm.setState(TileStateNormal) });
-      MatchAction.setState(MatchAction.StateView);
-    }
   }
 
   static onUnitTeleport() {

@@ -71,7 +71,7 @@ class TileStateSpawnPermanentSelection extends TileState {
     Board.spawnPermanentAt(obj.pos.x, obj.pos.y, Match.turnPlayer.selectedCard);
 
     // remove from hand
-    Match.turnPlayer.removeFromHand(Match.turnPlayer.selectedCard);
+    Match.turnPlayer.handRemove(Match.turnPlayer.selectedCard);
 
     // update tile state
     Board.tiles.forEach(tile => {
