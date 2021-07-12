@@ -66,7 +66,6 @@ class Board {
 
     // update array
     Board.permanents[toIndex(x, y)] = card;
-    Board.tiles[toIndex(x, y)].updateCards();
   }
   static movePermanentAt(x, y, newX, newY) {
     const curPos = toIndex(x, y);
@@ -75,10 +74,6 @@ class Board {
     // swap permanent
     Board.permanents[newPos] = Board.permanents[curPos];
     Board.permanents[curPos] = null;
-
-    // update tile
-    Board.tiles[curPos].updateCards();
-    Board.tiles[newPos].updateCards();
   }
   static removePermanentAt(x, y) {
     // check permanent
@@ -87,12 +82,30 @@ class Board {
 
     // remove from board
     Board.permanents[toIndex(x, y)] = null;
-    Board.getTileAt(x, y).updateCards();
 
     // destroy visual
     card.boardObj.destroy();
   }
 };
+
+class BoardData {
+  constructor() {
+    this.permanents = [...Board.permanents];
+    this.tileStates = [];
+    for (const tile of Board.tiles) {
+      this.tileStates.push(tile.fsm.curState);
+    }
+  }
+  restore() {
+    Board.permanents = [...this.permanents];
+    let i = 0;
+    for (const tile of Board.tiles) {
+      tile.fsm.setStateProto(this.tileStates[i++]);
+      // FIXME: cannot tp again after undo
+      tile.getPermanent()?.setPos(tile.pos.x, tile.pos.y);
+    }
+  }
+}
 
 function toCoord(index) {
   const result = { x: -1, y: -1 };

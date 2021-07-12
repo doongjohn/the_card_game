@@ -16,8 +16,12 @@ class Match {
 
     // init commanders
     // TODO: track commanders hp and determine the game result
-    Match.player1.commander = new CardPermanent(Team.P1, 'ZirAnSunforge');
-    Match.player2.commander = new CardPermanent(Team.P2, 'RagnoraTheRelentless');
+    Match.player1.commander = new CardPermanent(Team.P1, 'ZirAnSunforge', -1);
+    Match.player2.commander = new CardPermanent(Team.P2, 'RagnoraTheRelentless', -1);
+
+    // TEST: init players card
+    Match.player1.cardInit();
+    Match.player2.cardInit();
 
     // TEST: init players hand
     Match.player1.handInit();
@@ -72,41 +76,21 @@ class MatchData {
 
 // TODO: rafactor these functions to command pattern
 class MatchAction {
-  static onUnitTeleport() {
-    if (!Match.turnPlayer.selectedTile || !Match.turnPlayer.selectedTile.cards.permanent)
-      return;
-
-    // Unit Plan Move
-    UserAction.setState(UserAction.StatePlanMove);
-
-    // update tile state
-    Board.tiles.forEach(tile => {
-      if (tile.fsm.curState.compare(TileStateSelected))
-        return;
-      if (tile.cards.permanent)
-        tile.fsm.setState(TileStateNoInteraction);
-      else
-        tile.fsm.setState(TileStateChangePosSelection);
-    });
-  }
   static onUnitTap() {
-    if (!Match.turnPlayer.selectedTile.cards.permanent)
-      return;
-
-    const permanent = Match.turnPlayer.selectedTile.cards.permanent;
-    if (permanent.tapped())
-      permanent.untap();
-    else
-      permanent.tap();
+    const permanent = tile.getPermanent();
+    if (permanent) {
+      if (permanent.tapped())
+        permanent.untap();
+      else
+        permanent.tap();
+    }
   }
   static onUnitMove() {
-    if (!Match.turnPlayer.selectedTile || !Match.turnPlayer.selectedTile.cards.permanent)
-      return;
+    const permanent = Match.turnPlayer.selectedTile?.getPermanent();
+    if (!permanent) return;
 
-    const selected = Match.turnPlayer.selectedTile;
-    if (!selected.cards.permanent.isMyTurn()
-      || selected.cards.permanent.tapped()
-      || !selected.cards.permanent.canMove())
+    const tile = Match.turnPlayer.selectedTile;
+    if (!permanent.isMyTurn() || permanent.tapped() || !permanent.canMove())
       return;
 
     // Unit Plan Move
@@ -117,10 +101,10 @@ class MatchAction {
         Board.getTileAt(x, y)?.fsm.setState(TileStateMoveSelection);
     }
 
-    const u = { x: selected.pos.x, y: selected.pos.y - 1 };
-    const d = { x: selected.pos.x, y: selected.pos.y + 1 };
-    const r = { x: selected.pos.x + 1, y: selected.pos.y };
-    const l = { x: selected.pos.x - 1, y: selected.pos.y };
+    const u = { x: tile.pos.x, y: tile.pos.y - 1 };
+    const d = { x: tile.pos.x, y: tile.pos.y + 1 };
+    const r = { x: tile.pos.x + 1, y: tile.pos.y };
+    const l = { x: tile.pos.x - 1, y: tile.pos.y };
 
     const blockedR = Board.getPermanentAt(r.x, r.y);
     const blockedL = Board.getPermanentAt(l.x, l.y);
@@ -156,22 +140,18 @@ class MatchAction {
     });
   }
   static onUnitAttack() {
-    if (!Match.turnPlayer.selectedTile)
-      return;
+    const permanent = Match.turnPlayer.selectedTile?.getPermanent();
+    if (!permanent) return;
+    if (!permanent.isMyTurn() || permanent.tapped()) return;
 
-    const selectedTile = Match.turnPlayer.selectedTile;
-
-    if (!selectedTile.cards.permanent || !selectedTile.cards.permanent.isMyTurn())
-      return;
-    if (selectedTile.cards.permanent.tapped())
-      return;
+    const tile = Match.turnPlayer.selectedTile;
 
     // Unit Plan Attack
     UserAction.setState(UserAction.StatePlanAttack);
 
     function setAttackSelectionTile(x, y) {
       const target = Board.getPermanentAt(x, y);
-      if (target && target.data.team != selectedTile.cards.permanent.data.team) {
+      if (target && target.data.team != permanent.data.team) {
         Board.getTileAt(x, y).fsm.setState(TileStateAttackSelection);
         return 1;
       }
@@ -179,10 +159,10 @@ class MatchAction {
     }
 
     function findNearByEnemy() {
-      const u = { x: selectedTile.pos.x, y: selectedTile.pos.y - 1 };
-      const d = { x: selectedTile.pos.x, y: selectedTile.pos.y + 1 };
-      const r = { x: selectedTile.pos.x + 1, y: selectedTile.pos.y };
-      const l = { x: selectedTile.pos.x - 1, y: selectedTile.pos.y };
+      const u = { x: tile.pos.x, y: tile.pos.y - 1 };
+      const d = { x: tile.pos.x, y: tile.pos.y + 1 };
+      const r = { x: tile.pos.x + 1, y: tile.pos.y };
+      const l = { x: tile.pos.x - 1, y: tile.pos.y };
 
       let count = 0;
       count += setAttackSelectionTile(r.x, r.y);

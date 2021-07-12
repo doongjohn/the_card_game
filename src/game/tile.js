@@ -9,18 +9,12 @@ class TileColor {
 }
 
 class Tile {
-  static hoveringTile = null;
+  static hoveringTile = null; // run onHoverEnter on state change
 
   constructor(index, size, gapSize) {
     this.gameObject = this.initGameObject(size, gapSize);
     this.index = index;
     this.pos = toCoord(index);
-    this.cards = {
-      permanent: null,
-      spell: null,
-      rune: null,
-      land: null
-    };
     this.fsm = new FSM(this, TileStateNormal, (obj) => {
       obj.setHoverEnter(() => {
         Tile.hoveringTile = obj;
@@ -33,6 +27,12 @@ class Tile {
       if (Tile.hoveringTile == obj)
         Tile.hoveringTile.fsm.curState.onHoverEnter(obj);
     });
+
+    // get cards
+    this.getPermanent = () => Board.permanents[index];
+    // this.getLand = () => Board.lands[index];
+    // this.getSpell = () => Board.spells[index];
+    // this.getRune = () => Board.runes[index];
   }
 
   initGameObject(size, gapSize) {
@@ -52,14 +52,6 @@ class Tile {
     ).setInteractive().on('pointerdown', () => this.fsm.curState.onClick(this));
 
     return Game.spawn.container(0, 0, [this.tileBg, this.tileFg]);
-  }
-
-  updateCards() {
-    this.cards.permanent = Board.getPermanentAt(this.pos.x, this.pos.y);
-    // TODO: update all cards
-    // this.cards.spell = Board.getSpellAt(this.pos.x, this.pos.y);
-    // this.cards.rune = Board.getRuneAt(this.pos.x, this.pos.y);
-    // this.cards.land = Board.getLandAt(this.pos.x, this.pos.y);
   }
 
   setHoverEnter(func) {

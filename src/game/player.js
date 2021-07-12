@@ -8,6 +8,7 @@ class Player {
   constructor(team) {
     this.team = team;
     this.commander = null;
+    this.allCards = []; // this is used when user undo and the system wants the old card because cadrIndex will not change
     this.deck = [];
     this.hand = [];
     this.selectedTile = null;
@@ -15,20 +16,31 @@ class Player {
     this.handUI = new HandUI(this);
   }
 
-  handInit() {
-    this.hand.push(
-      new CardPermanent(this.team, 'RagnoraTheRelentless'),
-      new CardPermanent(this.team, 'ZirAnSunforge'),
-      new CardPermanent(this.team, 'RagnoraTheRelentless'),
-      new CardPermanent(this.team, 'ZirAnSunforge'),
-      new CardPermanent(this.team, 'RagnoraTheRelentless'),
-      new CardPermanent(this.team, 'ZirAnSunforge'),
-      new CardPermanent(this.team, 'RagnoraTheRelentless'),
-      new CardPermanent(this.team, 'ZirAnSunforge'),
-      new CardPermanent(this.team, 'ZirAnSunforge'),
-      new CardPermanent(this.team, 'ZirAnSunforge'),
-      new CardPermanent(this.team, 'RagnoraTheRelentless'),
+  cardInit() {
+    // TODO: read cards from user deck
+    let i = 0;
+    this.allCards.push(
+      new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
+      new CardPermanent(this.team, 'ZirAnSunforge', i++),
+      new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
+      new CardPermanent(this.team, 'ZirAnSunforge', i++),
+      new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
+      new CardPermanent(this.team, 'ZirAnSunforge', i++),
+      new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
+      new CardPermanent(this.team, 'ZirAnSunforge', i++),
+      new CardPermanent(this.team, 'ZirAnSunforge', i++),
+      new CardPermanent(this.team, 'ZirAnSunforge', i++),
+      new CardPermanent(this.team, 'RagnoraTheRelentless', i++)
     );
+
+    // copy all cards to deck
+    // TODO: shuffle the cards
+    this.deck.push(...this.allCards);
+  }
+
+  handInit() {
+    // TODO: pick some cards from the top of the deck
+    this.hand.push(...this.deck);
     this.handUI.init();
   }
   handAdd() {
@@ -50,6 +62,21 @@ class Player {
       ++i;
     }
     this.handUI.update();
+  }
+}
+
+class PlayerData {
+  constructor() {
+    this.p1_deck = [...Match.player1.deck];
+    this.p1_hand = [...Match.player1.hand];
+    this.p2_deck = [...Match.player2.deck];
+    this.p2_hand = [...Match.player2.hand];
+  }
+  restore() {
+    Match.player1.deck = [this.p1_deck];
+    Match.player1.hand = [this.p1_hand];
+    Match.player2.deck = [this.p2_deck];
+    Match.player2.hand = [this.p2_hand];
   }
 }
 

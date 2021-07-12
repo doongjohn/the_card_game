@@ -4,16 +4,16 @@ class MatchStateData {
     UserAction.pushCommand(cmd);
     this.matchData = new MatchData();
     this.userActionData = new UserActionData();
-    // TODO: save player state
-    // TODO: save board state
+    this.playerData = new PlayerData();
+    this.boardData = new BoardData();
     // TODO: save ui state
   }
   restore() {
     UserAction.popCommand();
     this.matchData.restore();
     this.userActionData.restore();
-    // TODO: restore player state
-    // TODO: restore board state
+    this.playerData.restore();
+    this.boardData.restore();
     // TODO: restore ui state
   }
 }
@@ -70,5 +70,35 @@ class CmdEndTurn {
     Match.turnPlayer.handUI.update();
     Match.turnPlayer.handUI.show();
     Match.oppsPlayer.handUI.hide();
+  }
+}
+
+class CmdUnitPlanTeleport {
+  execute() {
+    const permanent = Match.turnPlayer.selectedTile?.getPermanent();
+    if (!permanent) return;
+
+    this.data = new MatchStateData(this);
+
+    // Unit Plan Move
+    UserAction.setState(UserAction.StatePlanMove);
+
+    // update tile state
+    Board.tiles.forEach(tile => {
+      if (!tile.fsm.curState.compare(TileStateSelected))
+        tile.fsm.setState(tile.getPermanent() ? TileStateNoInteraction : TileStateChangePosSelection);
+    });
+  }
+  undo() {
+    this.data.restore();
+  }
+}
+
+class CmdUnitTeleport {
+  execute() {
+    this.data = new MatchStateData(this);
+  }
+  undo() {
+    this.data.restore();
   }
 }

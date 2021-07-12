@@ -22,13 +22,15 @@ class TileStateSelected extends TileState {
     obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
     obj.tileFg.setFillStyle(0xffbe0d, 0.25);
 
-    if (obj.cards.permanent) {
-      CardInfoUI.updateInfo(obj.cards.permanent);
+    const permanent = obj.getPermanent();
+    if (permanent) {
+      CardInfoUI.updateInfo(permanent);
       CardInfoUI.show();
     }
   }
   onExit(obj) {
-    if (obj.cards.permanent)
+    const permanent = obj.getPermanent();
+    if (permanent)
       CardInfoUI.hide();
   }
   onHoverEnter(obj) { }
@@ -94,7 +96,7 @@ class TileStateChangePosSelection extends TileState {
   }
   onClick(obj) {
     // update selected tile
-    Match.turnPlayer.selectedTile.cards.permanent.setPos(obj.pos.x, obj.pos.y);
+    Match.turnPlayer.selectedTile.getPermanent().setPos(obj.pos.x, obj.pos.y);
     Match.turnPlayer.selectedTile = obj;
 
     // update tile state
@@ -113,7 +115,7 @@ class TileStateChangePosSelection extends TileState {
 class TileStateMoveSelection extends TileStateChangePosSelection {
   onClick(obj) {
     // update selected tile
-    Match.turnPlayer.selectedTile.cards.permanent.moveTo(obj.pos.x, obj.pos.y);
+    Match.turnPlayer.selectedTile.getPermanent().moveTo(obj.pos.x, obj.pos.y);
     Match.turnPlayer.selectedTile = obj;
 
     // update tile state
@@ -139,11 +141,7 @@ class TileStateAttackSelection extends TileState {
   }
   onClick(obj) {
     // attcak target permanent
-    Match.turnPlayer.selectedTile.cards.permanent.doAttack(obj.cards.permanent);
-
-    // update tile cards
-    Match.turnPlayer.selectedTile.updateCards();
-    obj.updateCards();
+    Match.turnPlayer.selectedTile.getPermanent().doAttack(obj.getPermanent());
 
     // update tile state
     Board.tiles.forEach(tile => {

@@ -21,10 +21,18 @@ class FSM {
     this.onStateChange(this.obj);
   }
 
+  setStateProto(prototype) {
+    if (prototype == this.curState) return;
+    this.curState.onExit(this.obj);
+    this.prevState = this.curState;
+    this.curState = prototype;
+    this.curState.onEnter(this.obj);
+    this.onStateChange(this.obj);
+  }
   setState(state) {
     if (state.prototype == this.curState) return;
     this.curState.onExit(this.obj);
-    this.prevState = this.curState.prototype;
+    this.prevState = this.curState;
     this.curState = state.prototype;
     this.curState.onEnter(this.obj);
     this.onStateChange(this.obj);

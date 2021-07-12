@@ -41,8 +41,8 @@ class UserInput {
     UserInput.keys = Game.scene.input.keyboard.addKeys({
       // test input
       undo: 'u',
-      unitTeleport: 'p',
       unitTap: 't',
+      unitTeleport: 'p',
 
       // game input
       confirm: 'enter',
@@ -53,8 +53,8 @@ class UserInput {
     });
 
     UserInput.keys.undo.on('down', () => UserAction.undo());
-    UserInput.keys.unitTeleport.on('down', MatchAction.onUnitTeleport);
     UserInput.keys.unitTap.on('down', MatchAction.onUnitTap);
+    UserInput.keys.unitTeleport.on('down', () => new CmdUnitPlanTeleport().execute());
 
     UserInput.keys.cancel.on('down', () => new CmdCancel().execute());
     UserInput.keys.endTurn.on('down', () => new CmdEndTurn().execute());

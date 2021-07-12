@@ -200,14 +200,15 @@ class CardPaper {
 }
 
 class Card {
-  constructor(data) {
+  constructor(data, cardIndex) {
     this.data = data;
+    this.cardIndex = cardIndex;
     this.cardPaper = new CardPaper(data);
   }
 }
 
 class CardPermanent extends Card {
-  constructor(team, assetName) {
+  constructor(team, assetName, cardIndex) {
     // TODO: use a data base (json file?)
     switch (assetName) {
       case 'RagnoraTheRelentless':
@@ -218,7 +219,7 @@ class CardPermanent extends Card {
           text: 'This card is STRONG!',
           health: 40,
           attack: 2,
-        }));
+        }), cardIndex);
         break;
 
       case 'ArgeonHighmayne':
@@ -229,7 +230,7 @@ class CardPermanent extends Card {
           text: 'Yay, kill me.',
           health: 40,
           attack: 2,
-        }));
+        }), cardIndex);
         break;
 
       case 'ZirAnSunforge':
@@ -240,7 +241,7 @@ class CardPermanent extends Card {
           text: 'Fuck Lyonar',
           health: 99,
           attack: 5,
-        }));
+        }), cardIndex);
         break;
 
       case 'RazorcragGolem':
@@ -251,7 +252,7 @@ class CardPermanent extends Card {
           text: 'This card sucks. wow wow wow wow wowowowowowo.',
           health: 3,
           attack: 2,
-        }));
+        }), cardIndex);
         break;
     }
 
@@ -305,7 +306,8 @@ class CardPermanent extends Card {
       // update tile state
       Board.tiles.forEach(tile => {
         // spawn this card on the board
-        if (!tile.cards.permanent)
+        const permanent = tile.getPermanent();
+        if (!permanent)
           tile.fsm.setState(TileStateSpawnPermanentSelection);
       });
 
