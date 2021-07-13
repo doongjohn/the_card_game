@@ -90,20 +90,35 @@ class Board {
 
 class BoardData {
   constructor() {
-    this.permanents = [...Board.permanents];
     this.tileStates = [];
+    this.permanents = [...Board.permanents];
+    this.boardObjData = [];
     for (const tile of Board.tiles) {
       this.tileStates.push(tile.fsm.curState);
+      const permanent = this.permanents[tile.index];
+      if (!permanent) {
+        this.boardObjData.push(null);
+      } else {
+        const data = new BoardObjData(permanent.boardObj.data);
+        data.moveCount = permanent.boardObj.data.moveCount;
+        data.tapped = permanent.boardObj.data.tapped;
+        data.pos = permanent.boardObj.data.pos;
+        this.boardObjData.push(data);
+      }
     }
   }
   restore() {
-    Board.permanents = [...this.permanents];
-    let i = 0;
-    for (const tile of Board.tiles) {
-      tile.fsm.setStateProto(this.tileStates[i++]);
-      // FIXME: cannot tp again after undo
-      tile.getPermanent()?.setPos(tile.pos.x, tile.pos.y);
+    for (const i in Board.tiles) {
+      const tile = Board.tiles[i];
+      tile.fsm.setStateProto(this.tileStates[i]);
+      const permanent = this.permanents[tile.index];
+      if (permanent) {
+        permanent.boardObj.data.moveCount = this.boardObjData[i].moveCount;
+        this.boardObjData[i].tapped ? permanent.tap() : permanent.untap();
+        permanent.setPos(tile.pos.x, tile.pos.y);
+      }
     }
+    Board.permanents = [...this.permanents];
   }
 }
 

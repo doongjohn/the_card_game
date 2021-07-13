@@ -29,10 +29,10 @@ class Tile {
     });
 
     // get cards
-    this.getPermanent = () => Board.permanents[index];
-    // this.getLand = () => Board.lands[index];
-    // this.getSpell = () => Board.spells[index];
-    // this.getRune = () => Board.runes[index];
+    this.getPermanent = () => Board.permanents[this.index];
+    // this.getLand = () => Board.lands[this.index];
+    // this.getSpell = () => Board.spells[this.index];
+    // this.getRune = () => Board.runes[this.index];
   }
 
   initGameObject(size, gapSize) {

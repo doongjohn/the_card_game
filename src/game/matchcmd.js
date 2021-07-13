@@ -1,4 +1,3 @@
-// TODO: implement command pattern
 class MatchStateData {
   constructor(cmd) {
     UserAction.pushCommand(cmd);
@@ -23,17 +22,17 @@ class CmdCancel {
     if (UserAction.state == UserAction.StateEmpty)
       return;
 
-    this.data = new MatchStateData(this);
     if (UserAction.state == UserAction.StateView) {
       Board.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
       UserAction.setState(UserAction.StateEmpty);
     } else {
       Board.tiles.forEach(tile => { if (tile != Match.turnPlayer.selectedTile) tile.fsm.setState(TileStateNormal) });
       UserAction.setState(UserAction.StateView);
+      UserAction.popCommand();
     }
   }
   undo() {
-    this.data.restore();
+
   }
 }
 
@@ -73,12 +72,23 @@ class CmdEndTurn {
   }
 }
 
+class CmdUnitTap {
+  execute() {
+    this.data = new MatchStateData(this);
+
+    const permanent = Match.turnPlayer.selectedTile.getPermanent();
+    if (permanent)
+      permanent.tapped() ? permanent.untap() : permanent.tap();
+  }
+  undo() {
+    this.data.restore();
+  }
+}
+
 class CmdUnitPlanTeleport {
   execute() {
     const permanent = Match.turnPlayer.selectedTile?.getPermanent();
     if (!permanent) return;
-
-    this.data = new MatchStateData(this);
 
     // Unit Plan Move
     UserAction.setState(UserAction.StatePlanMove);
@@ -88,6 +98,9 @@ class CmdUnitPlanTeleport {
       if (!tile.fsm.curState.compare(TileStateSelected))
         tile.fsm.setState(tile.getPermanent() ? TileStateNoInteraction : TileStateChangePosSelection);
     });
+
+    // TODO: split tile and permanent data
+    this.data = new MatchStateData(this);
   }
   undo() {
     this.data.restore();

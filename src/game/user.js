@@ -52,8 +52,9 @@ class UserInput {
       unitAttack: 'a',
     });
 
+    // TODO: better undo design
     UserInput.keys.undo.on('down', () => UserAction.undo());
-    UserInput.keys.unitTap.on('down', MatchAction.onUnitTap);
+    UserInput.keys.unitTap.on('down', () => new CmdUnitTap().execute());
     UserInput.keys.unitTeleport.on('down', () => new CmdUnitPlanTeleport().execute());
 
     UserInput.keys.cancel.on('down', () => new CmdCancel().execute());

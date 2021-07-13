@@ -76,15 +76,6 @@ class MatchData {
 
 // TODO: rafactor these functions to command pattern
 class MatchAction {
-  static onUnitTap() {
-    const permanent = tile.getPermanent();
-    if (permanent) {
-      if (permanent.tapped())
-        permanent.untap();
-      else
-        permanent.tap();
-    }
-  }
   static onUnitMove() {
     const permanent = Match.turnPlayer.selectedTile?.getPermanent();
     if (!permanent) return;
