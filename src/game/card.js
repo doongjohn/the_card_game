@@ -273,9 +273,11 @@ class CardPermanent extends Card {
     this.tweenMovement = null;
   }
 
+  // TODO: refactor
   applyData(data) {
-    this.boardObj.data.moveCount = data.boardObjData[i].moveCount;
-    data.boardObjData[i].tapped ? this.tap() : this.untap();
+    const boardObjData = data.boardObjData[toIndex(data.pos)];
+    this.boardObj.data.moveCount = boardObjData.moveCount;
+    boardObjData.tapped ? this.tap() : this.untap();
     this.setPos(data.pos.x, data.pos.y);
   }
 
