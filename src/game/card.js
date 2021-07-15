@@ -273,6 +273,12 @@ class CardPermanent extends Card {
     this.tweenMovement = null;
   }
 
+  applyData(data) {
+    this.boardObj.data.moveCount = data.boardObjData[i].moveCount;
+    data.boardObjData[i].tapped ? this.tap() : this.untap();
+    this.setPos(data.pos.x, data.pos.y);
+  }
+
   initHover() {
     this.cardPaper.visual.on('pointerover', () => {
       this.originalIndex = Layer.getIndex(Layer.UI, this.cardPaper.visual);

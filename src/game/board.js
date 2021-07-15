@@ -88,14 +88,11 @@ class Board {
   }
 };
 
-class BoardData {
+class BoardPermanentData {
   constructor() {
-    this.tileStates = [];
     this.permanents = [...Board.permanents];
     this.boardObjData = [];
-    for (const tile of Board.tiles) {
-      this.tileStates.push(tile.fsm.curState);
-      const permanent = this.permanents[tile.index];
+    for (const permanent of this.permanents) {
       if (!permanent) {
         this.boardObjData.push(null);
       } else {
@@ -108,17 +105,21 @@ class BoardData {
     }
   }
   restore() {
-    for (const i in Board.tiles) {
-      const tile = Board.tiles[i];
-      tile.fsm.setStateProto(this.tileStates[i]);
-      const permanent = this.permanents[tile.index];
-      if (permanent) {
-        permanent.boardObj.data.moveCount = this.boardObjData[i].moveCount;
-        this.boardObjData[i].tapped ? permanent.tap() : permanent.untap();
-        permanent.setPos(tile.pos.x, tile.pos.y);
-      }
-    }
+    for (const permanent of this.permanents)
+      permanent?.applyData(this);
     Board.permanents = [...this.permanents];
+  }
+}
+
+class BoardData {
+  constructor() {
+    this.tileStates = [];
+    for (const tile of Board.tiles)
+      this.tileStates.push(tile.fsm.curState);
+  }
+  restore() {
+    for (const i in Board.tiles)
+      Board.tiles[i].fsm.setStateProto(this.tileStates[i]);
   }
 }
 

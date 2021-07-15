@@ -1,40 +1,31 @@
 class MatchStateData {
   constructor(cmd) {
+    // push command
     UserAction.pushCommand(cmd);
+
+    // save state
     this.matchData = new MatchData();
     this.userActionData = new UserActionData();
     this.playerData = new PlayerData();
+    this.boardPermanentData = new BoardPermanentData();
     this.boardData = new BoardData();
     // TODO: save ui state
   }
   restore() {
+    // pop command
     UserAction.popCommand();
+
+    // restore state
     this.matchData.restore();
     this.userActionData.restore();
     this.playerData.restore();
+    this.boardPermanentData.restore();
     this.boardData.restore();
     // TODO: restore ui state
   }
 }
 
-class CmdCancel {
-  execute() {
-    if (UserAction.state == UserAction.StateEmpty)
-      return;
-
-    if (UserAction.state == UserAction.StateView) {
-      Board.tiles.forEach(tile => { tile.fsm.setState(TileStateNormal); });
-      UserAction.setState(UserAction.StateEmpty);
-    } else {
-      Board.tiles.forEach(tile => { if (tile != Match.turnPlayer.selectedTile) tile.fsm.setState(TileStateNormal) });
-      UserAction.setState(UserAction.StateView);
-      UserAction.popCommand();
-    }
-  }
-  undo() {
-
-  }
-}
+// TODO: make custom data saver
 
 class CmdEndTurn {
   execute() {

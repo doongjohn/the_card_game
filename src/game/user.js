@@ -57,7 +57,21 @@ class UserInput {
     UserInput.keys.unitTap.on('down', () => new CmdUnitTap().execute());
     UserInput.keys.unitTeleport.on('down', () => new CmdUnitPlanTeleport().execute());
 
-    UserInput.keys.cancel.on('down', () => new CmdCancel().execute());
+    UserInput.keys.cancel.on('down', () => {
+      if (UserAction.state == UserAction.StateEmpty)
+        return;
+
+      if (UserAction.state == UserAction.StateView) {
+        UserAction.setState(UserAction.StateEmpty);
+        for (const tile of Board.tiles)
+          tile.fsm.setState(TileStateNormal);
+      } else {
+        UserAction.setState(UserAction.StateView);
+        UserAction.popCommand();
+        for (const tile of Board.tiles)
+          if (tile != Match.turnPlayer.selectedTile) tile.fsm.setState(TileStateNormal);
+      }
+    });
     UserInput.keys.endTurn.on('down', () => new CmdEndTurn().execute());
     UserInput.keys.unitMove.on('down', MatchAction.onUnitMove);
     UserInput.keys.unitAttack.on('down', MatchAction.onUnitAttack);
