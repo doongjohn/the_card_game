@@ -20,21 +20,28 @@ class UserCommand {
   }
   cmd_undo() {
     UserAction.popCommand();
+    UserAction.execute(CmdCancelAll);
     this.undo();
   }
   execute() { }
   undo() { }
 }
 
+class CmdCancelAll {
+  static execute() {
+    UserAction.setState(UserAction.StateEmpty);
+    Board.setTileStateAll(TileStateNormal);
+    CardInfoUI.hide();
+  }
+}
+
 class CmdCancel {
   static execute() {
-    if (UserAction.state == UserAction.StateEmpty)
+    if (UserAction.state != UserAction.StateEmpty)
       return;
 
     if (UserAction.state == UserAction.StateView) {
-      UserAction.setState(UserAction.StateEmpty);
-      Board.setTileStateAll(TileStateNormal);
-      CardInfoUI.hide();
+      CmdCancelAll.execute();
     } else {
       UserAction.setState(UserAction.StateView);
       for (const tile of Board.tiles)
@@ -130,12 +137,13 @@ class CmdUnitTeleport extends UserCommand {
   }
   undo() {
     this.restoreAll();
-    Match.turnPlayer.selectedTile = null;
-    Board.setTileStateAll(TileStateNormal);
-    CardInfoUI.hide();
+    // Match.turnPlayer.selectedTile = null;
+    // Board.setTileStateAll(TileStateNormal);
+    // CardInfoUI.hide();
   }
 }
 
+// TODO: implement plan move
 class CmdUnitMove extends UserCommand {
   execute(tile) {
     this.save(UserActionData, BoardPermanentData);
@@ -157,13 +165,31 @@ class CmdUnitMove extends UserCommand {
   }
   undo() {
     this.restoreAll();
-    Match.turnPlayer.selectedTile = null;
-    Board.setTileStateAll(TileStateNormal);
-    CardInfoUI.hide();
+    // Match.turnPlayer.selectedTile = null;
+    // Board.setTileStateAll(TileStateNormal);
+    // CardInfoUI.hide();
   }
 }
 
-// !TODO: implement spawn cmd
+class CmdUnitPlanSpawn extends UserCommand {
+  static execute(card) {
+    // update user action state
+    UserAction.setState(UserAction.StatePlanPermanentSpawn);
+
+    // update selected card
+    Match.turnPlayer.selectedTile = null;
+    Match.turnPlayer.selectedCard = card;
+    CardInfoUI.updateInfo(card);
+    CardInfoUI.show();
+
+    // update tile state
+    Board.tiles.forEach(tile => {
+      const permanent = tile.getPermanent();
+      permanent ? tile.fsm.setState(TileStateNoInteraction) : tile.fsm.setState(TileStateSpawnPermanentSelection);
+    });
+  }
+}
+
 class CmdUnitSpawn extends UserCommand {
   execute(tile) {
     this.save(PlayerData, BoardPermanentData);

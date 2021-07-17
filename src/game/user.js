@@ -25,20 +25,10 @@ class UserAction {
   static execute() {
     const cmd = arguments[0];
     const args = [...arguments].slice(1);
-    if (cmd.prototype instanceof UserCommand) {
-      const inst = new cmd();
-      if (arguments.length > 1)
-        inst.cmd_execute(...args);
-      else
-        inst.cmd_execute();
-      return inst;
-    } else {
-      if (arguments.length > 1)
-        cmd.execute(...args);
-      else
-        cmd.execute();
-      return null;
-    }
+    if (cmd.prototype instanceof UserCommand)
+      new cmd().cmd_execute(...args);
+    else
+      cmd.execute(...args);
   }
   static undo() {
     UserAction.getLastCommand()?.cmd_undo();

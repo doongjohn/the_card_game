@@ -224,24 +224,7 @@ class CardInteractPermanent {
     });
   }
   static click(self) {
-    self.cardPaper.visual.on('pointerdown', () => {
-      // update selected card
-      Match.turnPlayer.selectedTile = null;
-      Match.turnPlayer.selectedCard = self;
-      CardInfoUI.updateInfo(self);
-      CardInfoUI.show();
-
-      // plan permanent spawn
-      if (self.spawnable) {
-        // update tile state
-        Board.tiles.forEach(tile => {
-          const permanent = tile.getPermanent();
-          permanent ? tile.fsm.setState(TileStateNoInteraction) : tile.fsm.setState(TileStateSpawnPermanentSelection);
-        });
-        // update match action state
-        UserAction.setState(UserAction.StatePlanPermanentSpawn);
-      }
-    });
+    self.cardPaper.visual.on('pointerdown', () => UserAction.execute(CmdUnitPlanSpawn, self));
   }
 }
 

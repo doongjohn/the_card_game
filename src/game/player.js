@@ -9,11 +9,11 @@ class Player {
     this.team = team;
     this.commander = null;
     this.allCards = []; // this is used when user undo and the system wants the old card because cadrIndex will not change
-    this.deck = [];
+    this.deck = null;
     this.hand = [];
     this.selectedTile = null;
     this.selectedCard = null;
-    this.handUI = new HandUI(this.hand);
+    this.handUI = new HandUI(this);
   }
 
   cardInit() {
@@ -24,24 +24,26 @@ class Player {
       new CardPermanent(this.team, 'ZirAnSunforge', i++),
       new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
       new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
-      new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
-      new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      new CardPermanent(this.team, 'RagnoraTheRelentless', i++)
+      // new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
+      // new CardPermanent(this.team, 'ZirAnSunforge', i++),
+      // new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
+      // new CardPermanent(this.team, 'ZirAnSunforge', i++),
+      // new CardPermanent(this.team, 'ZirAnSunforge', i++),
+      // new CardPermanent(this.team, 'ZirAnSunforge', i++),
+      // new CardPermanent(this.team, 'RagnoraTheRelentless', i++)
     );
 
     // copy all cards to deck
     // TODO: shuffle the cards
-    this.deck.push(...this.allCards);
+    this.deck = [...this.allCards];
   }
 
   handInit() {
     // TODO: pick some cards from the top of the deck
     this.hand.push(...this.deck);
     this.handUI.init();
+    if (this == Match.turnPlayer)
+      this.handUI.show();
   }
   handAdd() {
     if (arguments.length > 1)
@@ -55,8 +57,8 @@ class Player {
     for (const c of this.hand) {
       if (card == c) {
         this.hand[i].cardPaper.hide();
-        // send this card to some container
         this.hand.splice(i, 1);
+        // TODO: send this card to some container
         break;
       }
       ++i;
@@ -68,17 +70,16 @@ class Player {
 class PlayerData {
   constructor() {
     this.p1_deck = [...Match.player1.deck];
-    this.p1_hand = [...Match.player1.hand];
     this.p2_deck = [...Match.player2.deck];
+    this.p1_hand = [...Match.player1.hand];
     this.p2_hand = [...Match.player2.hand];
   }
   restore() {
-    Match.player1.deck = [this.p1_deck];
-    Match.player2.deck = [this.p2_deck];
-    Match.player1.hand = [this.p1_hand];
-    Match.player2.hand = [this.p2_hand];
-    Match.player1.handUI.update();
-    Match.player2.handUI.update();
+    Match.player1.deck = this.p1_deck;
+    Match.player2.deck = this.p2_deck;
+    Match.player1.hand = this.p1_hand;
+    Match.player2.hand = this.p2_hand;
+    Match.turnPlayer.handUI.update();
   }
 }
 
@@ -86,8 +87,9 @@ class HandUI {
   static maxCard = 5;
   static y = 530;
 
-  constructor(hand) {
-    this.hand = hand;
+  constructor(player) {
+    this.player = player;
+    this.hand = this.player.hand;
     this.width = 250 + 10; // CardPaper width + gap
     this.maxWidth = this.width * (HandUI.maxCard - 1);
   }
@@ -105,12 +107,14 @@ class HandUI {
   }
 
   init() {
+    // update hand
+    this.hand = this.player.hand;
+
     // align cards
     const { startPos, gap } = this.getAlignData();
     let i = 0;
     for (const card of this.hand) {
       card.spawnable = true;
-      card.cardPaper.show();
       card.cardPaper.visual.x = startPos + (gap * i++);
       card.cardPaper.visual.y = HandUI.y;
     }
@@ -124,6 +128,9 @@ class HandUI {
       card.cardPaper.hide();
   }
   update() {
+    // update hand
+    this.hand = this.player.hand;
+
     // align cards
     const { startPos, gap } = this.getAlignData();
     let i = 0;
