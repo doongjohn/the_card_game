@@ -31,11 +31,13 @@ class Board {
   }
 
   static gridToWorldPos(x, y) {
+    // convert grid position to world position
     const tile = Board.getTileAt(x, y);
     return { x: tile.gameObject.x, y: tile.gameObject.y };
   }
 
   static occupied(x, y, arrays) {
+    // check if a tile at x, y is occupied
     const index = toIndex(x, y);
     for (const array of arrays)
       if (array[index]) return true;
@@ -43,85 +45,47 @@ class Board {
   }
 
   static getTileAt(x, y) {
+    // returns a tile object at x, y
     const index = toIndex(x, y);
-    return (index < 0 || index >= Board.size.x * Board.size.y) ? null : Board.tiles[index];
+    return index < 0 || index >= Board.tiles.length ? null : Board.tiles[index];
   }
   static setTileStateAll(state) {
+    // set every tile's state
     for (const tile of Board.tiles)
       tile.fsm.setState(state);
   }
 
   static getPermanentAt(x, y) {
+    // returns a permanent at x, y
     const index = toIndex(x, y);
-    return (index < 0 || index >= Board.size.x * Board.size.y) ? null : Board.permanents[index];
+    return index < 0 || index >= Board.tiles.length ? null : Board.permanents[index];
   }
   static spawnPermanentAt(x, y, card) {
+    // spawns a boardObj at x, y and returns a boardObj
     if (Board.occupied(x, y, [Board.permanents])) {
-      console.log("Can't spawn a permanent here! (this tile is occupied)");
-      return;
+      console.log(`Can't spawn a permanent here! (tile:[${x}, ${y}] is already occupied)`);
+      return null;
+    } else {
+      Board.permanents[toIndex(x, y)] = card;
+      return card.spawnBoardObj(x, y);
     }
-
-    // spawn board obj
-    card.spawnBoardObj(x, y);
-
-    // update array
-    Board.permanents[toIndex(x, y)] = card;
   }
   static movePermanentAt(x, y, newX, newY) {
+    // moves a permanent to x, y
     const curPos = toIndex(x, y);
     const newPos = toIndex(newX, newY);
-
-    // swap permanent
     Board.permanents[newPos] = Board.permanents[curPos];
     Board.permanents[curPos] = null;
   }
   static removePermanentAt(x, y) {
-    // check permanent
+    // remove a permanent at x, y
     const card = Board.getPermanentAt(x, y);
-    if (!card) return;
-
-    // remove from board
-    Board.permanents[toIndex(x, y)] = null;
-
-    // destroy visual
-    card.boardObj.destroy();
-  }
-};
-
-class BoardPermanentData {
-  constructor() {
-    this.permanents = [...Board.permanents];
-    this.boardObjData = [];
-    for (const permanent of this.permanents) {
-      if (!permanent) {
-        this.boardObjData.push(null);
-      } else {
-        const data = new BoardObjData(permanent.boardObj.data);
-        data.moveCount = permanent.boardObj.data.moveCount;
-        data.tapped = permanent.boardObj.data.tapped;
-        data.pos = permanent.boardObj.data.pos;
-        this.boardObjData.push(data);
-      }
+    if (card) {
+      Board.permanents[toIndex(x, y)] = null;
+      card.boardObj.destroy();
     }
   }
-  restore() {
-    for (const permanent of this.permanents)
-      permanent?.applyData(this);
-    Board.permanents = [...this.permanents];
-  }
-}
-
-class BoardData {
-  constructor() {
-    this.tileStates = [];
-    for (const tile of Board.tiles)
-      this.tileStates.push(tile.fsm.curState);
-  }
-  restore() {
-    for (const i in Board.tiles)
-      Board.tiles[i].fsm.setStateProto(this.tileStates[i]);
-  }
-}
+};
 
 function toCoord(index) {
   const result = { x: -1, y: -1 };
@@ -196,5 +160,52 @@ function gridAlignCenterGameObject(items, gridSize, cellSize) {
       curX = startX;
       curY += cellSize.y;
     }
+  }
+}
+
+class BoardTileStateData {
+  // TODO: do I really need this?
+  constructor() {
+    this.tileStates = [];
+    for (const tile of Board.tiles)
+      this.tileStates.push(tile.fsm.curState);
+  }
+  restore() {
+    for (const i in Board.tiles)
+      Board.tiles[i].fsm.setStateProto(this.tileStates[i]);
+  }
+}
+
+class BoardPermanentData {
+  // inorder to make this undo possible
+  // I need to make boardObj spawn / remove logic for BoardPermanentData
+  // and also save all boardobj stats (attack, health, etc)
+  // this can get complex if I implement effects...
+  constructor() {
+    this.permanents = [...Board.permanents];
+    this.boardObjData = [];
+    for (const permanent of this.permanents) {
+      if (!permanent) {
+        this.boardObjData.push(null);
+      } else {
+        const data = new BoardObjData(permanent.boardObj.data);
+        data.moveCount = permanent.boardObj.data.moveCount;
+        data.tapped = permanent.boardObj.data.tapped;
+        data.pos = { ...permanent.boardObj.data.pos };
+        this.boardObjData.push(data);
+      }
+    }
+  }
+  restore() {
+    for (const i in this.permanents) {
+      const permanent = this.permanents[i];
+      if (permanent?.boardObj) {
+        const data = this.boardObjData[i];
+        permanent.boardObj.data.moveCount = data.moveCount;
+        data.tapped ? permanent.tap() : permanent.untap();
+        permanent.setPos(data.pos.x, data.pos.y);
+      }
+    }
+    Board.permanents = [...this.permanents];
   }
 }

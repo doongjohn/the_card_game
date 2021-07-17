@@ -1,53 +1,53 @@
 class TileState extends FSMState {
-  onHoverEnter(obj) {
-    obj.tileFg.setFillStyle(TileColor.FG.hover.rgb, TileColor.FG.hover.alpha);
+  onHoverEnter(self) {
+    self.tileFg.setFillStyle(TileColor.FG.hover.rgb, TileColor.FG.hover.alpha);
   }
-  onHoverExit(obj) {
-    obj.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
+  onHoverExit(self) {
+    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
   }
-  onClick(obj) { }
+  onClick(self) { }
 }
 
 class TileStateNoInteraction extends TileState {
-  onEnter(obj) {
-    obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
-    obj.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
+  onEnter(self) {
+    self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
+    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
   }
-  onHoverEnter(obj) { }
-  onHoverExit(obj) { }
+  onHoverEnter(self) { }
+  onHoverExit(self) { }
 }
 
 class TileStateSelected extends TileState {
-  onEnter(obj) {
-    obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
-    obj.tileFg.setFillStyle(0xffbe0d, 0.25);
+  onEnter(self) {
+    self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
+    self.tileFg.setFillStyle(0xffbe0d, 0.25);
 
-    const permanent = obj.getPermanent();
+    const permanent = self.getPermanent();
     if (permanent) {
       CardInfoUI.updateInfo(permanent);
       CardInfoUI.show();
     }
   }
-  onExit(obj) {
-    const permanent = obj.getPermanent();
+  onExit(self) {
+    const permanent = self.getPermanent();
     if (permanent)
       CardInfoUI.hide();
   }
-  onHoverEnter(obj) { }
-  onHoverExit(obj) { }
+  onHoverEnter(self) { }
+  onHoverExit(self) { }
 }
 
 class TileStateNormal extends TileState {
-  onEnter(obj) {
-    obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
-    obj.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
+  onEnter(self) {
+    self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
+    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
   }
-  onClick(obj) {
+  onClick(self) {
     // update tile state
     Board.tiles.forEach(tile => tile.fsm.setState(TileStateNormal));
 
     // select this tile
-    Match.turnPlayer.selectedTile = obj;
+    Match.turnPlayer.selectedTile = self;
     Match.turnPlayer.selectedTile.fsm.setState(TileStateSelected);
 
     // update match action state
@@ -56,92 +56,53 @@ class TileStateNormal extends TileState {
 }
 
 class TileStateSpawnPermanentSelection extends TileState {
-  onEnter(obj) {
-    obj.tileBg.setFillStyle(0x259c51, 0.4);
-    obj.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
+  onEnter(self) {
+    self.tileBg.setFillStyle(0x259c51, 0.4);
+    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
 
     // show card info
     CardInfoUI.updateInfo(Match.turnPlayer.selectedCard);
     CardInfoUI.show();
   }
-  onExit(obj) {
+  onExit(self) {
     // hide card info
     CardInfoUI.hide();
   }
-  onClick(obj) {
-    // spawn a selected permanent
-    Board.spawnPermanentAt(obj.pos.x, obj.pos.y, Match.turnPlayer.selectedCard);
-
-    // remove from hand
-    Match.turnPlayer.handRemove(Match.turnPlayer.selectedCard);
-
-    // update tile state
-    Board.tiles.forEach(tile => {
-      if (!tile.fsm.curState.compare(TileStateSelected))
-        tile.fsm.setState(TileStateNormal);
-    });
-
-    // update match action state
-    UserAction.setState(UserAction.StateView);
+  onClick(self) {
+    UserAction.execute(CmdUnitSpawn, self);
   }
 }
 
 class TileStateChangePosSelection extends TileState {
-  onEnter(obj) {
-    obj.tileBg.setFillStyle(0x2b5dff, 0.4);
-    obj.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
+  onEnter(self) {
+    self.tileBg.setFillStyle(0x2b5dff, 0.4);
+    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
   }
-  onExit(obj) {
-    obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
+  onExit(self) {
+    self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
   }
-  onClick(obj) {
-    // update selected tile
-    Match.turnPlayer.selectedTile.getPermanent().setPos(obj.pos.x, obj.pos.y);
-    Match.turnPlayer.selectedTile = obj;
-
-    // update tile state
-    Board.tiles.forEach(tile => {
-      if (tile == Match.turnPlayer.selectedTile)
-        tile.fsm.setState(TileStateSelected);
-      else
-        tile.fsm.setState(TileStateNormal);
-    });
-
-    // update match action state
-    UserAction.setState(UserAction.StateView);
+  onClick(self) {
+    UserAction.execute(CmdUnitTeleport, self);
   }
 }
 
 class TileStateMoveSelection extends TileStateChangePosSelection {
-  onClick(obj) {
-    // update selected tile
-    Match.turnPlayer.selectedTile.getPermanent().moveTo(obj.pos.x, obj.pos.y);
-    Match.turnPlayer.selectedTile = obj;
-
-    // update tile state
-    Board.tiles.forEach(tile => {
-      if (tile == Match.turnPlayer.selectedTile)
-        tile.fsm.setState(TileStateSelected);
-      else
-        tile.fsm.setState(TileStateNormal);
-    });
-
-    // update match action state
-    UserAction.setState(UserAction.StateView);
+  onClick(self) {
+    UserAction.execute(CmdUnitMove, self);
   }
 }
 
 class TileStateAttackSelection extends TileState {
-  onEnter(obj) {
-    obj.tileBg.setFillStyle(0xff2b2b, 0.4);
-    obj.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
+  onEnter(self) {
+    self.tileBg.setFillStyle(0xff2b2b, 0.4);
+    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha);
   }
-  onExit(obj) {
-    obj.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
+  onExit(self) {
+    self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
   }
-  onClick(obj) {
+  onClick(self) {
     // attcak target permanent
-    Match.turnPlayer.selectedTile.getPermanent().doAttack(obj.getPermanent());
+    Match.turnPlayer.selectedTile.getPermanent().doAttack(self.getPermanent());
 
     // update tile state
     Board.tiles.forEach(tile => {

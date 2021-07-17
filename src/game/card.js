@@ -207,6 +207,44 @@ class Card {
   }
 }
 
+class CardInteractPermanent {
+  static hover(self) {
+    // over
+    self.cardPaper.visual.on('pointerover', () => {
+      self.originalIndex = Layer.getIndex(Layer.UI, self.cardPaper.visual);
+      Layer.bringToTop(Layer.UI, self.cardPaper.visual);
+      self.cardPaper.visual.y -= 180;
+      Match.turnPlayer.handUI.focusCard(self);
+    });
+    // out
+    self.cardPaper.visual.on('pointerout', () => {
+      Layer.moveTo(Layer.UI, self.cardPaper.visual, self.originalIndex);
+      self.cardPaper.visual.y += 180;
+      Match.turnPlayer.handUI.update();
+    });
+  }
+  static click(self) {
+    self.cardPaper.visual.on('pointerdown', () => {
+      // update selected card
+      Match.turnPlayer.selectedTile = null;
+      Match.turnPlayer.selectedCard = self;
+      CardInfoUI.updateInfo(self);
+      CardInfoUI.show();
+
+      // plan permanent spawn
+      if (self.spawnable) {
+        // update tile state
+        Board.tiles.forEach(tile => {
+          const permanent = tile.getPermanent();
+          permanent ? tile.fsm.setState(TileStateNoInteraction) : tile.fsm.setState(TileStateSpawnPermanentSelection);
+        });
+        // update match action state
+        UserAction.setState(UserAction.StatePlanPermanentSpawn);
+      }
+    });
+  }
+}
+
 class CardPermanent extends Card {
   constructor(team, assetName, cardIndex) {
     // TODO: use a data base (json file?)
@@ -260,10 +298,9 @@ class CardPermanent extends Card {
     this.spawnable = false;
     this.boardObj = null;
 
-    // init pointer event
-    this.initHover();
-    this.initClickShowInfo();
-    this.initClickSpawnBoardObj();
+    // init input event
+    CardInteractPermanent.hover(this);
+    CardInteractPermanent.click(this);
 
     // init ui
     this.cardPaper.initStatsUi(this.data);
@@ -273,68 +310,17 @@ class CardPermanent extends Card {
     this.tweenMovement = null;
   }
 
-  // TODO: refactor
-  applyData(data) {
-    const boardObjData = data.boardObjData[toIndex(data.pos)];
-    this.boardObj.data.moveCount = boardObjData.moveCount;
-    boardObjData.tapped ? this.tap() : this.untap();
-    this.setPos(data.pos.x, data.pos.y);
-  }
-
-  initHover() {
-    this.cardPaper.visual.on('pointerover', () => {
-      this.originalIndex = Layer.getIndex(Layer.UI, this.cardPaper.visual);
-      Layer.bringToTop(Layer.UI, this.cardPaper.visual);
-      this.cardPaper.visual.y -= 180;
-      Match.turnPlayer.handUI.focusCard(this);
-    });
-    this.cardPaper.visual.on('pointerout', () => {
-      Layer.moveTo(Layer.UI, this.cardPaper.visual, this.originalIndex);
-      this.cardPaper.visual.y += 180;
-      Match.turnPlayer.handUI.update();
-    });
-  }
-  initClickShowInfo() {
-    // TODO: show card info
-    this.cardPaper.visual.on('pointerdown', () => {
-      // deselect tile
-      Match.turnPlayer.selectedTile = null;
-      Board.setTileStateAll(TileStateNormal);
-
-      // update selected card
-      if (Match.turnPlayer.selectedCard && !Match.turnPlayer.selectedCard.spawnable)
-        Match.turnPlayer.selectedCard.cardPaper.hide();
-      Match.turnPlayer.selectedCard = this;
-    });
-  }
-  initClickSpawnBoardObj() {
-    this.cardPaper.visual.on('pointerdown', () => {
-      if (!this.spawnable) return;
-
-      // update tile state
-      Board.tiles.forEach(tile => {
-        // spawn this card on the board
-        const permanent = tile.getPermanent();
-        if (!permanent)
-          tile.fsm.setState(TileStateSpawnPermanentSelection);
-      });
-
-      // update match action state
-      UserAction.setState(UserAction.StatePlanPermanentSpawn);
-    });
-  }
-
   isMyTurn() {
     return this.data.team == Match.turn;
   }
 
   spawnBoardObj(x, y) {
     if (this.boardObj) {
-      console.warn("This card has already spawned a board object.");
+      console.error("This card has already spawned a board object.");
     } else {
       this.boardObj = new BoardObj(this.data);
-      this.boardObj.setPos(x, y);
     }
+    this.boardObj.setPos(x, y);
     return this.boardObj;
   }
   destroyBoardObj() {

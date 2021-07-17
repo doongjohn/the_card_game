@@ -12,17 +12,36 @@ class UserAction {
     UserAction.state = state;
   }
 
-  static getLastCommand() {
-    return UserAction.commands[UserAction.commands.length - 1];
-  }
   static pushCommand(cmd) {
     UserAction.commands.push(cmd);
   }
   static popCommand() {
     UserAction.commands.pop();
   }
+  static getLastCommand() {
+    return UserAction.commands[UserAction.commands.length - 1];
+  }
+
+  static execute() {
+    const cmd = arguments[0];
+    const args = [...arguments].slice(1);
+    if (cmd.prototype instanceof UserCommand) {
+      const inst = new cmd();
+      if (arguments.length > 1)
+        inst.cmd_execute(...args);
+      else
+        inst.cmd_execute();
+      return inst;
+    } else {
+      if (arguments.length > 1)
+        cmd.execute(...args);
+      else
+        cmd.execute();
+      return null;
+    }
+  }
   static undo() {
-    UserAction.getLastCommand()?.undo();
+    UserAction.getLastCommand()?.cmd_undo();
   }
 }
 
@@ -38,8 +57,9 @@ class UserActionData {
 
 class UserInput {
   static init() {
+    // init key bindings
     UserInput.keys = Game.scene.input.keyboard.addKeys({
-      // test input
+      // cheat input
       undo: 'u',
       unitTap: 't',
       unitTeleport: 'p',
@@ -52,27 +72,14 @@ class UserInput {
       unitAttack: 'a',
     });
 
-    // TODO: better undo design
+    // cheat input
     UserInput.keys.undo.on('down', () => UserAction.undo());
-    UserInput.keys.unitTap.on('down', () => new CmdUnitTap().execute());
-    UserInput.keys.unitTeleport.on('down', () => new CmdUnitPlanTeleport().execute());
+    UserInput.keys.unitTap.on('down', () => UserAction.execute(CmdUnitTap));
+    UserInput.keys.unitTeleport.on('down', () => UserAction.execute(CmdUnitPlanTeleport));
 
-    UserInput.keys.cancel.on('down', () => {
-      if (UserAction.state == UserAction.StateEmpty)
-        return;
-
-      if (UserAction.state == UserAction.StateView) {
-        UserAction.setState(UserAction.StateEmpty);
-        for (const tile of Board.tiles)
-          tile.fsm.setState(TileStateNormal);
-      } else {
-        UserAction.setState(UserAction.StateView);
-        UserAction.popCommand();
-        for (const tile of Board.tiles)
-          if (tile != Match.turnPlayer.selectedTile) tile.fsm.setState(TileStateNormal);
-      }
-    });
-    UserInput.keys.endTurn.on('down', () => new CmdEndTurn().execute());
+    // game input
+    UserInput.keys.cancel.on('down', () => UserAction.execute(CmdCancel));
+    UserInput.keys.endTurn.on('down', () => UserAction.execute(CmdEndTurn));
     UserInput.keys.unitMove.on('down', MatchAction.onUnitMove);
     UserInput.keys.unitAttack.on('down', MatchAction.onUnitAttack);
   }

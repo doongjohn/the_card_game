@@ -13,7 +13,7 @@ class Player {
     this.hand = [];
     this.selectedTile = null;
     this.selectedCard = null;
-    this.handUI = new HandUI(this);
+    this.handUI = new HandUI(this.hand);
   }
 
   cardInit() {
@@ -74,9 +74,11 @@ class PlayerData {
   }
   restore() {
     Match.player1.deck = [this.p1_deck];
-    Match.player1.hand = [this.p1_hand];
     Match.player2.deck = [this.p2_deck];
+    Match.player1.hand = [this.p1_hand];
     Match.player2.hand = [this.p2_hand];
+    Match.player1.handUI.update();
+    Match.player2.handUI.update();
   }
 }
 
@@ -84,9 +86,8 @@ class HandUI {
   static maxCard = 5;
   static y = 530;
 
-  constructor(player) {
-    this.player = player;
-    this.hand = player.hand;
+  constructor(hand) {
+    this.hand = hand;
     this.width = 250 + 10; // CardPaper width + gap
     this.maxWidth = this.width * (HandUI.maxCard - 1);
   }

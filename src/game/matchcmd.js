@@ -1,59 +1,77 @@
-class MatchStateData {
-  constructor(cmd) {
-    // push command
-    UserAction.pushCommand(cmd);
-
-    // save state
-    this.matchData = new MatchData();
-    this.userActionData = new UserActionData();
-    this.playerData = new PlayerData();
-    this.boardPermanentData = new BoardPermanentData();
-    this.boardData = new BoardData();
-    // TODO: save ui state
+class UserCommand {
+  constructor() {
+    this.saves = [];
   }
-  restore() {
-    // pop command
-    UserAction.popCommand();
 
-    // restore state
-    this.matchData.restore();
-    this.userActionData.restore();
-    this.playerData.restore();
-    this.boardPermanentData.restore();
-    this.boardData.restore();
-    // TODO: restore ui state
+  save() {
+    for (const arg of arguments) {
+      this.saves.push(new arg());
+    }
+  }
+  restoreAll() {
+    for (const save of this.saves) {
+      save.restore();
+    }
+  }
+
+  cmd_execute() {
+    UserAction.pushCommand(this);
+    this.execute(...arguments);
+  }
+  cmd_undo() {
+    UserAction.popCommand();
+    this.undo();
+  }
+  execute() { }
+  undo() { }
+}
+
+class CmdCancel {
+  static execute() {
+    if (UserAction.state == UserAction.StateEmpty)
+      return;
+
+    if (UserAction.state == UserAction.StateView) {
+      UserAction.setState(UserAction.StateEmpty);
+      Board.setTileStateAll(TileStateNormal);
+      CardInfoUI.hide();
+    } else {
+      UserAction.setState(UserAction.StateView);
+      for (const tile of Board.tiles)
+        if (tile != Match.turnPlayer.selectedTile)
+          tile.fsm.setState(TileStateNormal);
+    }
   }
 }
 
-// TODO: make custom data saver
-
-class CmdEndTurn {
+class CmdEndTurn extends UserCommand {
   execute() {
-    this.data = new MatchStateData(this);
+    // save data
+    this.save(MatchData, UserActionData);
 
     // deselect all
     Match.turnPlayer.selectedCard = null;
     Match.turnPlayer.selectedTile = null;
 
     // cycle turn
-    Match.oppsPlayer = Match.turnPlayer;
-    Match.turn = (Match.turn % 2) + 1;
-    Match.turnPlayer = Match.players[Match.turn - 1];
+    const newTurn = (Match.turn % 2) + 1;
+    Match.turnPlayer = Match.players[newTurn - 1];
+    Match.oppsPlayer = Match.players[Match.turn - 1];
+    Match.turn = newTurn;
+
+    // update stuffs
+    Board.permanents.forEach(permanent => permanent?.resetOnTurnStart());
+    Board.setTileStateAll(TileStateNormal);
 
     // update ui
     Match.turnText.text = `P${Match.turn}'s turn`;
     Match.turnPlayer.handUI.update();
     Match.turnPlayer.handUI.show();
     Match.oppsPlayer.handUI.hide();
-
-    // untap permanents
-    Board.permanents.forEach(permanent => permanent?.resetOnTurnStart());
-
-    // reset tile state
-    Board.setTileStateAll(TileStateNormal);
   }
   undo() {
-    this.data.restore();
+    // restore data
+    this.restoreAll();
 
     // update ui
     Match.turnText.text = `P${Match.turn}'s turn`;
@@ -63,25 +81,25 @@ class CmdEndTurn {
   }
 }
 
-class CmdUnitTap {
+class CmdUnitTap extends UserCommand {
   execute() {
-    this.data = new MatchStateData(this);
+    this.save(BoardPermanentData);
 
     const permanent = Match.turnPlayer.selectedTile.getPermanent();
     if (permanent)
       permanent.tapped() ? permanent.untap() : permanent.tap();
   }
   undo() {
-    this.data.restore();
+    this.restoreAll();
   }
 }
 
 class CmdUnitPlanTeleport {
-  execute() {
+  static execute() {
     const permanent = Match.turnPlayer.selectedTile?.getPermanent();
     if (!permanent) return;
 
-    // Unit Plan Move
+    // update user action state
     UserAction.setState(UserAction.StatePlanMove);
 
     // update tile state
@@ -89,20 +107,85 @@ class CmdUnitPlanTeleport {
       if (!tile.fsm.curState.compare(TileStateSelected))
         tile.fsm.setState(tile.getPermanent() ? TileStateNoInteraction : TileStateChangePosSelection);
     });
+  }
+}
+class CmdUnitTeleport extends UserCommand {
+  execute(tile) {
+    this.save(UserActionData, BoardPermanentData);
 
-    // TODO: split tile and permanent data
-    this.data = new MatchStateData(this);
+    // update user action state
+    UserAction.setState(UserAction.StateView);
+
+    // update selected tile
+    Match.turnPlayer.selectedTile.getPermanent().setPos(tile.pos.x, tile.pos.y);
+    Match.turnPlayer.selectedTile = tile;
+
+    // update tile state
+    Board.tiles.forEach(t => {
+      if (t == Match.turnPlayer.selectedTile)
+        t.fsm.setState(TileStateSelected);
+      else
+        t.fsm.setState(TileStateNormal);
+    });
   }
   undo() {
-    this.data.restore();
+    this.restoreAll();
+    Match.turnPlayer.selectedTile = null;
+    Board.setTileStateAll(TileStateNormal);
+    CardInfoUI.hide();
   }
 }
 
-class CmdUnitTeleport {
-  execute() {
-    this.data = new MatchStateData(this);
+class CmdUnitMove extends UserCommand {
+  execute(tile) {
+    this.save(UserActionData, BoardPermanentData);
+
+    // update match action state
+    UserAction.setState(UserAction.StateView);
+
+    // update selected tile
+    Match.turnPlayer.selectedTile.getPermanent().moveTo(tile.pos.x, tile.pos.y);
+    Match.turnPlayer.selectedTile = tile;
+
+    // update tile state
+    Board.tiles.forEach(t => {
+      if (t == Match.turnPlayer.selectedTile)
+        t.fsm.setState(TileStateSelected);
+      else
+        t.fsm.setState(TileStateNormal);
+    });
   }
   undo() {
-    this.data.restore();
+    this.restoreAll();
+    Match.turnPlayer.selectedTile = null;
+    Board.setTileStateAll(TileStateNormal);
+    CardInfoUI.hide();
   }
 }
+
+// !TODO: implement spawn cmd
+class CmdUnitSpawn extends UserCommand {
+  execute(tile) {
+    this.save(PlayerData, BoardPermanentData);
+
+    // update user action state
+    UserAction.setState(UserAction.StateView);
+
+    // spawn a selected permanent
+    Board.spawnPermanentAt(tile.pos.x, tile.pos.y, Match.turnPlayer.selectedCard);
+
+    // remove from hand
+    Match.turnPlayer.handRemove(Match.turnPlayer.selectedCard);
+
+    // update tile state
+    for (const t of Board.tiles)
+      if (!t.fsm.curState.compare(TileStateSelected))
+        t.fsm.setState(TileStateNormal);
+  }
+  undo() {
+    this.restoreAll();
+  }
+}
+
+// TODO: implement move cmd
+// TODO: implement attack cmd
