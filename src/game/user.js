@@ -29,6 +29,7 @@ class UserAction {
       new cmd().cmd_execute(...args);
     else
       cmd.execute(...args);
+    console.log();
   }
   static undo() {
     UserAction.getLastCommand()?.cmd_undo();

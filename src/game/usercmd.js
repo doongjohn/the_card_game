@@ -182,6 +182,8 @@ class CmdUnitPlanSpawn extends UserCommand {
     CardInfoUI.updateInfo(card);
     CardInfoUI.show();
 
+    console.log('wow');
+
     // update tile state
     Board.tiles.forEach(tile => {
       const permanent = tile.getPermanent();

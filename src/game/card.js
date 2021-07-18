@@ -224,6 +224,7 @@ class CardInteractPermanent {
     });
   }
   static click(self) {
+    // FIXME: BUG!!
     self.cardPaper.visual.on('pointerdown', () => UserAction.execute(CmdUnitPlanSpawn, self));
   }
 }
