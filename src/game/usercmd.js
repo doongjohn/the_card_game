@@ -171,7 +171,7 @@ class CmdUnitMove extends UserCommand {
   }
 }
 
-class CmdUnitPlanSpawn extends UserCommand {
+class CmdUnitPlanSpawn {
   static execute(card) {
     // update user action state
     UserAction.setState(UserAction.StatePlanPermanentSpawn);
@@ -181,8 +181,6 @@ class CmdUnitPlanSpawn extends UserCommand {
     Match.turnPlayer.selectedCard = card;
     CardInfoUI.updateInfo(card);
     CardInfoUI.show();
-
-    console.log('wow');
 
     // update tile state
     Board.tiles.forEach(tile => {
