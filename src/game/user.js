@@ -69,7 +69,7 @@ class UserInput {
     // game input
     UserInput.keys.cancel.on('down', () => UserAction.execute(CmdCancel));
     UserInput.keys.endTurn.on('down', () => UserAction.execute(CmdEndTurn));
-    UserInput.keys.unitMove.on('down', MatchAction.onUnitMove);
-    UserInput.keys.unitAttack.on('down', MatchAction.onUnitAttack);
+    UserInput.keys.unitMove.on('down', () => UserAction.execute(CmdUnitPlanMove));
+    UserInput.keys.unitAttack.on('down', () => UserAction.execute(CmdUnitPlanAttack));
   }
 }

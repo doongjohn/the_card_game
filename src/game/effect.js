@@ -9,6 +9,7 @@ class EffectType {
   static Lingering = 5;
 
   static toString(num) {
+    // note this may change when the javascript gets updated
     return Object.getOwnPropertyNames(EffectType)[num + 4];
   }
 }

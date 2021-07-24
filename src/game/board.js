@@ -177,35 +177,51 @@ class BoardTileStateData {
 }
 
 class BoardPermanentData {
-  // inorder to make this undo possible
+  // in order to make this undo possible
   // I need to make boardObj spawn / remove logic for BoardPermanentData
   // and also save all boardobj stats (attack, health, etc)
   // this can get complex if I implement effects...
   constructor() {
-    this.permanents = [...Board.permanents];
     this.boardObjData = [];
-    for (const permanent of this.permanents) {
+    this.cardInfo = [];
+    for (const permanent of Board.permanents) {
       if (!permanent) {
         this.boardObjData.push(null);
+        this.cardInfo.push(null);
       } else {
-        const data = new BoardObjData(permanent.boardObj.data);
-        data.moveCount = permanent.boardObj.data.moveCount;
-        data.tapped = permanent.boardObj.data.tapped;
-        data.pos = { ...permanent.boardObj.data.pos };
-        this.boardObjData.push(data);
+        this.boardObjData.push(permanent.boardObj.data.deepCopy());
+        this.cardInfo.push({ owner: permanent.cardOwner, index: permanent.cardIndex });
       }
     }
   }
   restore() {
-    for (const i in this.permanents) {
-      const permanent = this.permanents[i];
-      if (permanent?.boardObj) {
-        const data = this.boardObjData[i];
-        permanent.boardObj.data.moveCount = data.moveCount;
-        data.tapped ? permanent.tap() : permanent.untap();
-        permanent.setPos(data.pos.x, data.pos.y);
+    for (const i in Board.permanents) {
+      const owner = this.cardInfo[i]?.owner;
+      if (owner) {
+        let permanent = owner && this.cardInfo[i].index != -1
+          ? owner.allCards[this.cardInfo[i].index]
+          : owner.commander;
+
+        if (permanent?.boardObj) {
+          const data = this.boardObjData[i];
+          permanent.boardObj.data = data;
+          data.tapped ? permanent.tap() : permanent.untap();
+          permanent.setPos(data.pos.x, data.pos.y);
+          Board.permanents[i] = permanent;
+        } else {
+          Board.permanents[i] = null;
+        }
+
+        // TODO: make me!
+        if (Board.permanents[i]) {
+          Board.removePermanentAt(toIndex(i));
+          if (permanent?.boardObj) {
+            Board.permanents[i] = permanent;
+          }
+        } else {
+
+        }
       }
     }
-    Board.permanents = [...this.permanents];
   }
 }

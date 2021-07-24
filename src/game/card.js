@@ -28,6 +28,17 @@ class BoardObjData {
     this.tapped = false;
     this.pos = { x: 0, y: 0 };
   }
+  deepCopy() {
+    let copy = new BoardObjData(this);
+    copy.team = this.team;
+    copy.attack = this.attack;
+    copy.health = this.health;
+    copy.maxMoveCount = this.maxMoveCount;
+    copy.moveCount = this.moveCount;
+    this.tapped = this.tapped;
+    copy.pos = { ...this.pos };
+    return copy;
+  }
 
   resetOnUntap() {
     this.moveCount = 0;
@@ -200,8 +211,9 @@ class CardPaper {
 }
 
 class Card {
-  constructor(data, cardIndex) {
+  constructor(data, cardOwner, cardIndex) {
     this.data = data;
+    this.cardOwner = cardOwner;
     this.cardIndex = cardIndex;
     this.cardPaper = new CardPaper(data);
   }
@@ -229,51 +241,51 @@ class CardInteractPermanent {
 }
 
 class CardPermanent extends Card {
-  constructor(team, assetName, cardIndex) {
+  constructor(owner, assetName, cardIndex) {
     // TODO: use a data base (json file?)
     switch (assetName) {
       case 'RagnoraTheRelentless':
         super(new CardData({
           assetName: assetName,
-          team: team,
+          team: owner.team,
           name: 'Ragnora The Relentless',
           text: 'This card is STRONG!',
           health: 40,
           attack: 2,
-        }), cardIndex);
+        }), owner, cardIndex);
         break;
 
       case 'ArgeonHighmayne':
         super(new CardData({
           assetName: assetName,
-          team: team,
+          team: owner.team,
           name: 'Argeon Highmayne',
           text: 'Yay, kill me.',
           health: 40,
           attack: 2,
-        }), cardIndex);
+        }), owner, cardIndex);
         break;
 
       case 'ZirAnSunforge':
         super(new CardData({
           assetName: assetName,
-          team: team,
+          team: owner.team,
           name: 'Zir\'An Sunforge',
           text: 'Fuck Lyonar',
           health: 99,
           attack: 5,
-        }), cardIndex);
+        }), owner, cardIndex);
         break;
 
       case 'RazorcragGolem':
         super(new CardData({
           assetName: assetName,
-          team: team,
+          team: owner.team,
           name: 'Razorcrag Golem',
           text: 'This card sucks. wow wow wow wow wowowowowowo.',
           health: 3,
           attack: 2,
-        }), cardIndex);
+        }), owner, cardIndex);
         break;
     }
 

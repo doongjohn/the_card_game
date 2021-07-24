@@ -101,16 +101,6 @@ class TileStateAttackSelection extends TileState {
     self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha);
   }
   onClick(self) {
-    // attcak target permanent
-    Match.turnPlayer.selectedTile.getPermanent().doAttack(self.getPermanent());
-
-    // update tile state
-    Board.tiles.forEach(tile => {
-      if (tile != Match.turnPlayer.selectedTile)
-        tile.fsm.setState(TileStateNormal);
-    });
-
-    // update match action state
-    UserAction.setState(UserAction.StateView);
+    UserAction.execute(CmdUnitAttack, self);
   }
 }

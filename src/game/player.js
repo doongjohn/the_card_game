@@ -20,17 +20,17 @@ class Player {
     // TODO: read cards from user deck
     let i = 0;
     this.allCards.push(
-      new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
-      new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
-      new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      // new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
-      // new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      // new CardPermanent(this.team, 'RagnoraTheRelentless', i++),
-      // new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      // new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      // new CardPermanent(this.team, 'ZirAnSunforge', i++),
-      // new CardPermanent(this.team, 'RagnoraTheRelentless', i++)
+      new CardPermanent(this, 'RagnoraTheRelentless', i++),
+      new CardPermanent(this, 'ZirAnSunforge', i++),
+      new CardPermanent(this, 'RagnoraTheRelentless', i++),
+      new CardPermanent(this, 'ZirAnSunforge', i++),
+      // new CardPermanent(this, 'RagnoraTheRelentless', i++),
+      // new CardPermanent(this, 'ZirAnSunforge', i++),
+      // new CardPermanent(this, 'RagnoraTheRelentless', i++),
+      // new CardPermanent(this, 'ZirAnSunforge', i++),
+      // new CardPermanent(this, 'ZirAnSunforge', i++),
+      // new CardPermanent(this, 'ZirAnSunforge', i++),
+      // new CardPermanent(this, 'RagnoraTheRelentless', i++)
     );
 
     // copy all cards to deck

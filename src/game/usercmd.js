@@ -137,13 +137,65 @@ class CmdUnitTeleport extends UserCommand {
   }
   undo() {
     this.restoreAll();
-    // Match.turnPlayer.selectedTile = null;
-    // Board.setTileStateAll(TileStateNormal);
-    // CardInfoUI.hide();
   }
 }
 
-// TODO: implement plan move
+class CmdUnitPlanMove {
+  static execute() {
+    const permanent = Match.turnPlayer.selectedTile?.getPermanent();
+    if (!permanent) return;
+
+    const tile = Match.turnPlayer.selectedTile;
+    if (!permanent.isMyTurn() || permanent.tapped() || !permanent.canMove())
+      return;
+
+    // Unit Plan Move
+    UserAction.setState(UserAction.StatePlanMove);
+
+    function setMoveSelectionTile(x, y) {
+      if (!Board.getPermanentAt(x, y))
+        Board.getTileAt(x, y)?.fsm.setState(TileStateMoveSelection);
+    }
+
+    const u = { x: tile.pos.x, y: tile.pos.y - 1 };
+    const d = { x: tile.pos.x, y: tile.pos.y + 1 };
+    const r = { x: tile.pos.x + 1, y: tile.pos.y };
+    const l = { x: tile.pos.x - 1, y: tile.pos.y };
+
+    const blockedR = Board.getPermanentAt(r.x, r.y);
+    const blockedL = Board.getPermanentAt(l.x, l.y);
+    const blockedU = Board.getPermanentAt(u.x, u.y);
+    const blockedD = Board.getPermanentAt(d.x, d.y);
+
+    if (!blockedR) {
+      setMoveSelectionTile(r.x, r.y);
+      setMoveSelectionTile(r.x + 1, r.y);
+    }
+    if (!blockedL) {
+      setMoveSelectionTile(l.x, l.y);
+      setMoveSelectionTile(l.x - 1, l.y);
+    }
+    if (!blockedU) {
+      setMoveSelectionTile(u.x, u.y);
+      setMoveSelectionTile(u.x, u.y - 1);
+    }
+    if (!blockedD) {
+      setMoveSelectionTile(d.x, d.y);
+      setMoveSelectionTile(d.x, d.y + 1);
+    }
+
+    if (!blockedR || !blockedU) setMoveSelectionTile(r.x, u.y);
+    if (!blockedR || !blockedD) setMoveSelectionTile(r.x, d.y);
+    if (!blockedL || !blockedU) setMoveSelectionTile(l.x, u.y);
+    if (!blockedL || !blockedD) setMoveSelectionTile(l.x, d.y);
+
+    //  update tile state
+    Board.tiles.forEach((tile) => {
+      if (!tile.fsm.curState.compare(TileStateSelected, TileStateMoveSelection))
+        tile.fsm.setState(TileStateNoInteraction);
+    });
+  }
+}
 class CmdUnitMove extends UserCommand {
   execute(tile) {
     this.save(UserActionData, BoardPermanentData);
@@ -165,9 +217,78 @@ class CmdUnitMove extends UserCommand {
   }
   undo() {
     this.restoreAll();
-    // Match.turnPlayer.selectedTile = null;
-    // Board.setTileStateAll(TileStateNormal);
-    // CardInfoUI.hide();
+  }
+}
+
+class CmdUnitPlanAttack {
+  static execute() {
+    const permanent = Match.turnPlayer.selectedTile?.getPermanent();
+    if (!permanent) return;
+    if (!permanent.isMyTurn() || permanent.tapped()) return;
+
+    const tile = Match.turnPlayer.selectedTile;
+
+    // Unit Plan Attack
+    UserAction.setState(UserAction.StatePlanAttack);
+
+    function setAttackSelectionTile(x, y) {
+      const target = Board.getPermanentAt(x, y);
+      if (target && target.data.team != permanent.data.team) {
+        Board.getTileAt(x, y).fsm.setState(TileStateAttackSelection);
+        return 1;
+      }
+      return 0;
+    }
+
+    function findNearByEnemy() {
+      const u = { x: tile.pos.x, y: tile.pos.y - 1 };
+      const d = { x: tile.pos.x, y: tile.pos.y + 1 };
+      const r = { x: tile.pos.x + 1, y: tile.pos.y };
+      const l = { x: tile.pos.x - 1, y: tile.pos.y };
+
+      let count = 0;
+      count += setAttackSelectionTile(r.x, r.y);
+      count += setAttackSelectionTile(l.x, l.y);
+      count += setAttackSelectionTile(u.x, u.y);
+      count += setAttackSelectionTile(d.x, d.y);
+      count += setAttackSelectionTile(r.x, u.y);
+      count += setAttackSelectionTile(r.x, d.y);
+      count += setAttackSelectionTile(l.x, u.y);
+      count += setAttackSelectionTile(l.x, d.y);
+      return count;
+    }
+
+    // check if there are no enemies near by
+    if (!findNearByEnemy()) {
+      console.log("[Match] No attack target found.");
+      return;
+    }
+
+    // update tile state
+    Board.tiles.forEach((tile) => {
+      if (!tile.fsm.curState.compare(TileStateSelected, TileStateAttackSelection))
+        tile.fsm.setState(TileStateNoInteraction);
+    });
+  }
+}
+class CmdUnitAttack extends UserCommand {
+  execute(tile) {
+    this.save(BoardPermanentData);
+
+    // attcak target permanent
+    Match.turnPlayer.selectedTile.getPermanent().doAttack(tile.getPermanent());
+
+    // update tile state
+    Board.tiles.forEach(t => {
+      if (!t.fsm.curState.compare(TileStateSelected))
+        t.fsm.setState(TileStateNormal);
+    });
+
+    // update match action state
+    UserAction.setState(UserAction.StateView);
+  }
+  undo() {
+    this.restoreAll();
   }
 }
 
@@ -189,7 +310,6 @@ class CmdUnitPlanSpawn {
     });
   }
 }
-
 class CmdUnitSpawn extends UserCommand {
   execute(tile) {
     this.save(PlayerData, BoardPermanentData);
@@ -212,6 +332,3 @@ class CmdUnitSpawn extends UserCommand {
     this.restoreAll();
   }
 }
-
-// TODO: implement move cmd
-// TODO: implement attack cmd
