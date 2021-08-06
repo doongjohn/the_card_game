@@ -101,10 +101,3 @@ https://imgshare.io/album/duelyst-battlemaps.xB6t
 ## Inspiring images
 
 ![](https://cdnb.artstation.com/p/assets/images/images/013/705/071/large/danny-huynh-danny-huynh-duelyst-redstonebattlemaplow.jpg)
-
-## PS set default browser
-
-```powershell
-Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice' -Name ProgID -Value "ChromeHTML"
-Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice' -Name ProgID -Value "ChromeHTML"
-```
