@@ -1,3 +1,307 @@
+// TODO: big refactoring using composition!
+// things to do
+// - card paper hover and click
+// - implement permanent functions doDamage, takeDamage, doAttack, etc
+
+class CardAssetData {
+  constructor({
+    spriteName
+  } = {}) {
+    this.spriteName = spriteName;
+  }
+}
+class CardData {
+  constructor({
+    index,
+    owner,
+    name,
+    desc,
+  } = {}) {
+    this.index = index;
+    this.owner = owner;
+    this.name = name;
+    this.desc = desc;
+  }
+}
+
+class CardPaper {
+  // this is a paper that exists in the deck, hand, etc...
+  static width = 250;
+  static height = 350;
+  static cardColor = 0x1e2a42;
+  static descBox = {
+    margin: 6,
+    width: CardPaper.width - 6 * 2,
+    height: 160,
+    color: 0x182236
+  };
+
+  constructor(assetData, data) {
+    // tween
+    this.tween = null;
+
+    // card art
+    this.cardArt = new SpriteCardArt(0, 0, `CardArt:${assetData.spriteName}`, assetData.spriteName)
+      .setScale(1.6)
+      .setOrigin(0.5, 1);
+
+    // play card art animation
+    Game.tryPlayAnimation(this.cardArt, `CardArt:Idle:${assetData.spriteName}`);
+
+    // card
+    this.card = Game.spawn.rectangle(
+      0, 0,
+      CardPaper.width,
+      CardPaper.height,
+      CardPaper.cardColor
+    ).setStrokeStyle(3, CardPaper.descBox.color, 1);
+
+    // description box
+    this.descBox = Game.spawn.rectangle(
+      0, CardPaper.height / 2 - CardPaper.descBox.margin,
+      CardPaper.descBox.width,
+      CardPaper.descBox.height,
+      CardPaper.descBox.color
+    ).setOrigin(0.5, 1);
+
+    // card name
+    this.cardName = Game.spawn.text(0, 0, data.name, {
+      font: '18px Play',
+      align: 'center'
+    }).setOrigin(0.5, 1);
+
+    // card description
+    this.cardDesc = Game.spawn.text(
+      CardPaper.descBox.margin - (CardPaper.descBox.width / 2), 15,
+      data.desc,
+      {
+        font: '16px Play',
+        align: 'left',
+        wordWrap: { width: CardPaper.descBox.width - CardPaper.descBox.margin }
+      }
+    );
+
+    // container for this card paper
+    this.visual = Game.spawn.container(0, 0);
+    this.visual.setSize(CardPaper.width + 10, CardPaper.height);
+    this.visual.setInteractive();
+    this.visual.add([
+      this.bg,
+      this.cardArt,
+      this.cardName,
+      this.textBg,
+      this.cardText
+    ]);
+
+    Game.addToWorld(Layer.UI, this.visual);
+  }
+  hide() {
+    this.visual.setVisible(false);
+  }
+  show() {
+    this.visual.setVisible(true);
+  }
+}
+
+class CardPieceData {
+  constructor({
+    assetData,
+    data,
+    team,
+    pos
+  } = {}) {
+    this.data = data;
+    this.team = team;
+    this.pos = pos;
+    this.tapped = false;
+    this.flipped = false;
+
+    this.sprite = new SpriteCardArt(0, 0, `CardArt:${assetData.spriteName}`, assetData.spriteName)
+      .setScale(1.6)
+      .setOrigin(0.5, 1);
+    this.sprite.flipX = this.team != Team.P1;
+
+    // play animation
+    Game.tryPlayAnimation(this.sprite, `CardArt:Idle:${assetData.spriteName}`);
+
+    // TODO: add based on card type
+    Game.addToWorld(Layer.Permanent, this.sprite);
+  }
+}
+class CardPiece {
+  // this is an actual piece that exists on the board.
+  constructor(pieceData) {
+    this.pieceData = pieceData;
+  }
+  updateVisual() {
+    this.pieceData.sprite.flipX = this.pieceData.team != Team.P1;
+  }
+  hide() {
+    this.pieceData.sprite.setVisible(false);
+  }
+  show() {
+    this.pieceData.sprite.setVisible(true);
+  }
+
+  tap(bool) {
+    if (bool) {
+      this.pieceData.tapped = true;
+      this.pieceData.sprite.setPipeline(Game.pipeline.grayScale);
+    } else {
+      this.pieceData.tapped = false;
+      this.pieceData.sprite.resetPipeline();
+    }
+  }
+}
+
+class Card {
+  constructor(assetData, data) {
+    this.assetData = assetData;
+    this.data = data;
+  }
+  createCardPaper() {
+    this.cardPaper = new CardPaper(this.assetData, this.data);
+    return this.cardPaper;
+  }
+  createCardPiece() {
+    this.cardPiece = new CardPiece(new CardPieceData(this.assetData, this.data));
+    return this.cardPiece;
+  }
+}
+
+const CardUIPermanent = {
+  permanentStatsUI: null,
+  createPermanentStatsUi(data) {
+    const text = `⛨: ${data.health} ⚔: ${data.attack}`;
+    this.permanentStatsUI = Game.spawn.text(-115, -145, text, {
+      font: '18px Play',
+      align: 'left'
+    }).setOrigin(0, 1);
+    this.visual.add(this.permanentStatsUI);
+  },
+  updatePermanentStatsUi(data) {
+    this.permanentStatsUI.text = `⛨: ${data.health} ⚔: ${data.attack}`;
+  }
+}
+
+const CardDataPermanent = {
+  health: 0,
+  attack: 0,
+};
+const CardDataMovable = {
+  maxMoveCount: 1,
+  curMoveCount: 0,
+}
+
+class CardPermanent extends Card {
+  constructor(
+    assetData,
+    data,
+    cardDataMovable = CardDataPermanent,
+    cardDataPermanent = CardDataMovable
+  ) {
+    super(assetData, data);
+    this.data = {
+      ...this.data,
+      ...cardDataPermanent,
+      ...cardDataMovable
+    };
+
+    this.createCardPiece();
+    this.cardPiece.pieceData = {
+      ...this.cardPiece.pieceData,
+      ...cardDataPermanent,
+      ...cardDataMovable
+    };
+
+    this.createCardPaper();
+    this.cardPaper = {
+      ...this.cardPaper,
+      ...CardUIPermanent
+    };
+  }
+}
+
+function createCardPermanent(
+  index,
+  owner,
+  spriteAssetName
+) {
+  console.log('ww');
+  switch (spriteAssetName) {
+    case 'RagnoraTheRelentless':
+      return new CardPermanent(
+        new CardAssetData({
+          spriteName: spriteAssetName
+        }),
+        new CardData({
+          index: index,
+          owner: owner,
+          name: 'Ragnora The Relentless',
+          desc: 'This card is STRONG!'
+        }),
+        {
+          health: 5,
+          attack: 1
+        }
+      );
+    case 'ArgeonHighmayne':
+      return new CardPermanent(
+        new CardAssetData({
+          spriteName: spriteAssetName
+        }),
+        new CardData({
+          index: index,
+          owner: owner,
+          name: 'Argeon Highmayne',
+          desc: 'Yay, kill me.'
+        }),
+        {
+          health: 8,
+          attack: 2
+        }
+      );
+    case 'ZirAnSunforge':
+      return new CardPermanent(
+        new CardAssetData({
+          spriteName: spriteAssetName
+        }),
+        new CardData({
+          index: index,
+          owner: owner,
+          name: 'Zir\'An Sunforge',
+          desc: 'Fuck Lyonar'
+        }),
+        {
+          health: 5,
+          attack: 3
+        }
+      );
+    case 'RazorcragGolem':
+      return new CardPermanent(
+        new CardAssetData({
+          spriteName: spriteAssetName
+        }),
+        new CardData({
+          index: index,
+          owner: owner,
+          name: 'Razorcrag Golem',
+          desc: 'This card sucks. wow wow wow wow wowowowowowo.'
+        }),
+        {
+          health: 2,
+          attack: 1
+        }
+      );
+  }
+}
+
+
+
+
+
+
+
 class CardData {
   constructor({
     assetName,
@@ -28,7 +332,7 @@ class BoardObjData {
     this.tapped = false;
     this.pos = { x: 0, y: 0 };
   }
-  deepCopy() {
+  clone() {
     let copy = new BoardObjData(this);
     copy.team = this.team;
     copy.attack = this.attack;
@@ -112,101 +416,6 @@ class BoardObj {
     this.data.setPos(x, y);
     const worldPos = Board.gridToWorldPos(x, y);
     this.cardArt.setPosition(worldPos.x, worldPos.y + 60);
-  }
-}
-
-class CardPaper {
-  static width = 250;
-  static height = 350;
-  static bgColor = 0x1e2a42;
-  static textBg = {
-    margin: 6,
-    width: CardPaper.width - 6 * 2,
-    height: 160,
-    color: 0x182236
-  };
-
-  constructor(cardData) {
-    // create sprite
-    this.cardArt = new SpriteCardArt(0, 0, `CardArt:${cardData.assetName}`, cardData.assetName);
-    this.cardArt.setScale(1.6).setOrigin(0.5, 1);
-    Game.tryPlayAnimation(this.cardArt, `CardArt:Idle:${cardData.assetName}`);
-
-    // card bg
-    this.bg = Game.spawn.rectangle(
-      0, 0,
-      CardPaper.width,
-      CardPaper.height,
-      CardPaper.bgColor
-    ).setStrokeStyle(3, CardPaper.textBg.color, 1);
-
-    // card name
-    this.cardName = Game.spawn.text(0, 0, cardData.name, {
-      font: '18px Play',
-      align: 'center'
-    }).setOrigin(0.5, 1);
-
-    // text area bg
-    this.textBg = Game.spawn.rectangle(
-      0, CardPaper.height / 2 - CardPaper.textBg.margin,
-      CardPaper.textBg.width,
-      CardPaper.textBg.height,
-      CardPaper.textBg.color
-    ).setOrigin(0.5, 1);
-
-    // card text
-    this.cardText = Game.spawn.text(
-      CardPaper.textBg.margin - (CardPaper.textBg.width / 2), 15,
-      cardData.text,
-      {
-        font: '16px Play',
-        align: 'left',
-        wordWrap: { width: CardPaper.textBg.width - CardPaper.textBg.margin }
-      }
-    );
-
-    // container for this card paper
-    this.visual = Game.spawn.container(0, 0, [
-      this.bg,
-      this.cardArt,
-      this.cardName,
-      this.textBg,
-      this.cardText
-    ]);
-
-    // make interactable
-    this.visual.setSize(CardPaper.width + 10, CardPaper.height);
-    this.visual.setInteractive();
-
-    // add to layer
-    Game.addToWorld(Layer.UI, this.visual);
-
-    // hide
-    this.hide();
-
-    this.tween = null;
-  }
-
-  destroy() {
-    this.visual.destroy();
-  }
-
-  show() {
-    this.visual.setVisible(true);
-  }
-  hide() {
-    this.visual.setVisible(false);
-  }
-
-  initStatsUi(cardData) {
-    this.statsTxt = Game.spawn.text(-115, -145, `⛨: ${cardData.health} ⚔: ${cardData.attack}`, {
-      font: '18px Play',
-      align: 'left'
-    }).setOrigin(0, 1);
-    this.visual.add(this.statsTxt);
-  }
-  updateStatsUi(cardData) {
-    this.statsTxt.text = `⛨: ${cardData.health} ⚔: ${cardData.attack}`;
   }
 }
 

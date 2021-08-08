@@ -313,7 +313,6 @@ class CmdUnitPlanSpawn {
 class CmdUnitSpawn extends UserCommand {
   execute(tile) {
     this.save(PlayerData, BoardPermanentData);
-
     // update user action state
     UserAction.setState(UserAction.StateView);
 

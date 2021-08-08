@@ -20,10 +20,13 @@ class Player {
     // TODO: read cards from user deck
     let i = 0;
     this.allCards.push(
-      new CardPermanent(this, 'RagnoraTheRelentless', i++),
-      new CardPermanent(this, 'ZirAnSunforge', i++),
-      new CardPermanent(this, 'RagnoraTheRelentless', i++),
-      new CardPermanent(this, 'ZirAnSunforge', i++),
+      createCardPermanent(i++, this, 'RagnoraTheRelentless'),
+      createCardPermanent(i++, this, 'ZirAnSunforge'),
+      createCardPermanent(i++, this, 'RagnoraTheRelentless'),
+      // new CardPermanent(this, 'RagnoraTheRelentless', i++),
+      // new CardPermanent(this, 'ZirAnSunforge', i++),
+      // new CardPermanent(this, 'RagnoraTheRelentless', i++),
+      // new CardPermanent(this, 'ZirAnSunforge', i++),
       // new CardPermanent(this, 'RagnoraTheRelentless', i++),
       // new CardPermanent(this, 'ZirAnSunforge', i++),
       // new CardPermanent(this, 'RagnoraTheRelentless', i++),

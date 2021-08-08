@@ -82,7 +82,7 @@ class Board {
     const card = Board.getPermanentAt(x, y);
     if (card) {
       Board.permanents[toIndex(x, y)] = null;
-      card.boardObj.destroy();
+      card.destroyBoardObj();
     }
   }
 };
@@ -177,51 +177,46 @@ class BoardTileStateData {
 }
 
 class BoardPermanentData {
-  // in order to make this undo possible
   // I need to make boardObj spawn / remove logic for BoardPermanentData
   // and also save all boardobj stats (attack, health, etc)
   // this can get complex if I implement effects...
   constructor() {
-    this.boardObjData = [];
     this.cardInfo = [];
+    this.boardObjData = [];
     for (const permanent of Board.permanents) {
-      if (!permanent) {
-        this.boardObjData.push(null);
-        this.cardInfo.push(null);
-      } else {
-        this.boardObjData.push(permanent.boardObj.data.deepCopy());
+      if (permanent) {
         this.cardInfo.push({ owner: permanent.cardOwner, index: permanent.cardIndex });
+        this.boardObjData.push(permanent.boardObj.data.clone());
+      } else {
+        this.cardInfo.push(null);
+        this.boardObjData.push(null);
       }
     }
   }
   restore() {
     for (const i in Board.permanents) {
       const owner = this.cardInfo[i]?.owner;
-      if (owner) {
-        let permanent = owner && this.cardInfo[i].index != -1
-          ? owner.allCards[this.cardInfo[i].index]
-          : owner.commander;
-
-        if (permanent?.boardObj) {
-          const data = this.boardObjData[i];
-          permanent.boardObj.data = data;
-          data.tapped ? permanent.tap() : permanent.untap();
-          permanent.setPos(data.pos.x, data.pos.y);
-          Board.permanents[i] = permanent;
-        } else {
-          Board.permanents[i] = null;
-        }
-
-        // TODO: make me!
-        if (Board.permanents[i]) {
-          Board.removePermanentAt(toIndex(i));
-          if (permanent?.boardObj) {
-            Board.permanents[i] = permanent;
-          }
-        } else {
-
-        }
+      const pos = toCoord(i);
+      if (!owner)  {
+        Board.removePermanentAt(pos.x, pos.y);
+        console.log('remove');
+        continue;
       }
+
+      const permanent = this.cardInfo[i].index == -1
+        ? owner.commander
+        : owner.allCards[this.cardInfo[i].index];
+
+      if (!permanent?.boardObj)
+        permanent.spawnBoardObj(pos.x, pos.y);
+
+      // restore saved data
+      const data = this.boardObjData[i];
+      permanent.boardObj.data = data;
+      permanent.boardObj.setPos(pos.x, pos.y);
+      data.tapped ? permanent.tap() : permanent.untap();
+
+      Board.permanents[i] = permanent;
     }
   }
 }
