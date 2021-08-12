@@ -119,7 +119,7 @@ class CardPieceData {
       .setScale(1.6)
       .setOrigin(0.5, 1);
 
-    // TODO: add based on card type
+    // TODO: set layer based on card type
     Game.addToWorld(Layer.Permanent, this.sprite);
   }
 }

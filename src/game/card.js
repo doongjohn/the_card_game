@@ -48,13 +48,52 @@ class CardPermanent extends Card {
   }
 }
 
+const card_db = [
+  {
+    spriteAssetName: 'RagnoraTheRelentless',
+    name: 'Ragnora The Relentless',
+    desc: 'This card is VERY STRONGU!!!',
+    data: {
+      health: 5,
+      attack: 1
+    }
+  },
+  {
+    spriteAssetName: 'ArgeonHighmayne',
+    name: 'Argeon Highmayne',
+    desc: 'This card is VERY STRONGU!!!',
+    data: {
+      health: 8,
+      attack: 2
+    }
+  },
+  {
+    spriteAssetName: 'ZirAnSunforge',
+    name: 'Zir\'An Sunforge',
+    desc: 'Fuck Lyonar.',
+    data: {
+      health: 5,
+      attack: 3
+    }
+  },
+  {
+    spriteAssetName: 'RazorcragGolem',
+    name: 'Razorcrag Golem',
+    desc: 'This card sucks. wow wow wow wow wowowowowowo.',
+    data: {
+      health: 2,
+      attack: 1
+    }
+  }
+]
+
 function createCardPermanent(
   index,
   owner,
   spriteAssetName
 ) {
-  switch (spriteAssetName) {
-    case 'RagnoraTheRelentless':
+  for (const fetched of card_db) {
+    if (fetched.spriteAssetName == spriteAssetName) {
       return new CardPermanent(
         new CardAssetData({
           spriteName: spriteAssetName
@@ -62,65 +101,12 @@ function createCardPermanent(
         new CardData({
           index: index,
           owner: owner,
-          name: 'Ragnora The Relentless',
-          desc: 'This card is VERY STRONGU!!!'
+          name: fetched.name,
+          desc: fetched.desc
         }),
-        {
-          health: 5,
-          attack: 1
-        }
+        fetched.data
       );
-
-    case 'ArgeonHighmayne':
-      return new CardPermanent(
-        new CardAssetData({
-          spriteName: spriteAssetName
-        }),
-        new CardData({
-          index: index,
-          owner: owner,
-          name: 'Argeon Highmayne',
-          desc: 'Yay, plz kill me.'
-        }),
-        {
-          health: 8,
-          attack: 2
-        }
-      );
-
-    case 'ZirAnSunforge':
-      return new CardPermanent(
-        new CardAssetData({
-          spriteName: spriteAssetName
-        }),
-        new CardData({
-          index: index,
-          owner: owner,
-          name: 'Zir\'An Sunforge',
-          desc: 'Fuck Lyonar.'
-        }),
-        {
-          health: 5,
-          attack: 3
-        }
-      );
-
-    case 'RazorcragGolem':
-      return new CardPermanent(
-        new CardAssetData({
-          spriteName: spriteAssetName
-        }),
-        new CardData({
-          index: index,
-          owner: owner,
-          name: 'Razorcrag Golem',
-          desc: 'This card sucks. wow wow wow wow wowowowowowo.'
-        }),
-        {
-          health: 2,
-          attack: 1
-        }
-      );
+    }
   }
 }
 
