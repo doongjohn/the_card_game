@@ -1,8 +1,10 @@
-function compose(...mixins) {
-  let obj = {};
+function compose(obj, ...mixins) {
+  let result = obj;
   for (let mixin of mixins)
-    obj = { ...obj, ...mixin };
-  return obj;
+    result = { ...result, ...mixin };
+  if (obj.prototype)
+    result.prototype = obj.prototype;
+  return result;
 }
 
 function composed(val, ...comps) {

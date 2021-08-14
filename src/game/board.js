@@ -30,18 +30,17 @@ class Board {
     Board.spawnPermanentAt(9, 3, Match.oppsPlayer.commander);
   }
 
-  static gridToWorldPos(x, y) {
-    // convert grid position to world position
-    const tile = Board.getTileAt(x, y);
-    return { x: tile.gameObject.x, y: tile.gameObject.y };
-  }
-
   static occupied(x, y, arrays) {
     // check if a tile at x, y is occupied
     const index = toIndex(x, y);
     for (const array of arrays)
       if (array[index]) return true;
     return false;
+  }
+  static gridToWorldPos(x, y) {
+    // convert grid position to world position
+    const tile = Board.getTileAt(x, y);
+    return { x: tile.gameObject.x, y: tile.gameObject.y };
   }
 
   static getTileAt(x, y) {
@@ -56,33 +55,34 @@ class Board {
   }
 
   static getPermanentAt(x, y) {
-    // returns a permanent at x, y
+    // returns the card at x, y
     const index = toIndex(x, y);
     return index < 0 || index >= Board.tiles.length ? null : Board.permanents[index];
   }
-  static spawnPermanentAt(x, y, card) {
-    // spawns a boardObj at x, y and returns a boardObj
+  static setPermanentAt(x, y, card) {
+    // spawns a card piece at x, y
     if (Board.occupied(x, y, [Board.permanents])) {
       console.log(`Can't spawn a permanent here! (tile:[${x}, ${y}] is already occupied)`);
-      return null;
     } else {
       Board.permanents[toIndex(x, y)] = card;
-      return card.spawnBoardObj(x, y);
+      card.cardPiece.setPos(x, y);
+      card.cardPiece.show();
     }
   }
   static movePermanentAt(x, y, newX, newY) {
-    // moves a permanent to x, y
+    // moves a card piece to x, y
     const curPos = toIndex(x, y);
     const newPos = toIndex(newX, newY);
     Board.permanents[newPos] = Board.permanents[curPos];
     Board.permanents[curPos] = null;
   }
   static removePermanentAt(x, y) {
-    // remove a permanent at x, y
+    // remove a card piece at x, y
     const card = Board.getPermanentAt(x, y);
     if (card) {
       Board.permanents[toIndex(x, y)] = null;
-      card.destroyBoardObj();
+      card.cardPiece.pieceData.pos = null;
+      card.cardPiece.hide();
     }
   }
 };
@@ -197,7 +197,7 @@ class BoardPermanentData {
     for (const i in Board.permanents) {
       const owner = this.cardInfo[i]?.owner;
       const pos = toCoord(i);
-      if (!owner)  {
+      if (!owner) {
         Board.removePermanentAt(pos.x, pos.y);
         console.log('remove');
         continue;

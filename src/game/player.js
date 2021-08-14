@@ -23,17 +23,6 @@ class Player {
       createCardPermanent(i++, this, 'RagnoraTheRelentless'),
       createCardPermanent(i++, this, 'ZirAnSunforge'),
       createCardPermanent(i++, this, 'RagnoraTheRelentless'),
-      // new CardPermanent(this, 'RagnoraTheRelentless', i++),
-      // new CardPermanent(this, 'ZirAnSunforge', i++),
-      // new CardPermanent(this, 'RagnoraTheRelentless', i++),
-      // new CardPermanent(this, 'ZirAnSunforge', i++),
-      // new CardPermanent(this, 'RagnoraTheRelentless', i++),
-      // new CardPermanent(this, 'ZirAnSunforge', i++),
-      // new CardPermanent(this, 'RagnoraTheRelentless', i++),
-      // new CardPermanent(this, 'ZirAnSunforge', i++),
-      // new CardPermanent(this, 'ZirAnSunforge', i++),
-      // new CardPermanent(this, 'ZirAnSunforge', i++),
-      // new CardPermanent(this, 'RagnoraTheRelentless', i++)
     );
 
     // copy all cards to deck
@@ -117,14 +106,14 @@ class HandUI {
     const { startPos, gap } = this.getAlignData();
     let i = 0;
     for (const card of this.hand) {
-      card.spawnable = true;
       card.cardPaper.visual.x = startPos + (gap * i++);
       card.cardPaper.visual.y = HandUI.y;
     }
   }
   show() {
-    for (const card of this.hand)
+    for (const card of this.hand) {
       card.cardPaper.show();
+    }
   }
   hide() {
     for (const card of this.hand)
@@ -138,7 +127,6 @@ class HandUI {
     const { startPos, gap } = this.getAlignData();
     let i = 0;
     for (const card of this.hand) {
-      card.spawnable = true;
       card.cardPaper.show();
       card.cardPaper.tween?.remove();
       card.cardPaper.tween = Game.scene.tweens.add({

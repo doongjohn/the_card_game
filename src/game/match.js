@@ -16,8 +16,8 @@ class Match {
 
     // init commanders
     // TODO: track commanders hp and determine the game result
-    Match.player1.commander = new CardPermanent(Match.player1, 'ZirAnSunforge', -1);
-    Match.player2.commander = new CardPermanent(Match.player2, 'RagnoraTheRelentless', -1);
+    Match.player1.commander = createCardPermanent(Match.player1, 'ZirAnSunforge', -1);
+    Match.player2.commander = createCardPermanent(Match.player2, 'RagnoraTheRelentless', -1);
 
     // TEST: init players card
     Match.player1.cardInit();
