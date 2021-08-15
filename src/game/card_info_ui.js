@@ -17,7 +17,7 @@ class CardInfoUI {
 
     CardInfoUI.cardName = Game.spawn.text(
       0, 30,
-      "card name",
+      'card name',
       {
         font: '20px Play',
         align: 'center',

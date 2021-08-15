@@ -26,8 +26,8 @@ class Board {
     Board.tiles.forEach(tile => tile.gameObject.y -= 80);
 
     // spawn commanders
-    Board.spawnPermanentAt(1, 3, Match.turnPlayer.commander);
-    Board.spawnPermanentAt(9, 3, Match.oppsPlayer.commander);
+    Board.setPermanentAt(1, 3, Match.turnPlayer.commander);
+    Board.setPermanentAt(9, 3, Match.oppsPlayer.commander);
   }
 
   static occupied(x, y, arrays) {
@@ -67,6 +67,7 @@ class Board {
       Board.permanents[toIndex(x, y)] = card;
       card.cardPiece.setPos(x, y);
       card.cardPiece.show();
+      console.log(card.cardPiece.sprite);
     }
   }
   static movePermanentAt(x, y, newX, newY) {

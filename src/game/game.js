@@ -17,7 +17,8 @@ class Game {
   }
 
   // alias to Game.world.add
-  static addToWorld(layer, objs) {
+  static addToWorld(layer, ...objs) {
+    // FIXEME:
     function add(layer, obj) {
       if (obj instanceof Phaser.GameObjects.GameObject)
         Layer.add(layer, obj);
@@ -27,10 +28,8 @@ class Game {
         console.error("It can't be added to the world! (not a gameobject?)");
     }
 
-    if (Array.isArray(objs))
-      for (const obj of objs) add(layer, obj);
-    else
-      add(layer, objs);
+    for (const obj of objs)
+      add(layer, obj);
   }
 
   static tryPlayAnimation(thing, key) {

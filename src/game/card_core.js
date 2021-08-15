@@ -1,12 +1,10 @@
 // TODO: big refactoring using composition!
-// things to do
-// - card paper hover and click
-// - implement permanent functions doDamage, takeDamage, doAttack, etc
-// ref: https://github.com/victorlap/RAS
+// https://github.com/victorlap/RAS
 
-// everything is an action
-// action can run some other actions
-// action has an start and end event
+// TODO: big refactoring using actions!
+// - card effects can be described as series of actions
+// - implement permanent functions doDamage, takeDamage, doAttack, etc
+
 
 class CardAssetData {
   constructor({
@@ -38,7 +36,7 @@ class CardPaper {
   };
   static cardDescBox = {
     margin: 6,
-    width: CardPaper.width - 6 * 2,
+    width: CardPaper.cardBg.width - 6 * 2,
     height: 160,
     color: 0x182236
   };
@@ -108,6 +106,11 @@ class CardPaper {
 
     // interaction
     this.interaction = null;
+    // {
+    //   onHoverEnter: function(),
+    //   onHoverExit: function(),
+    //   onClick: function(),
+    // }
     this.visual.on('pointerover', () => { this.interaction?.onHoverEnter(); });
     this.visual.on('pointerout', () => { this.interaction?.onHoverExit(); });
     this.visual.on('pointerdown', () => { this.interaction?.onClick(); });
@@ -121,18 +124,12 @@ class CardPaper {
 }
 
 class CardPieceData {
-  constructor(assetData, data) {
+  constructor(data) {
     this.owner = data.owner;
     this.team = data.owner.team;
     this.tapped = false;
     this.faceDowned = false;
     this.pos = null;
-    this.sprite = new SpriteCardArt(0, 0, `CardArt:${assetData.spriteName}`, assetData.spriteName)
-      .setScale(1.6)
-      .setOrigin(0.5, 1);
-
-    // TODO: set layer based on card type
-    Game.addToWorld(Layer.Permanent, this.sprite);
   }
 }
 class CardPiece {
@@ -140,23 +137,29 @@ class CardPiece {
   constructor(assetData, pieceData) {
     this.pieceData = pieceData;
 
-    // tween
-    this.tween = null;
+    // sprite
+    this.sprite = new SpriteCardArt(0, 0, `CardArt:${assetData.spriteName}`, assetData.spriteName)
+    .setScale(1.6)
+    .setOrigin(0.5, 1);
 
-    this.hide();
-    this.updateVisual();
+    // TODO: set layer based on card type
+    Game.addToWorld(Layer.Permanent, this.sprite);
 
     // play animation
-    Game.tryPlayAnimation(this.pieceData.sprite, `CardArt:Idle:${assetData.spriteName}`);
+    Game.tryPlayAnimation(this.sprite, `CardArt:Idle:${assetData.spriteName}`);
+
+    this.tween = null;
+    this.hide();
+    this.updateVisual();
   }
   hide() {
-    this.pieceData.sprite.setVisible(false);
+    this.sprite.setVisible(false);
   }
   show() {
-    this.pieceData.sprite.setVisible(true);
+    this.sprite.setVisible(true);
   }
   updateVisual() {
-    this.pieceData.sprite.flipX = this.pieceData.team != Team.P1;
+    this.sprite.flipX = this.pieceData.team != Team.P1;
   }
 
   setPos(x, y) {
@@ -173,8 +176,8 @@ class CardPiece {
     this.tween = null;
 
     const worldPos = Board.gridToWorldPos(x, y);
-    this.pieceData.sprite.x = worldPos.x;
-    this.pieceData.sprite.x = worldPos.y + 60;
+    this.sprite.x = worldPos.x;
+    this.sprite.x = worldPos.y + 60;
   }
   tap(bool) {
     if (bool) {
@@ -205,7 +208,6 @@ class Card {
     this.cardPaper = new CardPaper(this.assetData, this.data);
   }
   createCardPiece() {
-    console.log(this.data);
-    this.cardPiece = new CardPiece(this.assetData, new CardPieceData(this.assetData, this.data));
+    this.cardPiece = new CardPiece(this.assetData, new CardPieceData(this.data));
   }
 }

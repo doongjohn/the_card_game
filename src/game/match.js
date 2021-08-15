@@ -16,8 +16,8 @@ class Match {
 
     // init commanders
     // TODO: track commanders hp and determine the game result
-    Match.player1.commander = createCardPermanent(Match.player1, 'ZirAnSunforge', -1);
-    Match.player2.commander = createCardPermanent(Match.player2, 'RagnoraTheRelentless', -1);
+    Match.player1.commander = createCardPermanent(-1, Match.player1, 'ZirAnSunforge');
+    Match.player2.commander = createCardPermanent(-1, Match.player2, 'RagnoraTheRelentless');
 
     // TEST: init players card
     Match.player1.cardInit();
@@ -33,14 +33,14 @@ class Match {
       Match.turnPlayer.commander,
       (self, target) => console.log(`I hit "${target.data.name}"`)
     );
-    EffectCallback.add("onDealDamage", onDealDamageEffectP1);
+    EffectCallback.add('onDealDamage', onDealDamageEffectP1);
 
     // init ui
     CardInfoUI.init();
     Match.turnPlayer.handUI.show();
     Match.oppsPlayer.handUI.hide();
 
-    // TEMP UI: help text
+    // TEST: ui
     Game.spawn.text(10, 5,
       `[SPACE]: end turn
 [P]: teleport
@@ -51,7 +51,6 @@ class Match {
       font: '20px consolas',
       align: 'left'
     });
-    // TEMP UI: turn text
     Game.spawn.rectangle(Game.center.x, 10, 200, 100, 0x000000);
     Match.turnText = Game.spawn.text(Game.center.x, 10, 'P1\'s turn', {
       color: '#ffffff',

@@ -260,7 +260,7 @@ class CmdUnitPlanAttack {
 
     // check if there are no enemies near by
     if (!findNearByEnemy()) {
-      console.log("[Match] No attack target found.");
+      console.log('[Match] No attack target found.');
       return;
     }
 
@@ -317,7 +317,7 @@ class CmdUnitSpawn extends UserCommand {
     UserAction.setState(UserAction.StateView);
 
     // spawn a selected permanent
-    Board.spawnPermanentAt(tile.pos.x, tile.pos.y, Match.turnPlayer.selectedCard);
+    Board.setPermanentAt(tile.pos.x, tile.pos.y, Match.turnPlayer.selectedCard);
 
     // remove from hand
     Match.turnPlayer.handRemove(Match.turnPlayer.selectedCard);
