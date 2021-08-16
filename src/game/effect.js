@@ -19,14 +19,15 @@ class Effect {
     this.index = 0;
     this.type = type;
     this.card = card;
-    this.action = function(self) {
-      if (self == this.card) {
-        console.log(`<Effect:${EffectType.toString(this.type)}> Player${Match.turn}'s "${self.data.name}"`);
-        action(...arguments);
-      }
+    this.action = function (self) {
+      if (self != this.card) return;
+
+      action(...arguments);
+      console.log(
+        `<Effect:${EffectType.toString(this.type)}> Player${Match.turn}'s "${self.data.name}"`
+      );
     };
   }
-
   setIndex(i) {
     this.index = i;
   }
@@ -34,6 +35,7 @@ class Effect {
 
 class EffectCallback {
   // TODO: use linked list
+  static onAttack = [];
   static onDealDamage = [];
   static onTakeDamage = [];
 
@@ -47,31 +49,28 @@ class EffectCallback {
     array.splice(effect.index, 1);
   }
   static find(when, effect) {
-    const array = EffectCallback[when];
-    let i = 0;
-    for (const fx of array) {
-      if (fx == effect) return i;
-      ++i;
-    }
-    return -1;
+    return EffectCallback[when].indexOf(effect);
   }
 }
 
 class EffectChain {
+  // TODO: implement effect chain
   constructor() {
     this.effects = [];
   }
 }
 
 class EffectAction {
-  static onDealDamage(self, target) {
-    for (const fx of EffectCallback.onDealDamage) {
+  static onAttack(self, target) {
+    for (let fx of EffectCallback.onAttack)
       fx.action(self, target);
-    }
+  }
+  static onDealDamage(self, target) {
+    for (let fx of EffectCallback.onDealDamage)
+      fx.action(self, target);
   }
   static onTakeDamage(self, attacker) {
-    for (const fx of EffectCallback.onTakeDamage) {
+    for (let fx of EffectCallback.onTakeDamage)
       fx.action(self, attacker);
-    }
   }
 }

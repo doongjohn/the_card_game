@@ -138,10 +138,10 @@ const CardPermanentData = {
 };
 const CardPiecePermanentLogic = {
   doDamage(target) {
-    target.takeDamage(this, this.pieceData.attack);
+    target.takeDamage(this.card, this.pieceData.attack);
   },
   doAttack(target) {
-    EffectAction.onDealDamage(this, target);
+    EffectAction.onAttack(this.card, target.card);
     this.doDamage(target);
     this.tap(true);
   },
@@ -151,7 +151,7 @@ const CardPiecePermanentLogic = {
     this.card.cardPaper.updatePermanentStatsUi(this.pieceData);
 
     // run effect
-    EffectAction.onTakeDamage(this, attacker);
+    EffectAction.onTakeDamage(this.card, attacker);
 
     // TODO: move this card to the graveyard
     if (this.pieceData.health <= 0)

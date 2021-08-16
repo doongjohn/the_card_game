@@ -39,12 +39,14 @@ class Match {
     Match.turnPlayer.handUI.show();
 
     // TEST: test effect
-    // const onDealDamageEffectP1 = new Effect(
-    //   EffectType.MandatoryTrigger,
-    //   Match.player1.commander,
-    //   (self, target) => console.log(`I hit "${target.data.name}"`)
-    // );
-    // EffectCallback.add('onDealDamage', onDealDamageEffectP1);
+    const onAttackEffectP1 = new Effect(
+      EffectType.MandatoryTrigger,
+      Match.player1.commander,
+      (self, target) => {
+        console.log(`I hit "${target.data.name}"!`);
+      }
+    );
+    EffectCallback.add('onAttack', onAttackEffectP1);
 
     // TEST: ui
     Game.spawn.text(10, 5,
