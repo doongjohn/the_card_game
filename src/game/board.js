@@ -171,13 +171,17 @@ class BoardPermanentData {
     this.cardInfo = [];
     this.cardPieceData = [];
     for (const card of Board.permanents) {
-      if (card) {
-        this.cardInfo.push({ owner: card.owner, index: card.index });
-        this.cardPieceData.push(card.cardPiece.pieceData.clone());
-      } else {
+      if (!card) {
         this.cardInfo.push(null);
         this.cardPieceData.push(null);
+        continue;
       }
+
+      this.cardInfo.push({
+        index: card.index,
+        owner: card.owne
+      });
+      this.cardPieceData.push(card.cardPiece.pieceData.clone());
     }
   }
   restore() {
@@ -189,20 +193,20 @@ class BoardPermanentData {
         continue;
       }
 
-      const permanent = this.cardInfo[i].index == -1
+      const index = this.cardInfo[i].index;
+      const card = index == -1
         ? owner.commander
-        : owner.allCards[this.cardInfo[i].index];
+        : owner.allCards[index];
+      const data = this.cardPieceData[i];
 
-      if (!permanent?.boardObj)
-        permanent.spawnBoardObj(pos.x, pos.y);
+      Board.setPermanentAt(data.pos.x, data.pos.y, card);
 
       // restore saved data
-      const data = this.cardPieceData[i];
-      permanent.boardObj.data = data;
-      permanent.boardObj.setPos(pos.x, pos.y);
-      data.tapped ? permanent.tap() : permanent.untap();
+      card.cardPiece.pieceData = data;
+      card.cardPiece.setPos(data.pos.x, data.pos.y);
+      card.tap(data.tapped);
 
-      Board.permanents[i] = permanent;
+      Board.permanents[i] = card;
     }
   }
 }

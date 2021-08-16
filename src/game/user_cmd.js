@@ -67,7 +67,8 @@ class CmdEndTurn extends UserCommand {
     Match.turn = newTurn;
 
     // update stuffs
-    Board.permanents.forEach(permanent => permanent?.resetOnTurnStart());
+    // TODO: refactor end of turn to action
+    // Board.permanents.forEach(permanent => permanent?.resetOnTurnStart());
     Board.setTileStateAll(TileStateNormal);
 
     // update ui
@@ -124,7 +125,7 @@ class CmdUnitTeleport extends UserCommand {
     UserAction.setState(UserAction.StateView);
 
     // update selected tile
-    Match.turnPlayer.selectedTile.getPermanent().setPos(tile.pos.x, tile.pos.y);
+    Match.turnPlayer.selectedTile.getPermanent().cardPiece.setPos(tile.pos.x, tile.pos.y);
     Match.turnPlayer.selectedTile = tile;
 
     // update tile state
@@ -146,7 +147,9 @@ class CmdUnitPlanMove {
     if (!permanent) return;
 
     const tile = Match.turnPlayer.selectedTile;
-    if (!permanent.isMyTurn() || permanent.tapped() || !permanent.canMove())
+    if (Match.turn != permanent.cardPiece.pieceData.team
+      || permanent.cardPiece.pieceData.tapped
+      || !permanent.cardPiece.canMove())
       return;
 
     // Unit Plan Move
@@ -204,7 +207,7 @@ class CmdUnitMove extends UserCommand {
     UserAction.setState(UserAction.StateView);
 
     // update selected tile
-    Match.turnPlayer.selectedTile.getPermanent().moveTo(tile.pos.x, tile.pos.y);
+    Match.turnPlayer.selectedTile.getPermanent().cardPiece.moveTo(tile.pos.x, tile.pos.y);
     Match.turnPlayer.selectedTile = tile;
 
     // update tile state

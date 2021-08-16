@@ -36,10 +36,7 @@ class Match {
 
     // init ui
     CardInfoUI.init();
-
-    // setup ui
     Match.turnPlayer.handUI.show();
-    Match.oppsPlayer.handUI.hide();
 
     // TEST: test effect
     // const onDealDamageEffectP1 = new Effect(

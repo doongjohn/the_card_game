@@ -111,6 +111,9 @@ class CardPaper {
     this.visual.on('pointerover', () => { this.interaction?.onHoverEnter(); });
     this.visual.on('pointerout', () => { this.interaction?.onHoverExit(); });
     this.visual.on('pointerdown', () => { this.interaction?.onClick(); });
+
+    // hide by default
+    this.hide();
   }
   hide() {
     this.visual.setVisible(false);

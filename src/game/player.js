@@ -4,6 +4,24 @@ class Team {
   static P2 = 2;
 }
 
+const TestDeckP1 = [
+  'RagnoraTheRelentless',
+  'RagnoraTheRelentless',
+  'RagnoraTheRelentless',
+  'RagnoraTheRelentless',
+  'RagnoraTheRelentless',
+  'RagnoraTheRelentless',
+];
+
+const TestDeckP2 = [
+  'ZirAnSunforge',
+  'ZirAnSunforge',
+  'ZirAnSunforge',
+  'ZirAnSunforge',
+  'ZirAnSunforge',
+  'ZirAnSunforge',
+];
+
 class Player {
   constructor(team) {
     this.team = team;
@@ -22,19 +40,8 @@ class Player {
   cardInit() {
     // TODO: read cards from user deck
     let i = 0;
-    this.allCards.push(
-      createCardPermanent(i++, this, 'RagnoraTheRelentless'),
-      createCardPermanent(i++, this, 'ZirAnSunforge'),
-      // createCardPermanent(i++, this, 'RagnoraTheRelentless'),
-      // createCardPermanent(i++, this, 'ZirAnSunforge'),
-      // createCardPermanent(i++, this, 'RagnoraTheRelentless'),
-      // createCardPermanent(i++, this, 'ZirAnSunforge'),
-      // createCardPermanent(i++, this, 'RagnoraTheRelentless'),
-      // createCardPermanent(i++, this, 'ZirAnSunforge'),
-      // createCardPermanent(i++, this, 'RagnoraTheRelentless'),
-      // createCardPermanent(i++, this, 'ZirAnSunforge'),
-      // createCardPermanent(i++, this, 'RagnoraTheRelentless'),
-    );
+    for (let spriteAssetName of this.team == Team.P1 ? TestDeckP1 : TestDeckP2)
+      this.allCards.push(createCardPermanent(i++, this, spriteAssetName));
 
     // copy all cards to deck
     // TODO: shuffle the cards

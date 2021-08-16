@@ -56,7 +56,7 @@ const CardPaperPermanentLogic = {
 };
 class CardPaperInteractHand {
   constructor(card) {
-    this.card = card; // FIXEME: WTF IS HAPPENING!
+    this.card = card;
     this.originalIndex = 0;
   }
   onHoverEnter() {
@@ -83,6 +83,7 @@ class CardPaperInteractHand {
     Match.turnPlayer.handUI.update();
   }
   onClick() {
+    console.log(this);
     // plan spawn this card
     UserAction.execute(CmdUnitPlanSpawn, this.card);
   }
@@ -95,11 +96,11 @@ const CardMovableData = {
 };
 const CardPieceMovableLogic = {
   canMove() {
-    return this.curMoveCount < this.maxMoveCount;
+    return this.pieceData.curMoveCount < this.pieceData.maxMoveCount;
   },
   moveTo(x, y) {
     Board.movePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y);
-    this.pieceData.moveCount++;
+    this.pieceData.curMoveCount++;
     this.pieceData.pos.x = x;
     this.pieceData.pos.y = y;
 
@@ -107,20 +108,20 @@ const CardPieceMovableLogic = {
     const speed = 0.35;
     const pos = Board.gridToWorldPos(x, y);
     pos.y += 60;
-    const dist = Phaser.Math.Distance.BetweenPoints(pos, this.pieceData.sprite);
+    const dist = Phaser.Math.Distance.BetweenPoints(pos, this.sprite);
 
     // tween movement
     this.tween?.remove();
     this.tween = Game.scene.tweens.add({
       // tween options
-      targets: this.pieceData.sprite,
+      targets: this.sprite,
       repeat: 0,
       ease: 'Linear',
       duration: dist / speed,
 
       // tween props
-      x: { from: this.pieceData.sprite.x, to: pos.x },
-      y: { from: this.pieceData.sprite.y, to: pos.y },
+      x: { from: this.sprite.x, to: pos.x },
+      y: { from: this.sprite.y, to: pos.y },
 
       // on tween complete
       onCompleteParams: [this],
@@ -195,6 +196,9 @@ function createCardPermanent(
     card.createCardPiece(
       permanentData,
       fetched.data,
+    );
+    card.cardPiece = compose(
+      card.cardPiece,
       CardPieceMovableLogic
     );
 
