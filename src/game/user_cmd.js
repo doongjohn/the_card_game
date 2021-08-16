@@ -37,7 +37,7 @@ class CmdCancelAll {
 
 class CmdCancel {
   static execute() {
-    if (UserAction.state != UserAction.StateEmpty)
+    if (UserAction.state == UserAction.StateEmpty)
       return;
 
     if (UserAction.state == UserAction.StateView) {
@@ -313,6 +313,7 @@ class CmdUnitPlanSpawn {
 class CmdUnitSpawn extends UserCommand {
   execute(tile) {
     this.save(PlayerData, BoardPermanentData);
+
     // update user action state
     UserAction.setState(UserAction.StateView);
 

@@ -1,10 +1,11 @@
 class Match {
+  static player1 = null;
+  static player2 = null;
+  static players = [];
+
   static turn = Team.P1;
-  static player1 = new Player(Team.P1);
-  static player2 = new Player(Team.P2);
-  static players = [Match.player1, Match.player2];
-  static turnPlayer = Match.player1;
-  static oppsPlayer = Match.player2;
+  static turnPlayer = null;
+  static oppsPlayer = null;
 
   // TODO: make a card manager
   static boardarea = [];
@@ -14,31 +15,39 @@ class Match {
     // init input
     UserInput.init();
 
+    // init players
+    Match.player1 = new Player(Team.P1);
+    Match.player2 = new Player(Team.P2);
+    Match.players = [Match.player1, Match.player2];
+
+    Match.turnPlayer = Match.player1;
+    Match.oppsPlayer = Match.player2;
+
     // init commanders
     // TODO: track commanders hp and determine the game result
     Match.player1.commander = createCardPermanent(-1, Match.player1, 'ZirAnSunforge');
     Match.player2.commander = createCardPermanent(-1, Match.player2, 'RagnoraTheRelentless');
 
-    // TEST: init players card
+    // init players card
     Match.player1.cardInit();
     Match.player2.cardInit();
-
-    // TEST: init players hand
     Match.player1.handInit();
     Match.player2.handInit();
 
-    // TEST: test effect
-    const onDealDamageEffectP1 = new Effect(
-      EffectType.MandatoryTrigger,
-      Match.turnPlayer.commander,
-      (self, target) => console.log(`I hit "${target.data.name}"`)
-    );
-    EffectCallback.add('onDealDamage', onDealDamageEffectP1);
-
     // init ui
     CardInfoUI.init();
+
+    // setup ui
     Match.turnPlayer.handUI.show();
     Match.oppsPlayer.handUI.hide();
+
+    // TEST: test effect
+    // const onDealDamageEffectP1 = new Effect(
+    //   EffectType.MandatoryTrigger,
+    //   Match.player1.commander,
+    //   (self, target) => console.log(`I hit "${target.data.name}"`)
+    // );
+    // EffectCallback.add('onDealDamage', onDealDamageEffectP1);
 
     // TEST: ui
     Game.spawn.text(10, 5,

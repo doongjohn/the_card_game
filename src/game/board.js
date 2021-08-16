@@ -10,14 +10,14 @@ class Board {
   static permanents = Array(Board.size.x * Board.size.y).fill(null);
 
   static init() {
-    // background image
-    const bg = Game.spawn.sprite(0, -100, 'BattleMap5').setScale(0.85);
-    Game.addToWorld(Layer.BG, bg);
+    // stage background image
+    const stageBg = Game.spawn.sprite(0, -100, 'BattleMap5').setScale(0.85);
+    Game.addToWorld(Layer.BG, stageBg);
 
     // spawn tiles
     for (const i in Board.tiles) {
       const tile = new Tile(i, Board.tileSize, Board.gapSize);
-      Game.addToWorld(Layer.Board, tile.gameObject);
+      Game.addToWorld(Layer.Board, tile);
       Board.tiles[i] = tile;
     }
 
@@ -25,7 +25,7 @@ class Board {
     gridAlignCenterGameObject(Board.tiles, Board.size, Board.cellSize);
     Board.tiles.forEach(tile => tile.gameObject.y -= 80);
 
-    // spawn commanders
+    // set commanders
     Board.setPermanentAt(1, 3, Match.turnPlayer.commander);
     Board.setPermanentAt(9, 3, Match.oppsPlayer.commander);
   }
@@ -67,7 +67,6 @@ class Board {
       Board.permanents[toIndex(x, y)] = card;
       card.cardPiece.setPos(x, y);
       card.cardPiece.show();
-      console.log(card.cardPiece.sprite);
     }
   }
   static movePermanentAt(x, y, newX, newY) {
@@ -164,33 +163,20 @@ function gridAlignCenterGameObject(items, gridSize, cellSize) {
   }
 }
 
-class BoardTileStateData {
-  // TODO: do I really need this?
-  constructor() {
-    this.tileStates = [];
-    for (const tile of Board.tiles)
-      this.tileStates.push(tile.fsm.curState);
-  }
-  restore() {
-    for (const i in Board.tiles)
-      Board.tiles[i].fsm.setStateProto(this.tileStates[i]);
-  }
-}
-
 class BoardPermanentData {
   // I need to make boardObj spawn / remove logic for BoardPermanentData
   // and also save all boardobj stats (attack, health, etc)
   // this can get complex if I implement effects...
   constructor() {
     this.cardInfo = [];
-    this.boardObjData = [];
-    for (const permanent of Board.permanents) {
-      if (permanent) {
-        this.cardInfo.push({ owner: permanent.cardOwner, index: permanent.cardIndex });
-        this.boardObjData.push(permanent.boardObj.data.clone());
+    this.cardPieceData = [];
+    for (const card of Board.permanents) {
+      if (card) {
+        this.cardInfo.push({ owner: card.owner, index: card.index });
+        this.cardPieceData.push(card.cardPiece.pieceData.clone());
       } else {
         this.cardInfo.push(null);
-        this.boardObjData.push(null);
+        this.cardPieceData.push(null);
       }
     }
   }
@@ -200,7 +186,6 @@ class BoardPermanentData {
       const pos = toCoord(i);
       if (!owner) {
         Board.removePermanentAt(pos.x, pos.y);
-        console.log('remove');
         continue;
       }
 
@@ -212,7 +197,7 @@ class BoardPermanentData {
         permanent.spawnBoardObj(pos.x, pos.y);
 
       // restore saved data
-      const data = this.boardObjData[i];
+      const data = this.cardPieceData[i];
       permanent.boardObj.data = data;
       permanent.boardObj.setPos(pos.x, pos.y);
       data.tapped ? permanent.tap() : permanent.untap();

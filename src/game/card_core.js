@@ -85,10 +85,7 @@ class CardPaper {
 
     // container for this card paper
     this.visual = Game.spawn.container(0, 0);
-    this.visual.setSize(
-      CardPaper.cardBg.width,
-      CardPaper.cardBg.height
-    );
+    this.visual.setSize(CardPaper.cardBg.width, CardPaper.cardBg.height);
     this.visual.setInteractive();
     this.visual.add([
       this.cardBg,
@@ -131,6 +128,13 @@ class CardPieceData {
     this.faceDowned = false;
     this.pos = null;
   }
+  clone() {
+    const copy = new CardPieceData(this);
+    copy.tapped = this.tapped;
+    copy.faceDowned = this.faceDowned;
+    copy.pos = this.pos ? { ...this.pos } : null;
+    return copy;
+  }
 }
 class CardPiece {
   // this is an actual piece that exists on the board.
@@ -139,8 +143,8 @@ class CardPiece {
 
     // sprite
     this.sprite = new SpriteCardArt(0, 0, `CardArt:${assetData.spriteName}`, assetData.spriteName)
-    .setScale(1.6)
-    .setOrigin(0.5, 1);
+      .setScale(1.6)
+      .setOrigin(0.5, 1);
 
     // TODO: set layer based on card type
     Game.addToWorld(Layer.Permanent, this.sprite);
@@ -163,6 +167,7 @@ class CardPiece {
   }
 
   setPos(x, y) {
+    // set position data
     if (this.pieceData.pos) {
       Board.movePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y);
       this.pieceData.pos.x = x;
@@ -175,9 +180,10 @@ class CardPiece {
     this.tween?.remove();
     this.tween = null;
 
+    // set world position
     const worldPos = Board.gridToWorldPos(x, y);
     this.sprite.x = worldPos.x;
-    this.sprite.x = worldPos.y + 60;
+    this.sprite.y = worldPos.y + 60;
   }
   tap(bool) {
     if (bool) {
@@ -204,10 +210,17 @@ class Card {
     this.assetData = assetData;
     this.data = data;
   }
-  createCardPaper() {
-    this.cardPaper = new CardPaper(this.assetData, this.data);
+  createCardPaper(...mixins) {
+    this.cardPaper = compose(
+      new CardPaper(this.assetData, this.data),
+      ...mixins
+    );
   }
-  createCardPiece() {
+  createCardPiece(...mixins) {
     this.cardPiece = new CardPiece(this.assetData, new CardPieceData(this.data));
+    this.cardPiece.pieceData = compose(
+      this.cardPiece.pieceData,
+      ...mixins
+    );
   }
 }

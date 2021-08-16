@@ -18,18 +18,20 @@ class Game {
 
   // alias to Game.world.add
   static addToWorld(layer, ...objs) {
-    // FIXEME:
-    function add(layer, obj) {
+    function logic(obj) {
       if (obj instanceof Phaser.GameObjects.GameObject)
         Layer.add(layer, obj);
       else if (obj.gameObject !== undefined)
         Layer.add(layer, obj.gameObject);
       else
-        console.error("It can't be added to the world! (not a gameobject?)");
+        console.error(`It can't be added to the world! ("${obj}": doesn't contains a gameobject)`);
     }
-
-    for (const obj of objs)
-      add(layer, obj);
+    for (const obj of objs) {
+      if (Array.isArray(obj))
+        for (const o of obj) logic(o);
+      else
+        logic(obj);
+    }
   }
 
   static tryPlayAnimation(thing, key) {

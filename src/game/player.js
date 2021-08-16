@@ -8,11 +8,14 @@ class Player {
   constructor(team) {
     this.team = team;
     this.commander = null;
-    this.allCards = []; // this is used when user undo and the system wants the old card because cadrIndex will not change
-    this.deck = null;
+
+    this.allCards = [];
+    this.deck = [];
     this.hand = [];
+
     this.selectedTile = null;
     this.selectedCard = null;
+
     this.handUI = new HandUI(this);
   }
 
@@ -22,7 +25,15 @@ class Player {
     this.allCards.push(
       createCardPermanent(i++, this, 'RagnoraTheRelentless'),
       createCardPermanent(i++, this, 'ZirAnSunforge'),
-      createCardPermanent(i++, this, 'RagnoraTheRelentless'),
+      // createCardPermanent(i++, this, 'RagnoraTheRelentless'),
+      // createCardPermanent(i++, this, 'ZirAnSunforge'),
+      // createCardPermanent(i++, this, 'RagnoraTheRelentless'),
+      // createCardPermanent(i++, this, 'ZirAnSunforge'),
+      // createCardPermanent(i++, this, 'RagnoraTheRelentless'),
+      // createCardPermanent(i++, this, 'ZirAnSunforge'),
+      // createCardPermanent(i++, this, 'RagnoraTheRelentless'),
+      // createCardPermanent(i++, this, 'ZirAnSunforge'),
+      // createCardPermanent(i++, this, 'RagnoraTheRelentless'),
     );
 
     // copy all cards to deck
@@ -34,14 +45,9 @@ class Player {
     // TODO: pick some cards from the top of the deck
     this.hand.push(...this.deck);
     this.handUI.init();
-    if (this == Match.turnPlayer)
-      this.handUI.show();
   }
-  handAdd() {
-    if (arguments.length > 1)
-      this.hand.push(...arguments);
-    else
-      this.hand.push(arguments[0]);
+  handAdd(...cards) {
+    this.hand.push(...cards);
     this.handUI.update();
   }
   handRemove(card) {
@@ -81,52 +87,47 @@ class HandUI {
 
   constructor(player) {
     this.player = player;
-    this.hand = this.player.hand;
     this.width = 250 + 10; // CardPaper width + gap
     this.maxWidth = this.width * (HandUI.maxCard - 1);
   }
 
   getAlignData() {
-    return this.hand.length <= HandUI.maxCard ?
+    const length = this.player.hand.length;
+    return length <= HandUI.maxCard ?
       {
-        startPos: -this.width / 2 * (this.hand.length - 1),
+        startPos: -this.width / 2 * (length - 1),
         gap: this.width
       } :
       {
         startPos: -this.maxWidth / 2,
-        gap: this.maxWidth / (this.hand.length - 1)
+        gap: this.maxWidth / (length - 1)
       };
   }
 
   init() {
-    // update hand
-    this.hand = this.player.hand;
-
     // align cards
     const { startPos, gap } = this.getAlignData();
     let i = 0;
-    for (const card of this.hand) {
+    for (const card of this.player.hand) {
       card.cardPaper.visual.x = startPos + (gap * i++);
       card.cardPaper.visual.y = HandUI.y;
     }
   }
   show() {
-    for (const card of this.hand) {
+    for (const card of this.player.hand) {
       card.cardPaper.show();
     }
   }
   hide() {
-    for (const card of this.hand)
+    for (const card of this.player.hand) {
       card.cardPaper.hide();
+    }
   }
   update() {
-    // update hand
-    this.hand = this.player.hand;
-
     // align cards
     const { startPos, gap } = this.getAlignData();
     let i = 0;
-    for (const card of this.hand) {
+    for (const card of this.player.hand) {
       card.cardPaper.show();
       card.cardPaper.tween?.remove();
       card.cardPaper.tween = Game.scene.tweens.add({
@@ -149,18 +150,18 @@ class HandUI {
     }
   }
   focusCard(card) {
-    if (this.hand.length <= HandUI.maxCard)
+    if (this.player.hand.length <= HandUI.maxCard)
       return;
 
     const { startPos, gap } = {
       startPos: -this.maxWidth / 2,
-      gap: this.maxWidth / (this.hand.length - 1)
+      gap: this.maxWidth / (this.player.hand.length - 1)
     };
     const offset = this.width - gap;
-    const startIndex = this.hand.indexOf(card) + 1;
+    const startIndex = this.player.hand.indexOf(card) + 1;
 
-    for (let i = startIndex; i < this.hand.length; ++i) {
-      const card = this.hand[i];
+    for (let i = startIndex; i < this.player.hand.length; ++i) {
+      const card = this.player.hand[i];
       card.cardPaper.tween?.remove();
       card.cardPaper.tween = Game.scene.tweens.add({
         // tween options

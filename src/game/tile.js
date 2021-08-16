@@ -49,9 +49,14 @@ class Tile {
       size.y + gapSize.y,
       TileColor.FG.rgb,
       TileColor.FG.alpha
-    ).setInteractive().on('pointerdown', () => this.fsm.curState.onClick(this));
+    )
+      .setInteractive()
+      .on('pointerdown', () => this.fsm.curState.onClick(this));
 
-    return Game.spawn.container(0, 0, [this.tileBg, this.tileFg]);
+    return Game.spawn.container(0, 0, [
+      this.tileBg,
+      this.tileFg
+    ]);
   }
 
   setHoverEnter(func) {

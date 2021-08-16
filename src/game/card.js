@@ -56,7 +56,7 @@ const CardPaperPermanentLogic = {
 };
 class CardPaperInteractHand {
   constructor(card) {
-    this.card = card;
+    this.card = card; // FIXEME: WTF IS HAPPENING!
     this.originalIndex = 0;
   }
   onHoverEnter() {
@@ -169,7 +169,9 @@ function createCardPermanent(
     if (fetched.spriteAssetName != spriteAssetName)
       continue;
 
-    const result = new Card(
+    const permanentData = compose(CardPermanentData, CardMovableData);
+
+    const card = new Card(
       new CardAssetData({
         spriteName: spriteAssetName
       }),
@@ -180,30 +182,25 @@ function createCardPermanent(
           name: fetched.name,
           desc: fetched.desc
         }),
-        CardPermanentData,
-        CardMovableData,
-        fetched.data,
+        permanentData,
+        fetched.data
       )
     );
 
-    result.createCardPaper();
-    result.cardPaper = compose(
-      result.cardPaper,
+    card.createCardPaper(
       CardPaperPermanentData,
       CardPaperPermanentLogic
     );
-    // when added to the hand
-    result.cardPaper.interaction = new CardPaperInteractHand(result);
 
-    result.createCardPiece();
-    result.cardPiece.pieceData = compose(
-      result.cardPiece.pieceData,
-      CardPermanentData,
-      CardMovableData,
-      CardPieceMovableLogic,
+    card.createCardPiece(
+      permanentData,
       fetched.data,
+      CardPieceMovableLogic
     );
 
-    return result;
+    // when added to the hand
+    card.cardPaper.interaction = new CardPaperInteractHand(card);
+
+    return card;
   }
 }
