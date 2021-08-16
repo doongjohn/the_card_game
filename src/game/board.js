@@ -164,9 +164,10 @@ function gridAlignCenterGameObject(items, gridSize, cellSize) {
 }
 
 class BoardPermanentData {
-  // I need to make boardObj spawn / remove logic for BoardPermanentData
-  // and also save all boardobj stats (attack, health, etc)
+  // FIXEME: what's happening!?
+  // TODO: save all stats
   // this can get complex if I implement effects...
+  // and maybe there is a better way of managing history...
   constructor() {
     this.cardInfo = [];
     this.cardPieceData = [];
@@ -194,16 +195,16 @@ class BoardPermanentData {
       }
 
       const index = this.cardInfo[i].index;
-      const card = index == -1
-        ? owner.commander
-        : owner.allCards[index];
+      const card = index == -1 ? owner.commander : owner.allCards[index];
       const data = this.cardPieceData[i];
 
-      Board.setPermanentAt(data.pos.x, data.pos.y, card);
+      if (Board.occupied(pos.x, pos.y, Board.permanents))
+        Board.removePermanentAt(pos.x, pos.y);
+      Board.setPermanentAt(pos.x, pos.y, card);
 
       // restore saved data
       card.cardPiece.pieceData = data;
-      card.cardPiece.setPos(data.pos.x, data.pos.y);
+      card.cardPiece.setPos(pos.x, pos.y);
       card.tap(data.tapped);
 
       Board.permanents[i] = card;
