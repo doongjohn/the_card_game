@@ -4,6 +4,7 @@ class Team {
   static P2 = 2;
 }
 
+// TEST: Deck
 const TestDeckP1 = [
   'RagnoraTheRelentless',
   'RagnoraTheRelentless',
@@ -12,7 +13,6 @@ const TestDeckP1 = [
   'RagnoraTheRelentless',
   'RagnoraTheRelentless',
 ];
-
 const TestDeckP2 = [
   'ZirAnSunforge',
   'ZirAnSunforge',
@@ -38,7 +38,7 @@ class Player {
   }
 
   cardInit() {
-    // TODO: read cards from user deck
+    // TODO: get cards from user deck
     let i = 0;
     for (let spriteAssetName of this.team == Team.P1 ? TestDeckP1 : TestDeckP2)
       this.allCards.push(createCardPermanent(i++, this, spriteAssetName));
@@ -63,7 +63,7 @@ class Player {
       if (card == c) {
         this.hand[i].cardPaper.hide();
         this.hand.splice(i, 1);
-        // TODO: send this card to some container
+        // TODO: send this card to some card container (like deck or somthing)
         break;
       }
       ++i;

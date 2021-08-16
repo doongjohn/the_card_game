@@ -1,12 +1,9 @@
-// TODO: big refactoring using composition!
-// https://github.com/victorlap/RAS
-
 // TODO: big refactoring using actions!
 // - card effects can be described as series of actions
-// - implement permanent functions doDamage, takeDamage, doAttack, etc
-
 
 class CardAssetData {
+  // this is an asset data for this card
+  // this data must not change
   constructor({
     spriteName
   } = {}) {
@@ -14,6 +11,8 @@ class CardAssetData {
   }
 }
 class CardData {
+  // this is an base data for this card
+  // this data must not change
   constructor({
     index,
     owner,
@@ -27,6 +26,8 @@ class CardData {
   }
 }
 
+// TODO: card paper has it's own data
+// players can apply effects on a card it self
 class CardPaper {
   // this is a paper that exists in the deck, hand, etc...
   static cardBg = {
