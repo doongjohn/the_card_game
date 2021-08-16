@@ -34,7 +34,6 @@ class CmdCancelAll {
     CardInfoUI.hide();
   }
 }
-
 class CmdCancel {
   static execute() {
     if (UserAction.state == UserAction.StateEmpty)
@@ -89,13 +88,13 @@ class CmdEndTurn extends UserCommand {
   }
 }
 
+// TODO: maybe rename Unit to Permanent?
 class CmdUnitTap extends UserCommand {
   execute() {
     this.save(BoardPermanentData);
 
-    const permanent = Match.turnPlayer.selectedTile.getPermanent();
-    if (permanent)
-      permanent.tapped() ? permanent.untap() : permanent.tap();
+    const card = Match.turnPlayer.selectedTile.getPermanent();
+    card && card.cardPiece.tap(!card.cardPiece.pieceData.tapped);
   }
   undo() {
     this.restoreAll();
@@ -104,8 +103,8 @@ class CmdUnitTap extends UserCommand {
 
 class CmdUnitPlanTeleport {
   static execute() {
-    const permanent = Match.turnPlayer.selectedTile?.getPermanent();
-    if (!permanent) return;
+    const card = Match.turnPlayer.selectedTile?.getPermanent();
+    if (!card) return;
 
     // update user action state
     UserAction.setState(UserAction.StatePlanMove);
@@ -143,13 +142,13 @@ class CmdUnitTeleport extends UserCommand {
 
 class CmdUnitPlanMove {
   static execute() {
-    const permanent = Match.turnPlayer.selectedTile?.getPermanent();
-    if (!permanent) return;
+    const card = Match.turnPlayer.selectedTile?.getPermanent();
+    if (!card) return;
 
     const tile = Match.turnPlayer.selectedTile;
-    if (Match.turn != permanent.cardPiece.pieceData.team
-      || permanent.cardPiece.pieceData.tapped
-      || !permanent.cardPiece.canMove())
+    if (Match.turn != card.cardPiece.pieceData.team
+      || card.cardPiece.pieceData.tapped
+      || !card.cardPiece.canMove())
       return;
 
     // Unit Plan Move
@@ -225,9 +224,9 @@ class CmdUnitMove extends UserCommand {
 
 class CmdUnitPlanAttack {
   static execute() {
-    const permanent = Match.turnPlayer.selectedTile?.getPermanent();
-    if (!permanent) return;
-    if (!permanent.isMyTurn() || permanent.tapped()) return;
+    const card = Match.turnPlayer.selectedTile?.getPermanent();
+    if (!card) return;
+    if (Match.turn != card.cardPiece.pieceData.team || card.cardPiece.pieceData.tapped) return;
 
     const tile = Match.turnPlayer.selectedTile;
 
@@ -236,14 +235,14 @@ class CmdUnitPlanAttack {
 
     function setAttackSelectionTile(x, y) {
       const target = Board.getPermanentAt(x, y);
-      if (target && target.data.team != permanent.data.team) {
+      if (target && target.cardPiece.pieceData.team != card.cardPiece.pieceData.team) {
         Board.getTileAt(x, y).fsm.setState(TileStateAttackSelection);
         return 1;
       }
       return 0;
     }
 
-    function findNearByEnemy() {
+    function getNearbyEnemyCount() {
       const u = { x: tile.pos.x, y: tile.pos.y - 1 };
       const d = { x: tile.pos.x, y: tile.pos.y + 1 };
       const r = { x: tile.pos.x + 1, y: tile.pos.y };
@@ -261,9 +260,9 @@ class CmdUnitPlanAttack {
       return count;
     }
 
-    // check if there are no enemies near by
-    if (!findNearByEnemy()) {
-      console.log('[Match] No attack target found.');
+    // check enemies nearby
+    if (!getNearbyEnemyCount()) {
+      console.log('[Match] There is no attack target nearby.');
       return;
     }
 
@@ -279,7 +278,7 @@ class CmdUnitAttack extends UserCommand {
     this.save(BoardPermanentData);
 
     // attcak target permanent
-    Match.turnPlayer.selectedTile.getPermanent().doAttack(tile.getPermanent());
+    Match.turnPlayer.selectedTile.getPermanent().cardPiece.doAttack(tile.getPermanent().cardPiece);
 
     // update tile state
     Board.tiles.forEach(t => {
@@ -308,8 +307,7 @@ class CmdUnitPlanSpawn {
 
     // update tile state
     Board.tiles.forEach(tile => {
-      const permanent = tile.getPermanent();
-      permanent ? tile.fsm.setState(TileStateNoInteraction) : tile.fsm.setState(TileStateSpawnPermanentSelection);
+      tile.fsm.setState(tile.getPermanent() ? TileStateNoInteraction : TileStateSpawnPermanentSelection);
     });
   }
 }

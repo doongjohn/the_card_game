@@ -83,7 +83,6 @@ class CardPaperInteractHand {
     Match.turnPlayer.handUI.update();
   }
   onClick() {
-    console.log(this);
     // plan spawn this card
     UserAction.execute(CmdUnitPlanSpawn, this.card);
   }
@@ -137,26 +136,26 @@ const CardPermanentData = {
   health: 0,
   attack: 0,
 };
-const CardPermanentLogic = {
+const CardPiecePermanentLogic = {
   doDamage(target) {
-    target.takeDamage(this, this.boardObj.data.attack);
+    target.takeDamage(this, this.pieceData.attack);
   },
   doAttack(target) {
     EffectAction.onDealDamage(this, target);
     this.doDamage(target);
-    this.tap();
+    this.tap(true);
   },
   takeDamage(attacker, damage) {
     // update health
-    this.boardObj.data.health = Math.max(this.boardObj.data.health - damage, 0);
-    this.cardPaper.updateStatsUi(this.boardObj.data);
+    this.pieceData.health = Math.max(this.pieceData.health - damage, 0);
+    this.card.cardPaper.updatePermanentStatsUi(this.pieceData);
 
     // run effect
     EffectAction.onTakeDamage(this, attacker);
 
     // TODO: move this card to the graveyard
-    if (this.boardObj.data.health <= 0)
-      Board.removePermanentAt(this.boardObj.data.pos.x, this.boardObj.data.pos.y);
+    if (this.pieceData.health <= 0)
+      Board.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y);
   }
 }
 
@@ -170,8 +169,6 @@ function createCardPermanent(
     if (fetched.spriteAssetName != spriteAssetName)
       continue;
 
-    const permanentData = compose(CardPermanentData, CardMovableData);
-
     const card = new Card(
       new CardAssetData({
         spriteName: spriteAssetName
@@ -183,27 +180,30 @@ function createCardPermanent(
           name: fetched.name,
           desc: fetched.desc
         }),
-        permanentData,
+        CardMovableData,
+        CardPermanentData,
         fetched.data
       )
     );
 
-    card.createCardPaper(
+    card.createCardPaper();
+    card.mixinCardPaper(
       CardPaperPermanentData,
       CardPaperPermanentLogic
     );
+    card.cardPaper.createPermanentStatsUi(card.data);
+    card.cardPaper.interaction = new CardPaperInteractHand(card); // TODO: this is only for interaction in hand
 
-    card.createCardPiece(
-      permanentData,
-      fetched.data,
+    card.createCardPiece();
+    card.mixinCardPieceData(
+      CardMovableData,
+      CardPermanentData,
+      fetched.data
     );
-    card.cardPiece = compose(
-      card.cardPiece,
-      CardPieceMovableLogic
+    card.mixinCardPiece(
+      CardPieceMovableLogic,
+      CardPiecePermanentLogic
     );
-
-    // when added to the hand
-    card.cardPaper.interaction = new CardPaperInteractHand(card);
 
     return card;
   }

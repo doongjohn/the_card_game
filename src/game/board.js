@@ -30,7 +30,7 @@ class Board {
     Board.setPermanentAt(9, 3, Match.oppsPlayer.commander);
   }
 
-  static occupied(x, y, arrays) {
+  static occupied(x, y, ...arrays) {
     // check if a tile at x, y is occupied
     const index = toIndex(x, y);
     for (const array of arrays)
@@ -61,7 +61,7 @@ class Board {
   }
   static setPermanentAt(x, y, card) {
     // spawns a card piece at x, y
-    if (Board.occupied(x, y, [Board.permanents])) {
+    if (Board.occupied(x, y, Board.permanents)) {
       console.log(`Can't spawn a permanent here! (tile:[${x}, ${y}] is already occupied)`);
     } else {
       Board.permanents[toIndex(x, y)] = card;
@@ -164,48 +164,43 @@ function gridAlignCenterGameObject(items, gridSize, cellSize) {
 }
 
 class BoardPermanentData {
-  // FIXEME: what's happening!?
-  // TODO: save all stats
-  // this can get complex if I implement effects...
+  // NOTE: this can get complex if I implement effects...
   // and maybe there is a better way of managing history...
   constructor() {
-    this.cardInfo = [];
+    this.cardData = [];
     this.cardPieceData = [];
     for (const card of Board.permanents) {
       if (!card) {
-        this.cardInfo.push(null);
+        this.cardData.push(null);
         this.cardPieceData.push(null);
         continue;
       }
 
-      this.cardInfo.push({
-        index: card.index,
-        owner: card.owne
+      this.cardData.push({
+        index: card.data.index,
+        owner: card.data.owner
       });
       this.cardPieceData.push(card.cardPiece.pieceData.clone());
     }
   }
   restore() {
     for (const i in Board.permanents) {
-      const owner = this.cardInfo[i]?.owner;
+      const owner = this.cardData[i]?.owner;
       const pos = toCoord(i);
       if (!owner) {
         Board.removePermanentAt(pos.x, pos.y);
         continue;
       }
 
-      const index = this.cardInfo[i].index;
+      const index = this.cardData[i].index;
       const card = index == -1 ? owner.commander : owner.allCards[index];
       const data = this.cardPieceData[i];
 
-      if (Board.occupied(pos.x, pos.y, Board.permanents))
-        Board.removePermanentAt(pos.x, pos.y);
+      Board.removePermanentAt(pos.x, pos.y);
       Board.setPermanentAt(pos.x, pos.y, card);
 
-      // restore saved data
       card.cardPiece.pieceData = data;
-      card.cardPiece.setPos(pos.x, pos.y);
-      card.tap(data.tapped);
+      card.cardPiece.tap(data.tapped);
 
       Board.permanents[i] = card;
     }

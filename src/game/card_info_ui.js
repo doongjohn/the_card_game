@@ -1,5 +1,9 @@
-// TODO: make card info ui
 class CardInfoUI {
+  // TODO: make card info ui
+  // - display detailed stats
+  // - display applied effects
+  // - display equiped cards
+
   static width = 350;
   static height = 500;
 
@@ -57,12 +61,9 @@ class CardInfoUI {
 
   static updateInfo(card) {
     CardInfoUI.cardName.setText(card.data.name);
-    if (card.boardObj) {
-      CardInfoUI.cardStats.setText(`⛨: ${card.boardObj.data.health} ⚔: ${card.boardObj.data.attack}`);
-    } else {
-      CardInfoUI.cardStats.setText(`⛨: ${card.data.health} ⚔: ${card.data.attack}`);
-    }
     CardInfoUI.cardExplain.setText(card.data.text);
+    const pieceData = card.cardPiece.pieceData;
+    CardInfoUI.cardStats.setText(`⛨: ${pieceData.health} ⚔: ${pieceData.attack}`);
   }
 
   static show() {

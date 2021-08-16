@@ -132,20 +132,19 @@ class CardPieceData {
     this.pos = null;
   }
   clone() {
-    const copy = new CardPieceData(this);
-    copy.tapped = this.tapped;
-    copy.faceDowned = this.faceDowned;
+    const copy = compose(new CardPieceData(this), this); // this is for cloning dynamic data
     copy.pos = this.pos ? { ...this.pos } : null;
     return copy;
   }
 }
 class CardPiece {
   // this is an actual piece that exists on the board.
-  constructor(assetData, pieceData) {
+  constructor(card, pieceData) {
+    this.card = card;
     this.pieceData = pieceData;
 
     // sprite
-    this.sprite = new SpriteCardArt(0, 0, `CardArt:${assetData.spriteName}`, assetData.spriteName)
+    this.sprite = new SpriteCardArt(0, 0, `CardArt:${card.assetData.spriteName}`, card.assetData.spriteName)
       .setScale(1.6)
       .setOrigin(0.5, 1);
 
@@ -153,7 +152,7 @@ class CardPiece {
     Game.addToWorld(Layer.Permanent, this.sprite);
 
     // play animation
-    Game.tryPlayAnimation(this.sprite, `CardArt:Idle:${assetData.spriteName}`);
+    Game.tryPlayAnimation(this.sprite, `CardArt:Idle:${card.assetData.spriteName}`);
 
     this.tween = null;
     this.hide();
@@ -170,8 +169,9 @@ class CardPiece {
   }
 
   setPos(x, y) {
-    // set position data
+    // set grid position
     if (this.pieceData.pos) {
+      // NOTE: Board.movePermanentAt() does not change pieceData.pos
       Board.movePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y);
       this.pieceData.pos.x = x;
       this.pieceData.pos.y = y;
@@ -183,7 +183,7 @@ class CardPiece {
     this.tween?.remove();
     this.tween = null;
 
-    // set world position
+    // set sprite world position
     const worldPos = Board.gridToWorldPos(x, y);
     this.sprite.x = worldPos.x;
     this.sprite.y = worldPos.y + 60;
@@ -191,10 +191,10 @@ class CardPiece {
   tap(bool) {
     if (bool) {
       this.pieceData.tapped = true;
-      this.pieceData.sprite.setPipeline(Game.pipeline.grayScale);
+      this.sprite.setPipeline(Game.pipeline.grayScale);
     } else {
       this.pieceData.tapped = false;
-      this.pieceData.sprite.resetPipeline();
+      this.sprite.resetPipeline();
     }
   }
   faceDown(bool) {
@@ -213,17 +213,21 @@ class Card {
     this.assetData = assetData;
     this.data = data;
   }
-  createCardPaper(...mixins) {
-    this.cardPaper = compose(
-      new CardPaper(this.assetData, this.data),
-      ...mixins
-    );
+
+  createCardPaper() {
+    this.cardPaper = new CardPaper(this.assetData, this.data);
   }
-  createCardPiece(...mixins) {
-    this.cardPiece = new CardPiece(this.assetData, new CardPieceData(this.data));
-    this.cardPiece.pieceData = compose(
-      this.cardPiece.pieceData,
-      ...mixins
-    );
+  mixinCardPaper(...mixins) {
+    this.cardPaper = compose(this.cardPaper, ...mixins);
+  }
+
+  createCardPiece() {
+    this.cardPiece = new CardPiece(this, new CardPieceData(this.data));
+  }
+  mixinCardPiece(...mixins) {
+    this.cardPiece = compose(this.cardPiece, ...mixins);
+  }
+  mixinCardPieceData(...mixins) {
+    this.cardPiece.pieceData = compose(this.cardPiece.pieceData, ...mixins);
   }
 }
