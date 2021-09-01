@@ -3,7 +3,7 @@
 ## TODO (short term):
 
 - [x] Implement Sprite loading
-  - [ ] Implement async Sprite loading (maybe not?)
+  - [ ] Implement lazy Sprite loading (maybe not?)
 - [x] Implement Sprite animation
 - [x] Implement Tile state
 - [x] Implement Basic Turn
@@ -23,15 +23,15 @@
 - [x] Implement Card Placement
 - [ ] Implement Card data base
 - [ ] Implement Deck
-- [ ] Implement Command pattern (work in progress)
+- [x] Implement Undo
 - [ ] upgrade mouse input (seperate right / left click)
 
 ## TODO (long term):
 
-- [ ] Add proper original arts
+- [ ] Add original arts
 - [ ] Implement multiplayer
-- [ ] Add game replay
-- [ ] Add spectator mode
+  - [ ] Add spectator mode
+  - [ ] Add game replay
 
 ## Reminder
 
