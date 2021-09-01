@@ -104,11 +104,6 @@ class CardPaper {
 
     // interaction
     this.interaction = null;
-    // {
-    //   onHoverEnter: function(),
-    //   onHoverExit: function(),
-    //   onClick: function(),
-    // }
     this.visual.on('pointerover', () => { this.interaction?.onHoverEnter(); });
     this.visual.on('pointerout', () => { this.interaction?.onHoverExit(); });
     this.visual.on('pointerdown', () => { this.interaction?.onClick(); });
@@ -199,6 +194,7 @@ class CardPiece {
     }
   }
   faceDown(bool) {
+    // TODO: think about visual representation
     if (bool) {
       this.pieceData.faceDowned = true;
       // do stuff
@@ -218,17 +214,17 @@ class Card {
   createCardPaper() {
     this.cardPaper = new CardPaper(this.assetData, this.data);
   }
-  mixinCardPaper(...mixins) {
+  composeCardPaper(...mixins) {
     this.cardPaper = compose(this.cardPaper, ...mixins);
   }
 
   createCardPiece() {
     this.cardPiece = new CardPiece(this, new CardPieceData(this.data));
   }
-  mixinCardPiece(...mixins) {
+  composeCardPiece(...mixins) {
     this.cardPiece = compose(this.cardPiece, ...mixins);
   }
-  mixinCardPieceData(...mixins) {
+  composeCardPieceData(...mixins) {
     this.cardPiece.pieceData = compose(this.cardPiece.pieceData, ...mixins);
   }
 }

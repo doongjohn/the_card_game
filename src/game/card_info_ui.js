@@ -1,8 +1,6 @@
 class CardInfoUI {
-  // TODO: make card info ui
-  // - display detailed stats
-  // - display applied effects
-  // - display equiped cards
+  // TODO: this must be diffrent for each card type
+  // make it composable
 
   static width = 350;
   static height = 500;
@@ -36,9 +34,9 @@ class CardInfoUI {
         align: 'left'
       }).setOrigin(0, 1);
 
-    CardInfoUI.cardExplain = Game.spawn.text(
+    CardInfoUI.cardDesc = Game.spawn.text(
       -CardInfoUI.width / 2 + 10, 70,
-      `blah blah blah blah blah blah blah blah blah blah blah blah`,
+      `card description`,
       {
         font: '18px Play',
         align: 'left',
@@ -49,21 +47,17 @@ class CardInfoUI {
       CardInfoUI.bg,
       CardInfoUI.cardName,
       CardInfoUI.cardStats,
-      CardInfoUI.cardExplain,
+      CardInfoUI.cardDesc,
     ]);
 
+    // set position
     CardInfoUI.visual.incXY(-765, -300);
-    CardInfoUI.hide();
 
     // add to layer
     Game.addToWorld(Layer.UI, CardInfoUI.visual.getChildren());
-  }
 
-  static updateInfo(card) {
-    CardInfoUI.cardName.setText(card.data.name);
-    CardInfoUI.cardExplain.setText(card.data.text);
-    const pieceData = card.cardPiece.pieceData;
-    CardInfoUI.cardStats.setText(`⛨: ${pieceData.health} ⚔: ${pieceData.attack}`);
+    // hide
+    CardInfoUI.hide();
   }
 
   static show() {
@@ -71,5 +65,12 @@ class CardInfoUI {
   }
   static hide() {
     CardInfoUI.visual.setVisible(false);
+  }
+  static updateInfo(card) {
+    CardInfoUI.cardName.setText(card.data.name);
+    CardInfoUI.cardDesc.setText(card.data.desc);
+
+    const pieceData = card.cardPiece.pieceData;
+    CardInfoUI.cardStats.setText(`⛨: ${pieceData.health} ⚔: ${pieceData.attack}`);
   }
 }

@@ -1,47 +1,7 @@
-const CardDB = [
-  {
-    spriteAssetName: 'RagnoraTheRelentless',
-    name: 'Ragnora The Relentless',
-    desc: 'This card is VERY STRONGU!!!',
-    data: {
-      health: 5,
-      attack: 1
-    }
-  },
-  {
-    spriteAssetName: 'ArgeonHighmayne',
-    name: 'Argeon Highmayne',
-    desc: 'This card is VERY STRONGU!!!',
-    data: {
-      health: 8,
-      attack: 2
-    }
-  },
-  {
-    spriteAssetName: 'ZirAnSunforge',
-    name: 'Zir\'An Sunforge',
-    desc: 'Fuck Lyonar.',
-    data: {
-      health: 5,
-      attack: 3
-    }
-  },
-  {
-    spriteAssetName: 'RazorcragGolem',
-    name: 'Razorcrag Golem',
-    desc: 'This card sucks. wow wow wow wow wowowowowowo.',
-    data: {
-      health: 2,
-      attack: 1
-    }
-  }
-];
-
-
-const CardPaperPermanentData = {
+const CardPaperDataPermanent = {
   permanentStatsUI: null
 }
-const CardPaperPermanentLogic = {
+const CardPaperLogicPermanent = {
   createPermanentStatsUi(data) {
     const text = `⛨: ${data.health} ⚔: ${data.attack}`;
     this.permanentStatsUI = Game.spawn.text(-115, -145, text, {
@@ -54,7 +14,7 @@ const CardPaperPermanentLogic = {
     this.permanentStatsUI.text = `⛨: ${data.health} ⚔: ${data.attack}`;
   }
 };
-class CardPaperInteractHand {
+class CardPaperHandInteraction {
   constructor(card) {
     this.card = card;
     this.originalIndex = 0;
@@ -89,11 +49,11 @@ class CardPaperInteractHand {
 }
 
 
-const CardMovableData = {
+const CardDataMovable = {
   maxMoveCount: 1,
   curMoveCount: 0,
 };
-const CardPieceMovableLogic = {
+const CardPieceLogicMovable = {
   canMove() {
     return this.pieceData.curMoveCount < this.pieceData.maxMoveCount;
   },
@@ -132,30 +92,42 @@ const CardPieceMovableLogic = {
   }
 }
 
-const CardPermanentData = {
+const CardDataPermanent = {
   health: 0,
   attack: 0,
 };
-const CardPiecePermanentLogic = {
-  doDamage(target) {
-    target.takeDamage(this.card, this.pieceData.attack);
-  },
-  doAttack(target) {
-    EffectAction.onAttack(this.card, target.card);
-    this.doDamage(target);
-    this.tap(true);
-  },
+const CardPieceLogicPermanent = {
   takeDamage(attacker, damage) {
     // update health
     this.pieceData.health = Math.max(this.pieceData.health - damage, 0);
+
+    // update stats ui
     this.card.cardPaper.updatePermanentStatsUi(this.pieceData);
 
-    // run effect
-    EffectAction.onTakeDamage(this.card, attacker);
+    // invoke effect
+    EffectEvent.invoke('onTakeDamage', this.card, attacker);
 
     // TODO: move this card to the graveyard
-    if (this.pieceData.health <= 0)
+    if (this.pieceData.health == 0) {
       Board.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y);
+    }
+  },
+  doDamage(target) {
+    // invoke effect
+    EffectEvent.invoke('onDealDamage', this.card, target.card);
+
+    // deal damage to target
+    target.takeDamage(this.card, this.pieceData.attack);
+  },
+  doAttack(target) {
+    // invoke effect
+    EffectEvent.invoke('onAttack', this.card, target.card);
+
+    // deal damage to target
+    this.doDamage(target);
+
+    // tap this card piece
+    this.tap(true);
   }
 }
 
@@ -169,6 +141,7 @@ function createCardPermanent(
     if (fetched.spriteAssetName != spriteAssetName)
       continue;
 
+    // create new card object
     const card = new Card(
       new CardAssetData({
         spriteName: spriteAssetName
@@ -180,29 +153,31 @@ function createCardPermanent(
           name: fetched.name,
           desc: fetched.desc
         }),
-        CardMovableData,
-        CardPermanentData,
+        CardDataMovable,
+        CardDataPermanent,
         fetched.data
       )
     );
 
+    // create card paper
     card.createCardPaper();
-    card.mixinCardPaper(
-      CardPaperPermanentData,
-      CardPaperPermanentLogic
+    card.composeCardPaper(
+      CardPaperDataPermanent,
+      CardPaperLogicPermanent
     );
     card.cardPaper.createPermanentStatsUi(card.data);
-    card.cardPaper.interaction = new CardPaperInteractHand(card); // TODO: this is only for interaction in hand
+    card.cardPaper.interaction = new CardPaperHandInteraction(card); // TODO: this is only for interaction in hand
 
+    // create card piece
     card.createCardPiece();
-    card.mixinCardPieceData(
-      CardMovableData,
-      CardPermanentData,
+    card.composeCardPieceData(
+      CardDataMovable,
+      CardDataPermanent,
       fetched.data
     );
-    card.mixinCardPiece(
-      CardPieceMovableLogic,
-      CardPiecePermanentLogic
+    card.composeCardPiece(
+      CardPieceLogicMovable,
+      CardPieceLogicPermanent
     );
 
     return card;
