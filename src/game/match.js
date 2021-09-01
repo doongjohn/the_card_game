@@ -46,7 +46,7 @@ class Match {
         console.log(`I hit "${target.data.name}"!`);
       }
     );
-    EffectCallback.add('onAttack', onAttackEffectP1);
+    EffectEvent.add('onAttack', onAttackEffectP1);
 
     // TEST: ui
     Game.spawn.text(10, 5,
