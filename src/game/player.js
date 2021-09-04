@@ -6,20 +6,20 @@ class Team {
 
 // TEST: Deck
 const TestDeckP1 = [
-  'RagnoraTheRelentless',
-  'RagnoraTheRelentless',
-  'RagnoraTheRelentless',
-  'RagnoraTheRelentless',
-  'RagnoraTheRelentless',
-  'RagnoraTheRelentless',
+  'ZirAnSunforge',
+  'Sojourner',
+  'ZirAnSunforge',
+  'Sojourner',
+  'ZirAnSunforge',
+  'Sojourner',
 ];
 const TestDeckP2 = [
-  'ZirAnSunforge',
-  'ZirAnSunforge',
-  'ZirAnSunforge',
-  'ZirAnSunforge',
-  'ZirAnSunforge',
-  'ZirAnSunforge',
+  'RazorcragGolem',
+  'Rex',
+  'RazorcragGolem',
+  'Rex',
+  'RazorcragGolem',
+  'Rex',
 ];
 
 class Player {

@@ -38,5 +38,25 @@ const CardDB = [
       health: 2,
       attack: 1
     }
-  }
+  },
+
+  {
+    spriteAssetName: 'Sojourner',
+    name: 'Sojourner',
+    desc: 'Duelyst is such an awesome game.',
+    data: {
+      health: 3,
+      attack: 2
+    }
+  },
+
+  {
+    spriteAssetName: 'Rex',
+    name: 'Rex',
+    desc: 'Me Dinosaur.',
+    data: {
+      health: 2,
+      attack: 2
+    }
+  },
 ];

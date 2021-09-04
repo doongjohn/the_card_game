@@ -162,7 +162,7 @@ class CardPiece {
     // sprite
     /** @type SpriteCardArt */
     this.sprite = new SpriteCardArt(0, 0, `CardArt:${card.assetData.spriteName}`, card.assetData.spriteName)
-      .setScale(1.6)
+      .setScale(1.8)
       .setOrigin(0.5, 1);
 
     // TODO: set layer based on card type

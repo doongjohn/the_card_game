@@ -24,7 +24,7 @@ class Match {
 
     // init commanders
     // TODO: track commanders health and determine the game result
-    Match.player1.commander = createCardPermanent(-1, Match.player1, 'ZirAnSunforge');
+    Match.player1.commander = createCardPermanent(-1, Match.player1, 'ArgeonHighmayne');
     Match.player2.commander = createCardPermanent(-1, Match.player2, 'RagnoraTheRelentless');
 
     // init players cards

@@ -61,13 +61,23 @@ class SpriteManager {
           width: 100, height: 100
         },
         {
+          name: 'CardArt:ZirAnSunforge',
+          fileName: 'ZirAnSunforge.png',
+          width: 100, height: 100
+        },
+        {
           name: 'CardArt:RazorcragGolem',
           fileName: 'RazorcragGolem.png',
           width: 120, height: 120
         },
         {
-          name: 'CardArt:ZirAnSunforge',
-          fileName: 'ZirAnSunforge.png',
+          name: 'CardArt:Sojourner',
+          fileName: 'Sojourner.png',
+          width: 80, height: 80
+        },
+        {
+          name: 'CardArt:Rex',
+          fileName: 'Rex.png',
           width: 100, height: 100
         },
       );
@@ -86,14 +96,24 @@ class SpriteManager {
           length: 11
         },
         {
+          name: 'CardArt:ZirAnSunforge',
+          key: 'CardArt:Idle:ZirAnSunforge',
+          length: 14
+        },
+        {
           name: 'CardArt:RazorcragGolem',
           key: 'CardArt:Idle:RazorcragGolem',
           length: 14
         },
         {
-          name: 'CardArt:ZirAnSunforge',
-          key: 'CardArt:Idle:ZirAnSunforge',
-          length: 14
+          name: 'CardArt:Sojourner',
+          key: 'CardArt:Idle:Sojourner',
+          length: 12
+        },
+        {
+          name: 'CardArt:Rex',
+          key: 'CardArt:Idle:Rex',
+          length: 12
         },
       );
     }
