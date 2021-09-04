@@ -23,7 +23,7 @@ class Board {
 
     // align tiles
     gridAlignCenterGameObject(Board.tiles, Board.size, Board.cellSize);
-    Board.tiles.forEach(tile => tile.gameObject.y -= 80);
+    Board.tiles.forEach(tile => tile.gameObject.y -= 90);
 
     // set commanders
     Board.setPermanentAt(1, 3, Match.turnPlayer.commander);
@@ -177,6 +177,7 @@ class BoardPermanentData {
   constructor() {
     this.cardData = [];
     this.cardPieceData = [];
+
     for (const card of Board.permanents) {
       if (!card) {
         this.cardData.push(null);
