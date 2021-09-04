@@ -44,7 +44,7 @@
 `opps player` **Effect:** On Take Damage ->  
 `turn player` Tap ->  
 `opps player` **Choose:** Counter attack ->  
-`opps player` **Effect:** On Attack ->  
+`opps player` **Effect:** On Counter Attack ->  
 `opps player` Deal damage (Counter attack) ->  
 `opps player` **Effect:** On Deal Damage ->  
 `turn player` **Effect:** On Take Damage ->  

@@ -1,8 +1,8 @@
 class PixelSprite extends Phaser.GameObjects.Sprite {
-  constructor(x, y, assetName, assetNameTrimmed, frame) {
-    super(Game.scene, x, y, assetName, frame);
+  constructor(x, y, assetNameFull, assetName, frame) {
+    super(Game.scene, x, y, assetNameFull, frame);
+    this.assetNameFull = assetNameFull;
     this.assetName = assetName;
-    this.assetNameTrimmed = assetNameTrimmed;
 
     this.texture.setFilter(Phaser.ScaleModes.NEAREST);
     Game.spawn.existing(this);
@@ -10,8 +10,8 @@ class PixelSprite extends Phaser.GameObjects.Sprite {
 }
 
 class SpriteCardArt extends PixelSprite {
-  constructor(x, y, assetName, assetNameTrimmed) {
-    super(x, y, assetName, assetNameTrimmed, 0);
+  constructor(x, y, assetName) {
+    super(x, y, 'CardArt:' + assetName, assetName, 0);
   }
 }
 
@@ -24,17 +24,17 @@ class SpriteManager {
   };
 
   static CardArt = {
-    cardArtLoad(data) {
+    cardArtLoad(...data) {
       for (const x of data) {
         Game.scene.load.spritesheet(
           x.name, `assets/card_art/${x.fileName}`, {
-            frameWidth: x.width,
-            frameHeight: x.height
-          });
+          frameWidth: x.width,
+          frameHeight: x.height
+        });
       }
     },
 
-    cardArtCreateAnim(data) {
+    cardArtCreateAnim(...data) {
       for (const x of data) {
         Game.scene.anims.create({
           key: x.key,
@@ -49,7 +49,7 @@ class SpriteManager {
     },
 
     load() {
-      this.cardArtLoad([
+      this.cardArtLoad(
         {
           name: 'CardArt:RagnoraTheRelentless',
           fileName: 'RagnoraTheRelentless.png',
@@ -70,11 +70,11 @@ class SpriteManager {
           fileName: 'ZirAnSunforge.png',
           width: 100, height: 100
         },
-      ]);
+      );
     },
 
     createAnims() {
-      this.cardArtCreateAnim([
+      this.cardArtCreateAnim(
         {
           name: 'CardArt:RagnoraTheRelentless',
           key: 'CardArt:Idle:RagnoraTheRelentless',
@@ -95,7 +95,7 @@ class SpriteManager {
           key: 'CardArt:Idle:ZirAnSunforge',
           length: 14
         },
-      ]);
+      );
     }
   };
 }

@@ -101,33 +101,42 @@ const CardPieceLogicPermanent = {
     // update health
     this.pieceData.health = Math.max(this.pieceData.health - damage, 0);
 
-    // update stats ui
-    this.card.cardPaper.updatePermanentStatsUi(this.pieceData);
-
     // invoke effect
     EffectEvent.invoke('onTakeDamage', this.card, attacker);
 
-    // TODO: move this card to the graveyard
+    // check death
     if (this.pieceData.health == 0) {
+      // destroy card piece
+      // TODO: move this card to the graveyard
       Board.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y);
+    } else {
+      // update stats ui
+      this.card.cardPaper.updatePermanentStatsUi(this.pieceData);
     }
-  },
-  doDamage(target) {
-    // invoke effect
-    EffectEvent.invoke('onDealDamage', this.card, target.card);
-
-    // deal damage to target
-    target.takeDamage(this.card, this.pieceData.attack);
   },
   doAttack(target) {
     // invoke effect
     EffectEvent.invoke('onAttack', this.card, target.card);
+    EffectEvent.invoke('onDealDamage', this.card, target.card);
 
     // deal damage to target
-    this.doDamage(target);
+    target.takeDamage(this.card, this.pieceData.attack);
 
     // tap this card piece
     this.tap(true);
+
+    // target counter attack
+    target.doCounterAttack(this);
+  },
+  doCounterAttack(target) {
+    // TODO: display confirmation button for counter attack
+
+    // invoke effect
+    EffectEvent.invoke('onCounterAttack', this.card, target.card);
+    EffectEvent.invoke('onDealDamage', this.card, target.card);
+
+    // deal damage to target
+    target.takeDamage(this.card, this.pieceData.attack);
   }
 }
 

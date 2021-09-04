@@ -9,15 +9,17 @@ const CardDB = [
       attack: 1
     }
   },
+
   {
     spriteAssetName: 'ArgeonHighmayne',
     name: 'Argeon Highmayne',
-    desc: 'This card is VERY STRONGU!!!',
+    desc: 'I love card games.\nIt\'s so fun!',
     data: {
       health: 8,
       attack: 2
     }
   },
+
   {
     spriteAssetName: 'ZirAnSunforge',
     name: 'Zir\'An Sunforge',
@@ -27,6 +29,7 @@ const CardDB = [
       attack: 3
     }
   },
+
   {
     spriteAssetName: 'RazorcragGolem',
     name: 'Razorcrag Golem',

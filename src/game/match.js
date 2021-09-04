@@ -19,16 +19,15 @@ class Match {
     Match.player1 = new Player(Team.P1);
     Match.player2 = new Player(Team.P2);
     Match.players = [Match.player1, Match.player2];
-
     Match.turnPlayer = Match.player1;
     Match.oppsPlayer = Match.player2;
 
     // init commanders
-    // TODO: track commanders hp and determine the game result
+    // TODO: track commanders health and determine the game result
     Match.player1.commander = createCardPermanent(-1, Match.player1, 'ZirAnSunforge');
     Match.player2.commander = createCardPermanent(-1, Match.player2, 'RagnoraTheRelentless');
 
-    // init players card
+    // init players cards
     Match.player1.cardInit();
     Match.player2.cardInit();
     Match.player1.handInit();
@@ -37,6 +36,7 @@ class Match {
     // init ui
     CardInfoUI.init();
     Match.turnPlayer.handUI.show();
+
 
     // TEST: test effect
     const onAttackEffectP1 = new Effect(
@@ -47,6 +47,15 @@ class Match {
       }
     );
     EffectEvent.add('onAttack', onAttackEffectP1);
+    const onTakeDamageEffectP2 = new Effect(
+      EffectType.MandatoryTrigger,
+      Match.player2.commander,
+      (self, attacker) => {
+        console.log(`I took damage by "${attacker.data.name}"!`);
+      }
+    );
+    EffectEvent.add('onTakeDamage', onTakeDamageEffectP2);
+
 
     // TEST: ui
     Game.spawn.text(10, 5,

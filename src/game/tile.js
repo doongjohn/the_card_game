@@ -11,8 +11,8 @@ class TileColor {
 class Tile {
   static hoveringTile = null; // run onHoverEnter on state change
 
-  constructor(index, size, gapSize) {
-    this.gameObject = this.initGameObject(size, gapSize);
+  constructor(index, size, gap) {
+    this.gameObject = this.initGameObject(size, gap);
     this.index = index;
     this.pos = toCoord(index);
     this.fsm = new FSM(this, TileStateNormal, (obj) => {
@@ -35,7 +35,7 @@ class Tile {
     // this.getRune = () => Board.runes[this.index];
   }
 
-  initGameObject(size, gapSize) {
+  initGameObject(size, gap) {
     this.tileBg = Game.spawn.rectangle(
       0, 0,
       size.x,
@@ -45,8 +45,8 @@ class Tile {
 
     this.tileFg = Game.spawn.rectangle(
       0, 0,
-      size.x + gapSize.x,
-      size.y + gapSize.y,
+      size.x + gap,
+      size.y + gap,
       TileColor.FG.rgb,
       TileColor.FG.alpha
     )

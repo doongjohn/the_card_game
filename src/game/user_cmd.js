@@ -2,7 +2,6 @@ class UserCommand {
   constructor() {
     this.saves = [];
   }
-
   save() {
     for (const arg of arguments) {
       this.saves.push(new arg());
@@ -13,7 +12,6 @@ class UserCommand {
       save.restore();
     }
   }
-
   cmd_execute() {
     UserAction.pushCommand(this);
     this.execute(...arguments);

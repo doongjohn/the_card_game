@@ -13,6 +13,7 @@ class CardAssetData {
 class CardData {
   // this is an base data for this card
   // this data must not change
+
   constructor({
     index,
     owner,
@@ -26,10 +27,14 @@ class CardData {
   }
 }
 
-// TODO: card paper has it's own data
-// players can apply effects on a card it self
+
 class CardPaper {
   // this is a paper that exists in the deck, hand, etc...
+  // card paper visual is hidden by defualt
+
+  // TODO: card paper has it's own data
+  // players can apply effects on a card it self
+
   static cardBg = {
     width: 250,
     height: 350,
@@ -44,14 +49,16 @@ class CardPaper {
 
   constructor(assetData, data) {
     // card art
-    this.cardArt = new SpriteCardArt(0, 0, `CardArt:${assetData.spriteName}`, assetData.spriteName)
+    /** @type SpriteCardArt */
+    this.cardArt = new SpriteCardArt(0, 0, assetData.spriteName)
       .setScale(1.6)
       .setOrigin(0.5, 1);
 
     // play card art animation
-    Game.tryPlayAnimation(this.cardArt, `CardArt:Idle:${assetData.spriteName}`);
+    Game.playAnimation(this.cardArt, 'CardArt:Idle:' + assetData.spriteName);
 
-    // card
+    // card background
+    /** @type Phaser.GameObjects.Rectangle */
     this.cardBg = Game.spawn.rectangle(
       0, 0,
       CardPaper.cardBg.width,
@@ -60,6 +67,7 @@ class CardPaper {
     ).setStrokeStyle(3, CardPaper.cardDescBox.color, 1);
 
     // description box
+    /** @type Phaser.GameObjects.Rectangle */
     this.cardDescBox = Game.spawn.rectangle(
       0, CardPaper.cardBg.height / 2 - CardPaper.cardDescBox.margin,
       CardPaper.cardDescBox.width,
@@ -68,12 +76,15 @@ class CardPaper {
     ).setOrigin(0.5, 1);
 
     // card name
+    /** @type Phaser.GameObjects.Text */
     this.cardNameText = Game.spawn.text(0, 0, data.name, {
       font: '18px Play',
       align: 'center'
     }).setOrigin(0.5, 1);
 
+
     // card description
+    /** @type Phaser.GameObjects.Text */
     this.cardDescText = Game.spawn.text(
       CardPaper.cardDescBox.margin - (CardPaper.cardDescBox.width / 2), 15,
       data.desc,
@@ -85,6 +96,7 @@ class CardPaper {
     );
 
     // container for this card paper
+    /** @type Phaser.GameObjects.Container */
     this.visual = Game.spawn.container(0, 0);
     this.visual.setSize(CardPaper.cardBg.width, CardPaper.cardBg.height);
     this.visual.setInteractive();
@@ -100,9 +112,16 @@ class CardPaper {
     Game.addToWorld(Layer.UI, this.visual);
 
     // tween
+    /** @type Phaser.Tweens */
     this.tween = null;
 
-    // interaction
+    /**
+     * @type {{
+     *  onHoverEnter: function,
+     *  onHoverExit: function,
+     *  onClick: function,
+     * }}
+     * */
     this.interaction = null;
     this.visual.on('pointerover', () => { this.interaction?.onHoverEnter(); });
     this.visual.on('pointerout', () => { this.interaction?.onHoverExit(); });
@@ -134,12 +153,14 @@ class CardPieceData {
   }
 }
 class CardPiece {
-  // this is an actual piece that exists on the board.
+  // this is an piece object that exists on the board
+
   constructor(card, pieceData) {
     this.card = card;
     this.pieceData = pieceData;
 
     // sprite
+    /** @type SpriteCardArt */
     this.sprite = new SpriteCardArt(0, 0, `CardArt:${card.assetData.spriteName}`, card.assetData.spriteName)
       .setScale(1.6)
       .setOrigin(0.5, 1);
@@ -148,8 +169,9 @@ class CardPiece {
     Game.addToWorld(Layer.Permanent, this.sprite);
 
     // play animation
-    Game.tryPlayAnimation(this.sprite, `CardArt:Idle:${card.assetData.spriteName}`);
+    Game.playAnimation(this.sprite, `CardArt:Idle:${card.assetData.spriteName}`);
 
+    /** @type Phaser.Tweens */
     this.tween = null;
     this.hide();
     this.updateVisual();
@@ -206,6 +228,8 @@ class CardPiece {
 }
 
 class Card {
+  // this is an object that conatians all the data and gameobjects
+
   constructor(assetData, data) {
     this.assetData = assetData;
     this.data = data;

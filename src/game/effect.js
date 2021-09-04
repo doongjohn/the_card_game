@@ -19,16 +19,7 @@ class Effect {
     this.index = 0;
     this.type = type;
     this.card = card;
-    this.action = function (card) {
-      if (card != this.card) return;
-      action(...arguments);
-      console.log(
-        `Effect invoked: %c${EffectType.toString(this.type)}\n` +
-        `%cPlayer${Match.turn}'s "${card.data.name}"`,
-        'color: orange',
-        'color: blue'
-      );
-    };
+    this.action = action;
   }
 }
 
@@ -43,30 +34,48 @@ class EffectChain {
 
 class EffectEvent {
   // TODO: use linked list
-  static onAttack = [];     // args: self, target
-  static onDealDamage = []; // args: self, target
-  static onTakeDamage = []; // args: self, attacker
+  static onAttack = [];            // args: self, target
+  static onCounterAttack = [];     // args: self, target
+  static onDealDamage = [];        // args: self, target
+  static onTakeDamage = [];        // args: self, attacker
 
-  static add(event, effect) {
-    const array = EffectEvent[event];
+  static add(eventName, effect) {
+    const array = EffectEvent[eventName];
     effect.index = array.length;
     array.push(effect);
   }
-  static remove(event, effect) {
-    EffectEvent[event].splice(effect.index, 1);
+  static remove(eventName, effect) {
+    EffectEvent[eventName].splice(effect.index, 1);
   }
-  static find(event, effect) {
-    return EffectEvent[event].indexOf(effect);
+  static find(eventName, effect) {
+    return EffectEvent[eventName].indexOf(effect);
   }
-  static invoke(event, self, ...args) {
-    if (EffectEvent[event].length == 0) {
+  static invoke(eventName, self, ...args) {
+    if (EffectEvent[eventName].length == 0)
       return;
-    } else if (EffectEvent[event].length == 1) {
-      EffectEvent[event][0].action(self, ...args);
-    } else {
-      // TODO: make user selects the order of execution
-      for (let fx of EffectEvent[event])
-        fx.action(self, ...args);
+
+    if (EffectEvent[eventName].length == 1) {
+      if (EffectEvent[eventName][0].card != self) return;
+      console.log(
+        `Effect invoked: %c"${eventName}": ${EffectType.toString(EffectEvent[eventName][0].type)}\n` +
+        `%cPlayer${EffectEvent[eventName][0].card.cardPiece.pieceData.team}'s "${EffectEvent[eventName][0].card.data.name}"`,
+        'color: orange',
+        'color: blue'
+      );
+      EffectEvent[eventName][0].action(self, ...args);
+      return;
+    }
+
+    // TODO: make user selects the order of execution
+    for (let effect of EffectEvent[eventName]) {
+      if (effect.card != self) return;
+      console.log(
+        `Effect invoked: %c"${eventName}": ${EffectType.toString(EffectEvent[eventName][0].type)}\n` +
+        `%cPlayer${EffectEvent[eventName][0].card.cardPiece.pieceData.team}'s "${EffectEvent[eventName][0].card.data.name}"`,
+        'color: orange',
+        'color: blue'
+      );
+      effect.action(self, ...args);
     }
   }
 }

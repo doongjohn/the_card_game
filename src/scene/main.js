@@ -10,7 +10,6 @@ class MainScene extends Phaser.Scene {
 
   create() {
     SpriteManager.CardArt.createAnims();
-
     Layer.init();
     Match.init();
     Board.init();

@@ -34,10 +34,10 @@ class Game {
     }
   }
 
-  static tryPlayAnimation(thing, key) {
+  static playAnimation(sprite, key) {
     if (Game.scene.anims.exists(key))
-      thing.play(key);
+      sprite.play(key);
     else
-      console.error(`Can't play animation: "${key}" <- this anim key does not exists.`);
+      console.error(`Can't play animation: "${key}"\nthat animation key does not exists.`);
   }
 }

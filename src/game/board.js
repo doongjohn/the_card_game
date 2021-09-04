@@ -1,9 +1,9 @@
 class Board {
   // board settings
   static size = new Phaser.Math.Vector2(11, 7);
-  static gapSize = new Phaser.Math.Vector2(5, 5);
+  static gap = 3;
   static tileSize = new Phaser.Math.Vector2(100, 100);
-  static cellSize = this.tileSize.clone().add(this.gapSize);
+  static cellSize = this.tileSize.clone().add({ x: Board.gap, y: Board.gap });
 
   // board array
   static tiles = Array(Board.size.x * Board.size.y).fill(null);
@@ -16,7 +16,7 @@ class Board {
 
     // spawn tiles
     for (const i in Board.tiles) {
-      const tile = new Tile(i, Board.tileSize, Board.gapSize);
+      const tile = new Tile(i, Board.tileSize, Board.gap);
       Game.addToWorld(Layer.Board, tile);
       Board.tiles[i] = tile;
     }
@@ -31,7 +31,7 @@ class Board {
   }
 
   static occupied(x, y, ...arrays) {
-    // check if a tile at x, y is occupied
+    // check if tiles at x, y in arrays are occupied
     const index = toIndex(x, y);
     for (const array of arrays)
       if (array[index]) return true;
@@ -49,7 +49,7 @@ class Board {
     return index < 0 || index >= Board.tiles.length ? null : Board.tiles[index];
   }
   static setTileStateAll(state) {
-    // set every tile's state
+    // set every tiles state
     for (const tile of Board.tiles)
       tile.fsm.setState(state);
   }
@@ -71,14 +71,21 @@ class Board {
   }
   static movePermanentAt(x, y, newX, newY) {
     // moves a card piece to x, y
-    const curPos = toIndex(x, y);
-    const newPos = toIndex(newX, newY);
+    let curPos = toIndex(x, y);
+    let newPos = toIndex(newX, newY);
     Board.permanents[newPos] = Board.permanents[curPos];
     Board.permanents[curPos] = null;
   }
+  static swapPermanentAt(x, y, x2, y2) {
+    // swaps two cards piece at x, y, and x2, y2
+    let curPos = toIndex(x, y);
+    let newPos = toIndex(x2, y2);
+    [Board.permanents[newPos], Board.permanents[curPos]] =
+      [Board.permanents[curPos], Board.permanents[newPos]];
+  }
   static removePermanentAt(x, y) {
     // remove a card piece at x, y
-    const card = Board.getPermanentAt(x, y);
+    let card = Board.getPermanentAt(x, y);
     if (card) {
       Board.permanents[toIndex(x, y)] = null;
       card.cardPiece.pieceData.pos = null;
@@ -88,17 +95,18 @@ class Board {
 };
 
 function toCoord(index) {
-  const result = { x: -1, y: -1 };
+  let result = { x: -1, y: -1 };
   result.y = Math.floor(index / Board.size.x);
   result.x = index - result.y * Board.size.x;
   return result;
 }
 function toIndex() {
+  // args: ({ x: x, y: y }) or (x, y)
   if (arguments.length == 1) {
-    const v = arguments[0];
-    return (v.x < 0 || v.y < 0 || v.x >= Board.size.x || v.y >= Board.size.y)
+    const pos = arguments[0];
+    return (pos.x < 0 || pos.y < 0 || pos.x >= Board.size.x || pos.y >= Board.size.y)
       ? -1
-      : Board.size.x * v.y + v.x;
+      : Board.size.x * pos.y + pos.x;
   }
   if (arguments.length == 2) {
     const x = arguments[0];
