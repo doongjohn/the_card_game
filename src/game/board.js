@@ -10,9 +10,8 @@ class Board {
   static permanents = Array(Board.size.x * Board.size.y).fill(null);
 
   static init() {
-    // stage background image
-    const stageBg = Game.spawn.sprite(0, -100, 'BattleMap5').setScale(0.85);
-    Game.addToWorld(Layer.BG, stageBg);
+    // spawn stage background image
+    Game.addToWorld(Layer.BG, Game.spawn.sprite(0, -100, 'BattleMap5').setScale(0.85));
 
     // spawn tiles
     for (const i in Board.tiles) {
@@ -22,12 +21,14 @@ class Board {
     }
 
     // align tiles
-    gridAlignCenterGameObject(Board.tiles, Board.size, Board.cellSize);
+    gridAlignCenter(Board.tiles, Board.size, Board.cellSize, (tile, x, y) => {
+      tile.gameObject.setPosition(x, y);
+    });
     Board.tiles.forEach(tile => tile.gameObject.y -= 90);
 
     // set commanders
-    Board.setPermanentAt(1, 3, Match.turnPlayer.commander);
-    Board.setPermanentAt(9, 3, Match.oppsPlayer.commander);
+    Board.setPermanentAt(1, 3, Match.player1.commander);
+    Board.setPermanentAt(9, 3, Match.player2.commander);
   }
 
   static occupied(x, y, ...arrays) {
@@ -100,6 +101,7 @@ function toCoord(index) {
   result.x = index - result.y * Board.size.x;
   return result;
 }
+
 function toIndex() {
   // args: ({ x: x, y: y }) or (x, y)
   if (arguments.length == 1) {
@@ -117,56 +119,34 @@ function toIndex() {
   }
 }
 
-function gridAlignCenter(items, gridSize, cellSize) {
-  const startX = (cellSize.x - cellSize.x * gridSize.x) * 0.5;
-  const startY = (cellSize.y - cellSize.y * gridSize.y) * 0.5;
-  let curX = startX;
-  let curY = startY;
-  let xIndex = 0;
-  let yIndex = 0;
+function gridAlignCenter(items, gridSize, cellSize, setPosFn) {
+  const
+    startX = (cellSize.x - cellSize.x * gridSize.x) * 0.5,
+    startY = (cellSize.y - cellSize.y * gridSize.y) * 0.5;
+
+  let
+    x = startX,
+    y = startY,
+    indexX = 0,
+    indexY = 0;
 
   for (const item of items) {
-    if (item == null) continue;
+    if (!item)
+      continue;
 
-    item.setPosition(curX, curY);
-    if (xIndex < gridSize.x - 1) {
-      xIndex += 1;
-      curX += cellSize.x;
+    setPosFn(item, x, y);
+
+    if (indexX < gridSize.x - 1) {
+      indexX += 1;
+      x += cellSize.x;
       continue;
     }
 
-    if (yIndex < gridSize.y - 1) {
-      xIndex = 0;
-      yIndex += 1;
-      curX = startX;
-      curY += cellSize.y;
-    }
-  }
-}
-function gridAlignCenterGameObject(items, gridSize, cellSize) {
-  const startX = (cellSize.x - cellSize.x * gridSize.x) * 0.5;
-  const startY = (cellSize.y - cellSize.y * gridSize.y) * 0.5;
-  let curX = startX;
-  let curY = startY;
-  let xIndex = 0;
-  let yIndex = 0;
-
-  for (const item of items) {
-    if (item == null)
-      continue;
-
-    item.gameObject.setPosition(curX, curY);
-    if (xIndex < gridSize.x - 1) {
-      xIndex += 1;
-      curX += cellSize.x;
-      continue;
-    }
-
-    if (yIndex < gridSize.y - 1) {
-      xIndex = 0;
-      yIndex += 1;
-      curX = startX;
-      curY += cellSize.y;
+    if (indexY < gridSize.y - 1) {
+      indexX = 0;
+      indexY += 1;
+      x = startX;
+      y += cellSize.y;
     }
   }
 }
