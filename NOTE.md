@@ -5,12 +5,14 @@
 - [x] Implement Sprite loading
   - [ ] Implement lazy Sprite loading (maybe not?)
 - [x] Implement Sprite animation
+  - [ ] Implement Sprite action animation (attack, take damage, death, etc...)
 - [x] Implement Tile state
 - [x] Implement Basic Turn
 - [x] Implement Basic Movement
   - [x] Implement movement tween
 - [x] Implement Attack
-- [ ] Implement Counter Attack
+- [x] Implement Counter Attack
+- [ ] Implement Face-down spawn
 - [ ] Implement Effect (partially done)
 - [ ] Implement Effect Chain
 - [ ] Implement UI

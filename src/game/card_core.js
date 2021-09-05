@@ -17,11 +17,13 @@ class CardData {
   constructor({
     index,
     owner,
+    type,
     name,
     desc,
   } = {}) {
     this.index = index;
     this.owner = owner;
+    this.type = type;
     this.name = name;
     this.desc = desc;
   }
@@ -51,7 +53,7 @@ class CardPaper {
     // card art
     /** @type SpriteCardArt */
     this.cardArt = new SpriteCardArt(0, 0, assetData.spriteName)
-      .setScale(1.6)
+      .setScale(2.0)
       .setOrigin(0.5, 1);
 
     // play card art animation
@@ -81,7 +83,6 @@ class CardPaper {
       font: '18px Play',
       align: 'center'
     }).setOrigin(0.5, 1);
-
 
     // card description
     /** @type Phaser.GameObjects.Text */
@@ -161,12 +162,20 @@ class CardPiece {
 
     // sprite
     /** @type SpriteCardArt */
-    this.sprite = new SpriteCardArt(0, 0, `CardArt:${card.assetData.spriteName}`, card.assetData.spriteName)
-      .setScale(1.8)
+    this.sprite = new SpriteCardArt(0, 0, card.assetData.spriteName)
+      .setScale(2.0)
       .setOrigin(0.5, 1);
 
-    // TODO: set layer based on card type
-    Game.addToWorld(Layer.Permanent, this.sprite);
+    // add sprite to world
+    let layer = null;
+    switch (card.type) {
+      case 'permanent':
+        layer = Layer.Permanent;
+        break;
+      default:
+        layer = Layer.Permanent;
+    };
+    Game.addToWorld(layer, this.sprite);
 
     // play animation
     Game.playAnimation(this.sprite, `CardArt:Idle:${card.assetData.spriteName}`);

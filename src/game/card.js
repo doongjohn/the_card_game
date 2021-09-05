@@ -159,6 +159,7 @@ function createCardPermanent(
         new CardData({
           index: index,
           owner: owner,
+          type: 'permanent',
           name: fetched.name,
           desc: fetched.desc
         }),

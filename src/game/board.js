@@ -2,7 +2,7 @@ class Board {
   // board settings
   static size = new Phaser.Math.Vector2(11, 7);
   static gap = 3;
-  static tileSize = new Phaser.Math.Vector2(100, 100);
+  static tileSize = new Phaser.Math.Vector2(105, 105);
   static cellSize = this.tileSize.clone().add({ x: Board.gap, y: Board.gap });
 
   // board array
@@ -24,7 +24,7 @@ class Board {
     gridAlignCenter(Board.tiles, Board.size, Board.cellSize, (tile, x, y) => {
       tile.gameObject.setPosition(x, y);
     });
-    Board.tiles.forEach(tile => tile.gameObject.y -= 90);
+    Board.tiles.forEach(tile => tile.gameObject.y -= 85);
 
     // set commanders
     Board.setPermanentAt(1, 3, Match.player1.commander);
