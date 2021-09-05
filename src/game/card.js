@@ -44,7 +44,7 @@ class CardPaperHandInteraction {
   }
   onClick() {
     // plan spawn this card
-    UserAction.execute(CmdUnitPlanSpawn, this.card);
+    UserAction.execute(CmdUnitPlanSummon, this.card);
   }
 }
 

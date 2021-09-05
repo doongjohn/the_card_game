@@ -21,8 +21,12 @@ class UserCommand {
     UserAction.execute(CmdCancelAll);
     this.undo();
   }
-  execute() { }
-  undo() { }
+  execute() {
+    // interface function
+  }
+  undo() {
+    // interface function
+  }
 }
 
 class CmdCancelAll {
@@ -292,7 +296,7 @@ class CmdUnitAttack extends UserCommand {
   }
 }
 
-class CmdUnitPlanSpawn {
+class CmdUnitPlanSummon {
   static execute(card) {
     // update user action state
     UserAction.setState(UserAction.StatePlanPermanentSpawn);
@@ -305,18 +309,48 @@ class CmdUnitPlanSpawn {
 
     // update tile state
     Board.tiles.forEach(tile => {
-      tile.fsm.setState(tile.getPermanent() ? TileStateNoInteraction : TileStateSpawnPermanentSelection);
+      tile.fsm.setState(
+        tile.getPermanent() || !tile.canSummon
+          ? TileStateNoInteraction
+          : TileStateSpawnPermanentSelection
+      );
     });
   }
 }
-class CmdUnitSpawn extends UserCommand {
+class CmdUnitDeclareSummon {
+  // TODO: impelement declare summon
+  static execute(tile) {
+    // update user action state
+    UserAction.setState(UserAction.StateDeclarePermanentSpawn);
+
+    // show declared card paper
+
+    // occupy the selected tile
+
+    // update tile state
+    Board.setTileStateAll(TileStateNoInteraction);
+
+    // show some kind of indicator at selected tile
+    Match.turnPlayer.selectedTile = tile;
+    tile.fsm.setState(TileStateSelected);
+    tile.canSummon = false;
+
+    // TODO: wait for the opponent respose
+    // - if opponent cancels the summon: this card will return to hand and selected tile will be empty
+    // - else: set the card on the selected tile
+    UserAction.execute(CmdUnitSummon, tile);
+
+    tile.canSummon = true;
+  }
+}
+class CmdUnitSummon extends UserCommand {
   execute(tile) {
     this.save(PlayerData, BoardPermanentData);
 
     // update user action state
     UserAction.setState(UserAction.StateView);
 
-    // spawn a selected permanent
+    // summon a selected permanent
     Board.setPermanentAt(tile.pos.x, tile.pos.y, Match.turnPlayer.selectedCard);
 
     // remove from hand
@@ -327,7 +361,7 @@ class CmdUnitSpawn extends UserCommand {
 
     // select this tile
     Match.turnPlayer.selectedTile = tile;
-    Match.turnPlayer.selectedTile.fsm.setState(TileStateSelected);
+    tile.fsm.setState(TileStateSelected);
   }
   undo() {
     this.restoreAll();

@@ -15,6 +15,8 @@ class Tile {
     this.gameObject = this.initGameObject(size, gap);
     this.index = index;
     this.pos = toCoord(index);
+
+    // init fsm
     this.fsm = new FSM(this, TileStateNormal, (obj) => {
       obj.setHoverEnter(() => {
         Tile.hoveringTile = obj;
@@ -27,6 +29,9 @@ class Tile {
       if (Tile.hoveringTile == obj)
         Tile.hoveringTile.fsm.curState.onHoverEnter(obj);
     });
+
+    // user action properties
+    this.canSummon = true;
 
     // get cards
     this.getPermanent = () => Board.permanents[this.index];

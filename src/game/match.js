@@ -58,20 +58,22 @@ class Match {
 
 
     // TEST: ui
-    Game.spawn.text(10, 5,
-      `[SPACE]: end turn
-[P]: teleport
-[T]: tap / untap
-[M]: move
-[A]: attack`, {
-      color: '#000000',
+    Game.spawn.text(10, 60,`
+[SPACE]: end turn
+    [P]: teleport
+    [T]: toggle tap
+    [M]: move
+    [A]: attack
+    `.trim(), {
+      color: '#ffffff',
       font: '20px consolas',
-      align: 'left'
-    });
-    Game.spawn.rectangle(Game.center.x, 10, 200, 100, 0x000000);
+      align: 'left',
+      backgroundColor: '#00000099'
+    }).setPadding(10, 10, 10, 10);
+    Game.spawn.rectangle(Game.center.x, 30, 1920, 50, 0x000000).setFillStyle(0x000000, 0.6);
     Match.turnText = Game.spawn.text(Game.center.x, 10, 'P1\'s turn', {
       color: '#ffffff',
-      font: '32px Arial',
+      font: '30px Play',
       align: 'center'
     }).setOrigin(0.5, 0);
   }

@@ -11,7 +11,7 @@ class Board {
 
   static init() {
     // spawn stage background image
-    Game.addToWorld(Layer.BG, Game.spawn.sprite(0, -100, 'BattleMap5').setScale(0.85));
+    Game.addToWorld(Layer.BG, Game.spawn.sprite(0, -100, 'BattleMap1').setScale(0.85));
 
     // spawn tiles
     for (const i in Board.tiles) {

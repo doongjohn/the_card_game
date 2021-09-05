@@ -69,7 +69,7 @@ class TileStateSpawnPermanentSelection extends TileState {
     CardInfoUI.hide();
   }
   onClick(self) {
-    UserAction.execute(CmdUnitSpawn, self);
+    UserAction.execute(CmdUnitDeclareSummon, self);
   }
 }
 

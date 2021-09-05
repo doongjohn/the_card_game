@@ -5,6 +5,7 @@ class UserAction {
   static StatePlanAttack = 3;
   static StateCounterAttack = 4;
   static StatePlanPermanentSpawn = 5;
+  static StateDeclarePermanentSpawn = 6;
   static state = UserAction.StateEmpty;
   static commands = [];
 
