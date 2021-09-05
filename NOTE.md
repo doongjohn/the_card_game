@@ -26,7 +26,8 @@
 - [ ] Implement Card data base
 - [ ] Implement Deck
 - [x] Implement Undo
-- [ ] upgrade mouse input (seperate right / left click)
+- [ ] Upgrade mouse input (seperate right / left click)
+  - [ ] Implement context menu
 
 ## TODO (long term):
 
