@@ -110,8 +110,8 @@ const CardPieceLogicPermanent = {
       // TODO: move this card to the graveyard
       Board.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y);
     } else {
-      // update stats ui
-      this.card.cardPaper.updatePermanentStatsUi(this.pieceData);
+      // update ui
+      CardInfoUI.updateInfo(this.card);
     }
   },
   doAttack(target) {
@@ -127,6 +127,12 @@ const CardPieceLogicPermanent = {
 
     // target counter attack
     target.doCounterAttack(this);
+
+    // check death
+    if (this.pieceData.health == 0) {
+      // update ui
+      CardInfoUI.hide();
+    }
   },
   doCounterAttack(target) {
     // TODO: display confirmation button for counter attack

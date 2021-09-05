@@ -323,9 +323,11 @@ class CmdUnitSpawn extends UserCommand {
     Match.turnPlayer.handRemove(Match.turnPlayer.selectedCard);
 
     // update tile state
-    for (const t of Board.tiles)
-      if (!t.fsm.curState.compare(TileStateSelected))
-        t.fsm.setState(TileStateNormal);
+    Board.setTileStateAll(TileStateNormal);
+
+    // select this tile
+    Match.turnPlayer.selectedTile = tile;
+    Match.turnPlayer.selectedTile.fsm.setState(TileStateSelected);
   }
   undo() {
     this.restoreAll();
