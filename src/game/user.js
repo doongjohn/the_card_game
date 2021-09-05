@@ -52,6 +52,7 @@ class UserInput {
       // cheat input
       undo: 'u',
       unitTap: 't',
+      unitFaceToggle: 'f',
       unitTeleport: 'p',
 
       // game input
@@ -65,6 +66,7 @@ class UserInput {
     // cheat input
     UserInput.keys.undo.on('down', () => UserAction.undo());
     UserInput.keys.unitTap.on('down', () => UserAction.execute(CmdUnitTap));
+    UserInput.keys.unitFaceToggle.on('down', () => UserAction.execute(CmdUnitFaceToggle));
     UserInput.keys.unitTeleport.on('down', () => UserAction.execute(CmdUnitPlanTeleport));
 
     // game input

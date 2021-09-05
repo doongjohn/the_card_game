@@ -5,6 +5,7 @@ class MainScene extends Phaser.Scene {
 
   preload() {
     SpriteManager.BoardBG.load();
+    SpriteManager.CardBack.load();
     SpriteManager.CardArt.load();
   }
 

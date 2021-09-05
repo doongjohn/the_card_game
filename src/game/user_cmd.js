@@ -93,10 +93,24 @@ class CmdEndTurn extends UserCommand {
 // TODO: maybe rename Unit to Permanent?
 class CmdUnitTap extends UserCommand {
   execute() {
+    const card = Match.turnPlayer.selectedTile.getPermanent();
+    if (card.cardPiece.faceDown)
+      return;
+
+    this.save(BoardPermanentData);
+    card && card.cardPiece.tap(!card.cardPiece.pieceData.tapped);
+  }
+  undo() {
+    this.restoreAll();
+  }
+}
+
+class CmdUnitFaceToggle extends UserCommand {
+  execute() {
     this.save(BoardPermanentData);
 
     const card = Match.turnPlayer.selectedTile.getPermanent();
-    card && card.cardPiece.tap(!card.cardPiece.pieceData.tapped);
+    card && card.cardPiece.faceDown(!card.cardPiece.pieceData.faceDowned);
   }
   undo() {
     this.restoreAll();

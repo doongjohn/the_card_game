@@ -1,9 +1,7 @@
 class PixelSprite extends Phaser.GameObjects.Sprite {
-  constructor(x, y, assetNameFull, assetName, frame) {
-    super(Game.scene, x, y, assetNameFull, frame);
-    this.assetNameFull = assetNameFull;
+  constructor(x, y, assetName) {
+    super(Game.scene, x, y, assetName);
     this.assetName = assetName;
-
     this.texture.setFilter(Phaser.ScaleModes.NEAREST);
     Game.spawn.existing(this);
   }
@@ -11,7 +9,7 @@ class PixelSprite extends Phaser.GameObjects.Sprite {
 
 class SpriteCardArt extends PixelSprite {
   constructor(x, y, assetName) {
-    super(x, y, 'CardArt:' + assetName, assetName, 0);
+    super(x, y, 'CardArt:' + assetName, assetName);
   }
 }
 
@@ -20,6 +18,12 @@ class SpriteManager {
     load() {
       Game.scene.load.image('BattleMap1', 'assets/board_bg/battlemap1.png');
       Game.scene.load.image('BattleMap5', 'assets/board_bg/battlemap5.png');
+    }
+  };
+
+  static CardBack = {
+    load() {
+      Game.scene.load.image('CardBackDefault', 'assets/card_back/CardBackDefault.png');
     }
   };
 

@@ -214,8 +214,16 @@ class CardPiece {
     const worldPos = Board.gridToWorldPos(x, y);
     this.sprite.x = worldPos.x;
     this.sprite.y = worldPos.y + 60;
+
+    if (this.cardBackSprite) {
+      this.cardBackSprite.x = this.sprite.x;
+      this.cardBackSprite.y = this.sprite.y;
+    }
   }
   tap(bool) {
+    if (this.pieceData.faceDowned)
+      return;
+
     if (bool) {
       this.pieceData.tapped = true;
       this.sprite.setPipeline(Game.pipeline.grayScale);
@@ -227,11 +235,23 @@ class CardPiece {
   faceDown(bool) {
     // TODO: think about visual representation
     if (bool) {
+      this.pieceData.tapped = true;
       this.pieceData.faceDowned = true;
+
+      // show card back
+      this.hide();
+      this.cardBackSprite = Game.spawn.sprite(0, 0, 'CardBackDefault').setOrigin(0.5, 1.12).setScale(0.16);
+      this.cardBackSprite.x = this.sprite.x;
+      this.cardBackSprite.y = this.sprite.y;
+      Game.addToWorld(Layer.Permanent, this.cardBackSprite);
+
       // do stuff
     } else {
+      this.pieceData.tapped = false;
       this.pieceData.faceDowned = false;
-      // do stuff
+
+      this.show();
+      this.cardBackSprite.destroy();
     }
   }
 }
