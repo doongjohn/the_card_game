@@ -44,13 +44,14 @@ class Player {
       this.allCards.push(createCardPermanent(i++, this, spriteAssetName));
 
     // copy all cards to deck
-    // TODO: shuffle the cards
     this.deck = [...this.allCards];
+    shuffleArray(this.deck, 10);
   }
 
   handInit() {
     // TODO: pick some cards from the top of the deck
-    this.hand.push(...this.deck);
+    this.hand.push(this.deck[0]);
+    this.hand.push(this.deck[1]);
     this.handUI.init();
   }
   handAdd(...cards) {
