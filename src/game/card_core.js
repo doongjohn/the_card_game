@@ -233,23 +233,23 @@ class CardPiece {
     }
   }
   faceDown(bool) {
-    // TODO: think about visual representation
     if (bool) {
-      this.pieceData.tapped = true;
       this.pieceData.faceDowned = true;
+      this.pieceData.tapped = true;
 
+      // TODO: improve visual
       // show card back
       this.hide();
       this.cardBackSprite = Game.spawn.sprite(0, 0, 'CardBackDefault').setOrigin(0.5, 1.12).setScale(0.16);
       this.cardBackSprite.x = this.sprite.x;
       this.cardBackSprite.y = this.sprite.y;
       Game.addToWorld(Layer.Permanent, this.cardBackSprite);
-
-      // do stuff
     } else {
-      this.pieceData.tapped = false;
       this.pieceData.faceDowned = false;
+      this.pieceData.tapped = false;
+      this.sprite.resetPipeline();
 
+      // show card sprite
       this.show();
       this.cardBackSprite.destroy();
     }
