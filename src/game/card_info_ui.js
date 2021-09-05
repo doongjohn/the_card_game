@@ -15,7 +15,9 @@ class CardInfoUI {
       0, 0,
       CardInfoUI.width, CardInfoUI.height,
       0x182236
-    ).setOrigin(0.5, 0);
+    )
+      .setOrigin(0.5, 0)
+      .setFillStyle(0x182236, 0.8);
 
     CardInfoUI.cardName = Game.spawn.text(
       0, 30,
@@ -51,7 +53,7 @@ class CardInfoUI {
     ]);
 
     // set position
-    CardInfoUI.visual.incXY(-765, -300);
+    CardInfoUI.visual.incXY(-775, -300);
 
     // add to layer
     Game.addToWorld(Layer.UI, CardInfoUI.visual.getChildren());
