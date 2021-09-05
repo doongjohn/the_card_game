@@ -62,6 +62,7 @@ class Match {
 [SPACE]: end turn
     [P]: teleport
     [T]: toggle tap
+    [F]: toggle face-down
     [M]: move
     [A]: attack
     `.trim(), {
