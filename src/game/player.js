@@ -1,26 +1,31 @@
+// TEST: Deck
+const TestDeckP1 = [
+  'ZirAnSunforge',
+  'ZirAnSunforge',
+  'ZirAnSunforge',
+  'ZirAnSunforge',
+  'Sojourner',
+  'Sojourner',
+  'Sojourner',
+  'Sojourner',
+];
+const TestDeckP2 = [
+  'RazorcragGolem',
+  'RazorcragGolem',
+  'RazorcragGolem',
+  'RazorcragGolem',
+  'Rex',
+  'Rex',
+  'Rex',
+  'Rex',
+];
+
+
 class Team {
   static None = 0;
   static P1 = 1;
   static P2 = 2;
 }
-
-// TEST: Deck
-const TestDeckP1 = [
-  'ZirAnSunforge',
-  'Sojourner',
-  'ZirAnSunforge',
-  'Sojourner',
-  'ZirAnSunforge',
-  'Sojourner',
-];
-const TestDeckP2 = [
-  'RazorcragGolem',
-  'Rex',
-  'RazorcragGolem',
-  'Rex',
-  'RazorcragGolem',
-  'Rex',
-];
 
 class Player {
   constructor(team) {
@@ -52,22 +57,25 @@ class Player {
     // TODO: pick some cards from the top of the deck
     this.hand.push(this.deck[0]);
     this.hand.push(this.deck[1]);
+    this.hand.push(this.deck[2]);
+    this.hand.push(this.deck[3]);
+    this.hand.push(this.deck[4]);
     this.handUI.init();
   }
   handAdd(...cards) {
+    // TODO: from where? deck?
+    // make transfer cards function instead
     this.hand.push(...cards);
     this.handUI.update();
   }
-  handRemove(card) {
-    let i = 0;
-    for (const c of this.hand) {
-      if (card == c) {
+  handRemove(...cards) {
+    // TODO: to where? graveyard?
+    // make transfer cards function instead
+    for (const i in this.hand) {
+      if (cards.includes(this.hand[i])) {
         this.hand[i].cardPaper.hide();
         this.hand.splice(i, 1);
-        // TODO: send this card to some card container (like deck or somthing)
-        break;
       }
-      ++i;
     }
     this.handUI.update();
   }
