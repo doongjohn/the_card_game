@@ -55,16 +55,21 @@ class Player {
 
   handInit() {
     // TODO: pick some cards from the top of the deck
-    this.hand.push(this.deck[0]);
-    this.hand.push(this.deck[1]);
-    this.hand.push(this.deck[2]);
-    this.hand.push(this.deck[3]);
-    this.hand.push(this.deck[4]);
+    // this.handUiGroup = Game.spawn.group();
+    const num = 6;
+    for (let i = 0; i < num; ++i) {
+      // FIXME
+      this.deck[i].cardPaper.visual.depth = i;
+      this.hand.push(this.deck[i]);
+    }
     this.handUI.init();
   }
   handAdd(...cards) {
     // TODO: from where? deck?
     // make transfer cards function instead
+    for (let card of cards) {
+      card.cardPaper.visual.depth = this.hand.length - 1;
+    }
     this.hand.push(...cards);
     this.handUI.update();
   }
@@ -93,11 +98,15 @@ class PlayerData {
     Match.player2.deck = this.p2_deck;
     Match.player1.hand = this.p1_hand;
     Match.player2.hand = this.p2_hand;
+
+    // update ui
     Match.turnPlayer.handUI.update();
   }
 }
 
 class HandUI {
+  // TODO: make both players hand visible
+
   static maxCard = 5;
   static y = 530;
 
