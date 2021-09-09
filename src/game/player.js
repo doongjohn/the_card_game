@@ -56,10 +56,10 @@ class Player {
   handInit() {
     // TODO: pick some cards from the top of the deck
     // this.handUiGroup = Game.spawn.group();
-    const num = 6;
+    const num = 8;
     for (let i = 0; i < num; ++i) {
-      // FIXME
-      this.deck[i].cardPaper.visual.depth = i;
+      this.deck[i].cardPaper.inputArea.setDepth(i);
+      Layer.moveTo(Layer.UI, this.deck[i].cardPaper.visual, i);
       this.hand.push(this.deck[i]);
     }
     this.handUI.init();
@@ -68,9 +68,10 @@ class Player {
     // TODO: from where? deck?
     // make transfer cards function instead
     for (let card of cards) {
-      card.cardPaper.visual.depth = this.hand.length - 1;
+      card.cardPaper.inputArea.setDepth(this.hand.length - 1);
+      Layer.moveTo(Layer.UI, card.cardPaper.visual, this.hand.length - 1);
+      this.hand.push(card);
     }
-    this.hand.push(...cards);
     this.handUI.update();
   }
   handRemove(...cards) {
@@ -136,6 +137,11 @@ class HandUI {
     for (const card of this.player.hand) {
       card.cardPaper.visual.x = startPos + (gap * i++);
       card.cardPaper.visual.y = HandUI.y;
+
+      // FIXME: only one inputArea is working
+      // TODO: make it work with tween
+      card.cardPaper.inputArea.y = card.cardPaper.visual.parentContainer.y + card.cardPaper.visual.y;
+      card.cardPaper.inputArea.x = card.cardPaper.visual.parentContainer.x + card.cardPaper.visual.x;
     }
   }
   show() {
@@ -196,7 +202,7 @@ class HandUI {
         duration: 200,
 
         // tween props
-        x: { from: card.cardPaper.visual.x, to: startPos + offset + (gap * i) },
+        // x: { from: card.cardPaper.visual.x, to: startPos + offset + (gap * i) },
 
         // on tween complete
         onCompleteParams: [this],

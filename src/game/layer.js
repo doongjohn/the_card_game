@@ -1,13 +1,14 @@
 // NOTE: Why does phaser hate nested continer?
 class Layer {
   static BG = 0;
-  static Board = 1;
-  static Permanent = 2;
-  static UI = 3;
+  static Default = 1;
+  static Board = 2;
+  static Permanent = 3;
+  static UI = 4;
 
   static init() {
     Layer.roots = [];
-    for (let i = 0; i < 4; ++i)
+    for (let i = 0; i < 5; ++i)
       Layer.roots.push(Game.spawn.container(Game.center.x, Game.center.y).setDepth(i));
   }
 

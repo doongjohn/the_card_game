@@ -98,10 +98,7 @@ class CardPaper {
 
     // container for this card paper
     /** @type Phaser.GameObjects.Container */
-    this.visual = Game.spawn.container(0, 0);
-    this.visual.setSize(CardPaper.cardBg.width, CardPaper.cardBg.height);
-    this.visual.setInteractive();
-    this.visual.add([
+    this.visual = Game.spawn.container(0, 0, [
       this.cardBg,
       this.cardArt,
       this.cardNameText,
@@ -116,6 +113,10 @@ class CardPaper {
     /** @type Phaser.Tweens */
     this.tween = null;
 
+    /** @type Phaser.GameObjects.Zone */
+    this.inputArea = Game.spawn.zone(0, 0, CardPaper.cardBg.width, CardPaper.cardBg.height);
+    this.inputArea.setInteractive();
+
     /**
      * @type {{
      *  onHoverEnter: function,
@@ -124,17 +125,19 @@ class CardPaper {
      * }}
      * */
     this.interaction = null;
-    this.visual.on('pointerover', () => { this.interaction?.onHoverEnter(); });
-    this.visual.on('pointerout', () => { this.interaction?.onHoverExit(); });
-    this.visual.on('pointerdown', () => { this.interaction?.onClick(); });
+    this.inputArea.on('pointerover', () => { this.interaction?.onHoverEnter(); });
+    this.inputArea.on('pointerout', () => { this.interaction?.onHoverExit(); });
+    this.inputArea.on('pointerdown', () => { this.interaction?.onClick(); });
 
     // hide by default
     this.hide();
   }
   hide() {
+    this.inputArea.setActive(false);
     this.visual.setVisible(false);
   }
   show() {
+    this.inputArea.setActive(true);
     this.visual.setVisible(true);
   }
 }
