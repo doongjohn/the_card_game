@@ -16,8 +16,7 @@ class CardInfoUI {
       CardInfoUI.width, CardInfoUI.height,
       0x182236
     )
-      .setOrigin(0.5, 0)
-      .setFillStyle(0x182236, 0.8);
+      .setOrigin(0.5, 0);
 
     CardInfoUI.cardName = Game.spawn.text(
       0, 30,

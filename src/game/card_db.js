@@ -35,8 +35,8 @@ const CardDB = [
     name: 'Razorcrag Golem',
     desc: 'This card sucks. wow wow wow wow wowowowowowo.',
     data: {
-      health: 2,
-      attack: 1
+      health: 4,
+      attack: 3
     }
   },
 

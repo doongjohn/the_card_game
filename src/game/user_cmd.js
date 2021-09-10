@@ -94,11 +94,14 @@ class CmdEndTurn extends UserCommand {
 class CmdUnitTap extends UserCommand {
   execute() {
     const card = Match.turnPlayer.selectedTile.getPermanent();
-    if (card.cardPiece.faceDowned)
+    if (!card || card.cardPiece.faceDowned)
       return;
 
+    // save data
     this.save(BoardPermanentData);
-    card && card.cardPiece.tap(!card.cardPiece.pieceData.tapped);
+
+    // toggle tap
+    card.cardPiece.tap(!card.cardPiece.pieceData.tapped);
   }
   undo() {
     this.restoreAll();

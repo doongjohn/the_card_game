@@ -137,11 +137,7 @@ class HandUI {
     for (const card of this.player.hand) {
       card.cardPaper.visual.x = startPos + (gap * i++);
       card.cardPaper.visual.y = HandUI.y;
-
-      // FIXME: only one inputArea is working
-      // TODO: make it work with tween
-      card.cardPaper.inputArea.y = card.cardPaper.visual.parentContainer.y + card.cardPaper.visual.y;
-      card.cardPaper.inputArea.x = card.cardPaper.visual.parentContainer.x + card.cardPaper.visual.x;
+      card.cardPaper.resetInputAreaPos();
     }
   }
   show() {
@@ -159,56 +155,32 @@ class HandUI {
     const { startPos, gap } = this.getAlignData();
     let i = 0;
     for (const card of this.player.hand) {
-      card.cardPaper.show();
-      card.cardPaper.tween?.remove();
-      card.cardPaper.tween = Game.scene.tweens.add({
+      const cardPaper = card.cardPaper;
+      cardPaper.show();
+      cardPaper.tween?.remove();
+      cardPaper.tween = Game.scene.tweens.add({
         // tween options
-        targets: card.cardPaper.visual,
+        targets: cardPaper.visual,
         repeat: 0,
+        duration: 200,
         ease: 'Cubic.Out',
-        duration: 200,
 
         // tween props
-        x: { from: card.cardPaper.visual.x, to: startPos + (gap * i++) },
-
-        // on tween complete
-        onCompleteParams: [this],
-        onComplete: function (tween) {
-          tween.remove();
-          card.cardPaper.tween = null;
+        props: {
+          x: { from: cardPaper.visual.x, to: startPos + (gap * i++) },
         },
-      });
-    }
-  }
-  focusCard(card) {
-    if (this.player.hand.length <= HandUI.maxCard)
-      return;
 
-    const { startPos, gap } = {
-      startPos: -this.maxWidth / 2,
-      gap: this.maxWidth / (this.player.hand.length - 1)
-    };
-    const offset = this.width - gap;
-    const startIndex = this.player.hand.indexOf(card) + 1;
-
-    for (let i = startIndex; i < this.player.hand.length; ++i) {
-      const card = this.player.hand[i];
-      card.cardPaper.tween?.remove();
-      card.cardPaper.tween = Game.scene.tweens.add({
-        // tween options
-        targets: card.cardPaper.visual,
-        repeat: 0,
-        ease: 'Sine.Out',
-        duration: 200,
-
-        // tween props
-        // x: { from: card.cardPaper.visual.x, to: startPos + offset + (gap * i) },
+        // on tween update
+        onUpdateParams: [this],
+        onUpdate: function (tween) {
+          cardPaper.resetInputAreaPos();
+        },
 
         // on tween complete
         onCompleteParams: [this],
         onComplete: function (tween) {
           tween.remove();
-          card.cardPaper.tween = null;
+          cardPaper.tween = null;
         },
       });
     }

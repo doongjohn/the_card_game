@@ -57,26 +57,26 @@ class Match {
     EffectEvent.add('onTakeDamage', onTakeDamageEffectP2);
 
 
-    // TEST: ui
-    Game.spawn.text(10, 60,`
-[SPACE]: end turn
-    [P]: teleport
-    [T]: toggle tap
-    [F]: toggle face-down
-    [M]: move
-    [A]: attack
-    `.trim(), {
-      color: '#ffffff',
-      font: '20px consolas',
-      align: 'left',
-      backgroundColor: '#00000099'
-    }).setPadding(10, 10, 10, 10);
-    Game.spawn.rectangle(Game.center.x, 30, 1920, 50, 0x000000).setFillStyle(0x000000, 0.6);
+    // TEST: turn indicator
+    Game.spawn.rectangle(Game.center.x, 25, 200, 50, 0x000000).setFillStyle(0x000000, 0.6);
     Match.turnText = Game.spawn.text(Game.center.x, 10, 'P1\'s turn', {
       color: '#ffffff',
       font: '30px Play',
       align: 'center'
     }).setOrigin(0.5, 0);
+
+    // TEST: help text
+    Game.spawn.text(10, 60,
+      'SPACE : end turn\n' +
+      'P     : teleport\n' +
+      'T     : toggle tap\n' +
+      'F     : toggle face-down\n' +
+      'M     : move\n' +
+      'A     : attack', {
+      color: '#ffffff',
+      font: '20px consolas',
+      backgroundColor: '#00000099'
+    }).setPadding(10, 10, 10, 10);
   }
 }
 

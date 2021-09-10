@@ -28,9 +28,6 @@ class CardPaperHandInteraction {
 
     // move card up
     this.card.cardPaper.visual.y -= 180;
-
-    // update hand ui
-    Match.turnPlayer.handUI.focusCard(this.card);
   }
   onHoverExit() {
     // set card paper display index to original
@@ -54,12 +51,17 @@ const CardDataMovable = {
   curMoveCount: 0,
 };
 const CardPieceLogicMovable = {
+  resetMoveCount() {
+    this.pieceData.curMoveCount = 0;
+  },
   canMove() {
+    // check if curMoveCount is smaller than maxMoveCount
     return this.pieceData.curMoveCount < this.pieceData.maxMoveCount;
   },
   moveTo(x, y) {
     Board.movePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y);
-    this.pieceData.curMoveCount++;
+
+    ++this.pieceData.curMoveCount;
     this.pieceData.pos.x = x;
     this.pieceData.pos.y = y;
 
@@ -79,8 +81,10 @@ const CardPieceLogicMovable = {
       duration: dist / speed,
 
       // tween props
-      x: { from: this.sprite.x, to: pos.x },
-      y: { from: this.sprite.y, to: pos.y },
+      props: {
+        x: { from: this.sprite.x, to: pos.x },
+        y: { from: this.sprite.y, to: pos.y },
+      },
 
       // on tween complete
       onCompleteParams: [this],
@@ -97,6 +101,19 @@ const CardDataPermanent = {
   attack: 0,
 };
 const CardPieceLogicPermanent = {
+  tap(bool) { // overrides base function
+    if (this.pieceData.faceDowned)
+      return;
+
+    if (bool) {
+      this.pieceData.tapped = true;
+      this.sprite.setPipeline(Game.pipeline.grayScale);
+    } else {
+      this.pieceData.tapped = false;
+      this.sprite.resetPipeline();
+      this.resetMoveCount();
+    }
+  },
   takeDamage(attacker, damage) {
     // update health
     this.pieceData.health = Math.max(this.pieceData.health - damage, 0);

@@ -105,17 +105,11 @@ class CardPaper {
       this.cardDescBox,
       this.cardDescText
     ]);
-
-    // add gameobjects to world
     Game.addToWorld(Layer.UI, this.visual);
 
     // tween
     /** @type Phaser.Tweens */
     this.tween = null;
-
-    /** @type Phaser.GameObjects.Zone */
-    this.inputArea = Game.spawn.zone(0, 0, CardPaper.cardBg.width, CardPaper.cardBg.height);
-    this.inputArea.setInteractive();
 
     /**
      * @type {{
@@ -125,6 +119,10 @@ class CardPaper {
      * }}
      * */
     this.interaction = null;
+
+    /** @type Phaser.GameObjects.Zone */
+    this.inputArea = Game.spawn.zone(0, 0, CardPaper.cardBg.width, CardPaper.cardBg.height);
+    this.inputArea.setInteractive();
     this.inputArea.on('pointerover', () => { this.interaction?.onHoverEnter(); });
     this.inputArea.on('pointerout', () => { this.interaction?.onHoverExit(); });
     this.inputArea.on('pointerdown', () => { this.interaction?.onClick(); });
@@ -133,12 +131,16 @@ class CardPaper {
     this.hide();
   }
   hide() {
-    this.inputArea.setActive(false);
+    this.inputArea.disableInteractive();
     this.visual.setVisible(false);
   }
   show() {
-    this.inputArea.setActive(true);
+    this.inputArea.setInteractive();
     this.visual.setVisible(true);
+  }
+  resetInputAreaPos() {
+    this.inputArea.y = this.visual.parentContainer.y + this.visual.y;
+    this.inputArea.x = this.visual.parentContainer.x + this.visual.x;
   }
 }
 
