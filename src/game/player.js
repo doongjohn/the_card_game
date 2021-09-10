@@ -50,12 +50,12 @@ class Player {
 
     // copy all cards to deck
     this.deck = [...this.allCards];
+
+    // shuffle deck
     shuffleArray(this.deck, 10);
   }
 
   handInit() {
-    // TODO: pick some cards from the top of the deck
-    // this.handUiGroup = Game.spawn.group();
     const num = 8;
     for (let i = 0; i < num; ++i) {
       this.deck[i].cardPaper.inputArea.setDepth(i);

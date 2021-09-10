@@ -115,6 +115,11 @@ const CardPieceLogicPermanent = {
     }
   },
   takeDamage(attacker, damage) {
+    // face up
+    if (this.pieceData.faceDowned) {
+      this.faceDown(false);
+    }
+
     // update health
     this.pieceData.health = Math.max(this.pieceData.health - damage, 0);
 

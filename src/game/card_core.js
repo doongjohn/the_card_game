@@ -34,7 +34,7 @@ class CardPaper {
   // this is a paper that exists in the deck, hand, etc...
   // card paper visual is hidden by defualt
 
-  // TODO: card paper has it's own data
+  // TODO: card paper has it's own data (only in hand)
   // players can apply effects on a card it self
 
   static cardBg = {
