@@ -8,6 +8,10 @@ const TestDeckP1 = [
   'Sojourner',
   'Sojourner',
   'Sojourner',
+  'KaleosXaan',
+  'KaleosXaan',
+  'KaleosXaan',
+  'KaleosXaan',
 ];
 const TestDeckP2 = [
   'RazorcragGolem',

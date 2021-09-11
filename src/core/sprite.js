@@ -84,6 +84,11 @@ class SpriteManager {
           fileName: 'Rex.png',
           width: 100, height: 100
         },
+        {
+          name: 'CardArt:KaleosXaan',
+          fileName: 'KaleosXaan.png',
+          width: 80, height: 80
+        },
       );
     },
 
@@ -118,6 +123,11 @@ class SpriteManager {
           name: 'CardArt:Rex',
           key: 'CardArt:Idle:Rex',
           length: 12
+        },
+        {
+          name: 'CardArt:KaleosXaan',
+          key: 'CardArt:Idle:KaleosXaan',
+          length: 14
         },
       );
     }

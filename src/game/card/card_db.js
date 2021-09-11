@@ -59,4 +59,15 @@ const CardDB = [
       attack: 2
     }
   },
+
+  {
+    spriteAssetName: 'KaleosXaan',
+    name: 'Dogshit',
+    desc: 'Me do aggro :).',
+    data: {
+      health: 1,
+      attack: 2000,
+      maxMoveCount: 2
+    }
+  },
 ];
