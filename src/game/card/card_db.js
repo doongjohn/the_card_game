@@ -5,7 +5,7 @@ const CardDB = [
     name: 'Ragnora The Relentless',
     desc: 'This card is VERY STRONGU!!!',
     data: {
-      health: 5,
+      health: 7,
       attack: 1
     }
   },
