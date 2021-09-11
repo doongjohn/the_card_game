@@ -56,6 +56,8 @@ class CardPaper {
       .setScale(2.0)
       .setOrigin(0.5, 1);
 
+    console.log(assetData.spriteName);
+
     // play card art animation
     Game.playAnimation(this.cardArt, 'CardArt:Idle:' + assetData.spriteName);
 

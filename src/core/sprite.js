@@ -31,21 +31,29 @@ class SpriteManager {
     cardArtLoad(...data) {
       for (const x of data) {
         Game.scene.load.spritesheet(
-          x.name, `assets/card_art/${x.fileName}`, {
+          'CardArt:' + x.fileName, `assets/card_art/${x.fileName}.png`, {
           frameWidth: x.width,
           frameHeight: x.height
         });
+      }
+    },
+    cardArtLoadFromUrl(...data) {
+      for (const x of data) {
+        Game.scene.load.image('CardArt:' + x.name, x.url);
       }
     },
 
     cardArtCreateAnim(...data) {
       for (const x of data) {
         Game.scene.anims.create({
-          key: x.key,
-          frames: Game.scene.anims.generateFrameNumbers(x.name, {
-            start: 0,
-            end: x.length - 1
-          }),
+          key: 'CardArt:' + x.key + ':' + x.name,
+          frames: Game.scene.anims.generateFrameNumbers(
+            'CardArt:' + x.name,
+            {
+              start: 0,
+              end: x.length - 1
+            }
+          ),
           frameRate: 16,
           repeat: -1
         });
@@ -53,40 +61,40 @@ class SpriteManager {
     },
 
     load() {
+      this.cardArtLoadFromUrl(
+        {
+          name: 'BloodtearAlchmist',
+          url: 'https://static.wikia.nocookie.net/duelyst_gamepedia/images/2/2c/Bloodtear_Alchemist_idle.gif',
+          width: 80, height: 80
+        }
+      );
       this.cardArtLoad(
         {
-          name: 'CardArt:RagnoraTheRelentless',
-          fileName: 'RagnoraTheRelentless.png',
+          fileName: 'RagnoraTheRelentless',
           width: 130, height: 130
         },
         {
-          name: 'CardArt:ArgeonHighmayne',
-          fileName: 'ArgeonHighmayne.png',
+          fileName: 'ArgeonHighmayne',
           width: 100, height: 100
         },
         {
-          name: 'CardArt:ZirAnSunforge',
-          fileName: 'ZirAnSunforge.png',
+          fileName: 'ZirAnSunforge',
           width: 100, height: 100
         },
         {
-          name: 'CardArt:RazorcragGolem',
-          fileName: 'RazorcragGolem.png',
+          fileName: 'RazorcragGolem',
           width: 120, height: 120
         },
         {
-          name: 'CardArt:Sojourner',
-          fileName: 'Sojourner.png',
+          fileName: 'Sojourner',
           width: 80, height: 80
         },
         {
-          name: 'CardArt:Rex',
-          fileName: 'Rex.png',
+          fileName: 'Rex',
           width: 100, height: 100
         },
         {
-          name: 'CardArt:KaleosXaan',
-          fileName: 'KaleosXaan.png',
+          fileName: 'KaleosXaan',
           width: 80, height: 80
         },
       );
@@ -95,38 +103,38 @@ class SpriteManager {
     createAnims() {
       this.cardArtCreateAnim(
         {
-          name: 'CardArt:RagnoraTheRelentless',
-          key: 'CardArt:Idle:RagnoraTheRelentless',
+          name: 'RagnoraTheRelentless',
+          key: 'Idle',
           length: 14
         },
         {
-          name: 'CardArt:ArgeonHighmayne',
-          key: 'CardArt:Idle:ArgeonHighmayne',
+          name: 'ArgeonHighmayne',
+          key: 'Idle',
           length: 11
         },
         {
-          name: 'CardArt:ZirAnSunforge',
-          key: 'CardArt:Idle:ZirAnSunforge',
+          name: 'ZirAnSunforge',
+          key: 'Idle',
           length: 14
         },
         {
-          name: 'CardArt:RazorcragGolem',
-          key: 'CardArt:Idle:RazorcragGolem',
+          name: 'RazorcragGolem',
+          key: 'Idle',
           length: 14
         },
         {
-          name: 'CardArt:Sojourner',
-          key: 'CardArt:Idle:Sojourner',
+          name: 'Sojourner',
+          key: 'Idle',
           length: 12
         },
         {
-          name: 'CardArt:Rex',
-          key: 'CardArt:Idle:Rex',
+          name: 'Rex',
+          key: 'Idle',
           length: 12
         },
         {
-          name: 'CardArt:KaleosXaan',
-          key: 'CardArt:Idle:KaleosXaan',
+          name: 'KaleosXaan',
+          key: 'Idle',
           length: 14
         },
       );

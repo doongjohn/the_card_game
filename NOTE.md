@@ -96,6 +96,7 @@ https://phasergames.com/phaser-3-input-text-form-ui-part-1/
 https://www.artstation.com/duelyst  
 https://www.behance.net/gallery/72142165/Duelyst-Assets  
 http://kirkbarnett.blogspot.com/p/sketch-page-pros-loose-and-open-minded.html  
+https://github.com/Duelers/resources/tree/master/resources  
 
 **Duelyst Cards:**  
 https://duelspot.com/cards/
