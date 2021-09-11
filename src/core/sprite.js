@@ -61,13 +61,13 @@ class SpriteManager {
     },
 
     load() {
-      this.cardArtLoadFromUrl(
-        {
-          name: 'BloodtearAlchmist',
-          url: 'https://static.wikia.nocookie.net/duelyst_gamepedia/images/2/2c/Bloodtear_Alchemist_idle.gif',
-          width: 80, height: 80
-        }
-      );
+      // this.cardArtLoadFromUrl(
+      //   {
+      //     name: 'BloodtearAlchmist',
+      //     url: 'https://static.wikia.nocookie.net/duelyst_gamepedia/images/2/2c/Bloodtear_Alchemist_idle.gif',
+      //     width: 80, height: 80
+      //   }
+      // );
       this.cardArtLoad(
         {
           fileName: 'RagnoraTheRelentless',

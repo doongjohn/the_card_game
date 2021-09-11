@@ -22,7 +22,6 @@ const TestDeckP2 = [
   'Rex',
   'Rex',
   'Rex',
-  'BloodtearAlchmist',
 ];
 
 

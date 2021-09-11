@@ -16,6 +16,7 @@ class CardZone {
 
 class CardZones {
   constructor() {
+    // TODO: refactor board.js
     this.board = {
       permanents: new CardZone(),
       spells: new CardZone()
@@ -29,14 +30,5 @@ class CardZones {
     this.banish = new CardZone();
     this.limbo = new CardZone();
     this.timeStream = new CardZone();
-  }
-}
-
-class CardZonesData {
-  constructor() {
-
-  }
-  restore() {
-
   }
 }
