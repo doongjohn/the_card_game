@@ -256,7 +256,7 @@ class CardPiece {
 
       // show card sprite
       this.show();
-      this.cardBackSprite.destroy();
+      this.cardBackSprite?.destroy();
     }
   }
 }

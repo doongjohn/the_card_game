@@ -190,6 +190,7 @@ class BoardPermanentData {
 
       card.cardPiece.pieceData = data;
       card.cardPiece.tap(data.tapped);
+      card.cardPiece.faceDown(data.faceDowned);
 
       Board.permanents[i] = card;
     }
