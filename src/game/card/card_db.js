@@ -45,7 +45,7 @@ const CardDB = [
     name: 'Sojourner',
     desc: 'Duelyst is such an awesome game.',
     data: {
-      health: 3,
+      health: 34,
       attack: 2
     }
   },
