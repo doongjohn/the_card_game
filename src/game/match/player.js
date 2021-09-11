@@ -35,6 +35,14 @@ class Player {
   constructor(team) {
     this.team = team;
     this.commander = null;
+    this.mana = {
+      fire: 0,
+      water: 0,
+      earth: 0,
+      wind: 0,
+      light: 0,
+      darkness: 0,
+    };
 
     this.allCards = [];
     this.deck = [];
