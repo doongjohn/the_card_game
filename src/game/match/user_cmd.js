@@ -55,7 +55,7 @@ class CmdCancel {
 class CmdEndTurn extends UserCommand {
   execute() {
     // save data
-    this.save(MatchData, UserActionData);
+    this.save(MatchData, UserActionData, BoardPermanentData);
 
     // deselect all
     Match.turnPlayer.selectedCard = null;
@@ -69,7 +69,7 @@ class CmdEndTurn extends UserCommand {
 
     // update stuffs
     // TODO: refactor end of turn to action
-    // Board.permanents.forEach(permanent => permanent?.resetOnTurnStart());
+    Board.permanents.forEach(card => card?.cardPiece.refresh());
     Board.setTileStateAll(TileStateNormal);
 
     // update ui
@@ -156,6 +156,18 @@ class CmdUnitFaceUp extends UserCommand {
 
     this.save(BoardPermanentData);
     card.cardPiece.faceDown(false);
+  }
+  undo() {
+    this.restoreAll();
+  }
+}
+
+class CmdUnitRefresh extends UserCommand {
+  execute(card) {
+    if (!card) return;
+
+    this.save(BoardPermanentData);
+    card.cardPiece.refresh();
   }
   undo() {
     this.restoreAll();

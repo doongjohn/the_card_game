@@ -114,6 +114,10 @@ const CardPieceLogicPermanent = {
       this.resetMoveCount();
     }
   },
+  refresh() {
+    this.tap(false);
+    this.resetMoveCount();
+  },
   takeDamage(attacker, damage) {
     // face up
     if (this.pieceData.faceDowned) {
@@ -131,6 +135,11 @@ const CardPieceLogicPermanent = {
       // destroy card piece
       // TODO: move this card to the graveyard
       Board.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y);
+
+      // update ui
+      if (this == Match.turnPlayer.selectedCard) {
+        CardInfoUI.hide();
+      }
     } else {
       // update ui
       CardInfoUI.updateInfo(this.card);
@@ -150,12 +159,6 @@ const CardPieceLogicPermanent = {
     // target counter attack
     if (target.pieceData.health > 0)
       target.doCounterAttack(this);
-
-    // check death
-    if (this.pieceData.health == 0) {
-      // update ui
-      CardInfoUI.hide();
-    }
   },
   doCounterAttack(target) {
     // TODO: display confirmation button for counter attack

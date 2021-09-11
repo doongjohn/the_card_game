@@ -275,7 +275,6 @@ class CardPiece {
       this.#faceDownVisualInit();
     } else {
       this.pieceData.faceDowned = false;
-      this.sprite.resetPipeline();
       this.#faceDownVisualDeinit();
     }
   }

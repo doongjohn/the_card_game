@@ -188,8 +188,9 @@ class BoardPermanentData {
       Board.setPermanentAt(pos.x, pos.y, card);
 
       card.cardPiece.pieceData = data;
-      card.cardPiece.tap(data.tapped);
       card.cardPiece.faceDownRaw(data.faceDowned);
+      card.cardPiece.tap(data.tapped);
+      console.log(data.tapped);
 
       Board.permanents[i] = card;
     }
