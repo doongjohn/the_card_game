@@ -25,6 +25,8 @@
 - [x] Implement Card Placement
 - [ ] Implement Card data base
 - [ ] Implement Deck
+- [ ] Implement Graveyard
+- [ ] Implement Banish Zone
 - [x] Implement Undo
 - [ ] Upgrade mouse input (seperate right / left click)
   - [ ] Implement context menu
