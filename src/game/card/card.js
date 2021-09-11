@@ -148,7 +148,8 @@ const CardPieceLogicPermanent = {
     UserAction.execute(CmdUnitTap, this.card);
 
     // target counter attack
-    target.doCounterAttack(this);
+    if (target.pieceData.health > 0)
+      target.doCounterAttack(this);
 
     // check death
     if (this.pieceData.health == 0) {
