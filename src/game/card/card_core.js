@@ -150,7 +150,7 @@ class CardPieceData {
     this.team = data.owner.team;
     this.tapped = false;
     this.faceDowned = false;
-    this.pos = null;
+    this.pos = null; // x, y
   }
   clone() {
     const copy = compose(new CardPieceData(this), this); // this is for cloning dynamic data
@@ -237,26 +237,46 @@ class CardPiece {
       this.sprite.resetPipeline();
     }
   }
+  #faceDownVisualInit() {
+    this.hide();
+    if (!this.cardBackSprite) {
+      this.cardBackSprite = Game.spawn.sprite(0, 0, 'CardBackDefault').setOrigin(0.5, 1.12).setScale(0.16);
+      Game.addToWorld(Layer.Permanent, this.cardBackSprite);
+    }
+    this.cardBackSprite.x = this.sprite.x;
+    this.cardBackSprite.y = this.sprite.y;
+  }
+  #faceDownVisualDeinit() {
+    this.show();
+    this.cardBackSprite?.destroy();
+    this.cardBackSprite = null;
+  }
   faceDown(bool) {
+    // this will change tapped state
     if (bool) {
       this.pieceData.faceDowned = true;
       this.pieceData.tapped = true;
 
       // TODO: improve visual
-      // show card back
-      this.hide();
-      this.cardBackSprite = Game.spawn.sprite(0, 0, 'CardBackDefault').setOrigin(0.5, 1.12).setScale(0.16);
-      this.cardBackSprite.x = this.sprite.x;
-      this.cardBackSprite.y = this.sprite.y;
-      Game.addToWorld(Layer.Permanent, this.cardBackSprite);
+      this.#faceDownVisualInit();
     } else {
       this.pieceData.faceDowned = false;
       this.pieceData.tapped = false;
       this.sprite.resetPipeline();
+      this.#faceDownVisualDeinit();
+    }
+  }
+  faceDownRaw(bool) {
+    // this does not change tapped state
+    if (bool) {
+      this.pieceData.faceDowned = true;
 
-      // show card sprite
-      this.show();
-      this.cardBackSprite?.destroy();
+      // TODO: improve visual
+      this.#faceDownVisualInit();
+    } else {
+      this.pieceData.faceDowned = false;
+      this.sprite.resetPipeline();
+      this.#faceDownVisualDeinit();
     }
   }
 }

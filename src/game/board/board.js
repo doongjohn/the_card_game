@@ -176,21 +176,20 @@ class BoardPermanentData {
     for (const i in Board.permanents) {
       const owner = this.cardData[i]?.owner;
       const pos = toCoord(i);
-      if (!owner) {
-        Board.removePermanentAt(pos.x, pos.y);
+
+      Board.removePermanentAt(pos.x, pos.y);
+      if (!owner)
         continue;
-      }
 
       const index = this.cardData[i].index;
       const card = index == -1 ? owner.commander : owner.allCards[index];
       const data = this.cardPieceData[i];
 
-      Board.removePermanentAt(pos.x, pos.y);
       Board.setPermanentAt(pos.x, pos.y, card);
 
       card.cardPiece.pieceData = data;
       card.cardPiece.tap(data.tapped);
-      card.cardPiece.faceDown(data.faceDowned);
+      card.cardPiece.faceDownRaw(data.faceDowned);
 
       Board.permanents[i] = card;
     }

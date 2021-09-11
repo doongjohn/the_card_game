@@ -145,7 +145,7 @@ const CardPieceLogicPermanent = {
     target.takeDamage(this.card, this.pieceData.attack);
 
     // tap this card piece
-    this.tap(true);
+    UserAction.execute(CmdUnitTap, this.card);
 
     // target counter attack
     target.doCounterAttack(this);

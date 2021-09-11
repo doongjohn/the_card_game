@@ -91,17 +91,37 @@ class CmdEndTurn extends UserCommand {
 }
 
 // TODO: maybe rename Unit to Permanent?
-class CmdUnitTap extends UserCommand {
-  execute() {
-    const card = Match.turnPlayer.selectedTile.getPermanent();
+class CmdUnitTapToggle extends UserCommand {
+  execute(card) {
     if (!card || card.cardPiece.faceDowned)
       return;
 
-    // save data
     this.save(BoardPermanentData);
-
-    // toggle tap
     card.cardPiece.tap(!card.cardPiece.pieceData.tapped);
+  }
+  undo() {
+    this.restoreAll();
+  }
+}
+class CmdUnitTap extends UserCommand {
+  execute(card) {
+    if (!card || card.cardPiece.faceDowned)
+      return;
+
+    this.save(BoardPermanentData);
+    card.cardPiece.tap(true);
+  }
+  undo() {
+    this.restoreAll();
+  }
+}
+class CmdUnitUntap extends UserCommand {
+  execute(card) {
+    if (!card || card.cardPiece.faceDowned)
+      return;
+
+    this.save(BoardPermanentData);
+    card.cardPiece.tap(false);
   }
   undo() {
     this.restoreAll();
@@ -109,11 +129,33 @@ class CmdUnitTap extends UserCommand {
 }
 
 class CmdUnitFaceToggle extends UserCommand {
-  execute() {
-    this.save(BoardPermanentData);
+  execute(card) {
+    if (!card) return;
 
-    const card = Match.turnPlayer.selectedTile.getPermanent();
-    card && card.cardPiece.faceDown(!card.cardPiece.pieceData.faceDowned);
+    this.save(BoardPermanentData);
+    card.cardPiece.faceDown(!card.cardPiece.pieceData.faceDowned);
+  }
+  undo() {
+    this.restoreAll();
+  }
+}
+class CmdUnitFaceDown extends UserCommand {
+  execute(card) {
+    if (!card) return;
+
+    this.save(BoardPermanentData);
+    card.cardPiece.faceDown(true);
+  }
+  undo() {
+    this.restoreAll();
+  }
+}
+class CmdUnitFaceUp extends UserCommand {
+  execute(card) {
+    if (!card) return;
+
+    this.save(BoardPermanentData);
+    card.cardPiece.faceDown(false);
   }
   undo() {
     this.restoreAll();

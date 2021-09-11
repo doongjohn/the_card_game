@@ -65,8 +65,10 @@ class UserInput {
 
     // cheat input
     UserInput.keys.undo.on('down', () => UserAction.undo());
-    UserInput.keys.unitTap.on('down', () => UserAction.execute(CmdUnitTap));
-    UserInput.keys.unitFaceToggle.on('down', () => UserAction.execute(CmdUnitFaceToggle));
+    UserInput.keys.unitTap.on('down', () => UserAction.execute(CmdUnitTapToggle,
+      Match.turnPlayer.selectedTile.getPermanent()));
+    UserInput.keys.unitFaceToggle.on('down', () => UserAction.execute(CmdUnitFaceToggle,
+      Match.turnPlayer.selectedTile.getPermanent()));
     UserInput.keys.unitTeleport.on('down', () => UserAction.execute(CmdUnitPlanTeleport));
 
     // game input

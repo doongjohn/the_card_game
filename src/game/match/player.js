@@ -62,18 +62,39 @@ class Player {
   handInit() {
     const num = 8;
     for (let i = 0; i < num; ++i) {
-      this.deck[i].cardPaper.inputArea.setDepth(i);
-      Layer.moveTo(Layer.UI, this.deck[i].cardPaper.visual, i);
-      this.hand.push(this.deck[i]);
+      const card = this.deck.pop();
+      card.cardPaper.inputArea.setDepth(i);
+      Layer.moveTo(Layer.UI, card.cardPaper.visual, i);
+      this.hand.push(card);
     }
     this.handUI.init();
+  }
+  handDraw(num = 1) {
+    for (let i = 0; i < num; ++i) {
+      if (this.deck.length < 1) {
+        console.log('no more card in the deck!');
+        break;
+      }
+
+      const card = this.deck.pop();
+      const depth = this.hand[this.hand.length - 1].cardPaper.inputArea.depth + 1;
+      const displayIndex = Layer.getIndex(Layer.UI, this.hand[this.hand.length - 1].cardPaper.visual) + 1;
+      card.cardPaper.inputArea.setDepth(depth);
+      Layer.moveTo(Layer.UI, card.cardPaper.visual, displayIndex);
+      card.cardPaper.visual.y = HandUI.y;
+      this.hand.push(card);
+    }
+    this.handUI.update();
   }
   handAdd(...cards) {
     // TODO: from where? deck?
     // make transfer cards function instead
     for (let card of cards) {
-      card.cardPaper.inputArea.setDepth(this.hand.length - 1);
-      Layer.moveTo(Layer.UI, card.cardPaper.visual, this.hand.length - 1);
+      const depth = this.hand[this.hand.length - 1].cardPaper.inputArea.depth + 1;
+      const displayIndex = Layer.getIndex(Layer.UI, this.hand[this.hand.length - 1].cardPaper.visual) + 1;
+      card.cardPaper.inputArea.setDepth(depth);
+      Layer.moveTo(Layer.UI, card.cardPaper.visual, displayIndex);
+      card.cardPaper.visual.y = HandUI.y;
       this.hand.push(card);
     }
     this.handUI.update();
