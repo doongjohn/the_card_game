@@ -185,14 +185,11 @@ class BoardPermanentData {
       const card = index == -1 ? owner.commander : owner.allCards[index];
       const data = this.cardPieceData[i];
 
-      Board.setPermanentAt(pos.x, pos.y, card);
-
       card.cardPiece.pieceData = data;
       card.cardPiece.faceDownRaw(data.faceDowned);
       card.cardPiece.tap(data.tapped);
-      console.log(data.tapped);
 
-      Board.permanents[i] = card;
+      Board.setPermanentAt(pos.x, pos.y, card);
     }
   }
 }

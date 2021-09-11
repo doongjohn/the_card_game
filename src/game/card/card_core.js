@@ -197,7 +197,7 @@ class CardPiece {
     this.sprite.setVisible(true);
   }
   updateVisual() {
-    this.sprite.flipX = this.pieceData.team != Team.P1;
+    this.sprite.flipX = this.pieceData.owner.team != Team.P1;
   }
 
   setPos(x, y) {

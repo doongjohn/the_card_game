@@ -219,7 +219,7 @@ class CmdUnitPlanMove {
     if (!card) return;
 
     const tile = Match.turnPlayer.selectedTile;
-    if (Match.turn != card.cardPiece.pieceData.team
+    if (Match.turn != card.cardPiece.pieceData.owner.team
       || card.cardPiece.pieceData.tapped
       || !card.cardPiece.canMove())
       return;
@@ -299,7 +299,7 @@ class CmdUnitPlanAttack {
   static execute() {
     const card = Match.turnPlayer.selectedTile?.getPermanent();
     if (!card) return;
-    if (Match.turn != card.cardPiece.pieceData.team || card.cardPiece.pieceData.tapped) return;
+    if (Match.turn != card.cardPiece.pieceData.owner.team || card.cardPiece.pieceData.tapped) return;
 
     const tile = Match.turnPlayer.selectedTile;
 
@@ -308,7 +308,7 @@ class CmdUnitPlanAttack {
 
     function setAttackSelectionTile(x, y) {
       const target = Board.getPermanentAt(x, y);
-      if (target && target.cardPiece.pieceData.team != card.cardPiece.pieceData.team) {
+      if (target && target.cardPiece.pieceData.owner.team != card.cardPiece.pieceData.owner.team) {
         Board.getTileAt(x, y).fsm.setState(TileStateAttackSelection);
         return 1;
       }

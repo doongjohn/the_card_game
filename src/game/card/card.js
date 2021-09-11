@@ -114,6 +114,10 @@ const CardPieceLogicPermanent = {
       this.resetMoveCount();
     }
   },
+  setOwner(owner) {
+    this.pieceData.owner = owner;
+    this.updateVisual();
+  },
   refresh() {
     this.tap(false);
     this.resetMoveCount();
