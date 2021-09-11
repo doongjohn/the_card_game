@@ -114,8 +114,8 @@ const CardPieceLogicPermanent = {
       this.resetMoveCount();
     }
   },
-  setOwner(owner) {
-    this.pieceData.owner = owner;
+  setTeam(team) {
+    this.pieceData.owner = team == Team.P1 ? Match.player1 : Match.player2;
     this.updateVisual();
   },
   refresh() {

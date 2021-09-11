@@ -91,6 +91,20 @@ class CmdEndTurn extends UserCommand {
 }
 
 // TODO: maybe rename Unit to Permanent?
+
+class CmdUnitSetTeam extends UserAction {
+  execute(card, team) {
+    if (!card)
+      return;
+
+    this.save(BoardPermanentData);
+    card.cardPiece.setTeam(team);
+  }
+  undo() {
+    this.restoreAll();
+  }
+}
+
 class CmdUnitTapToggle extends UserCommand {
   execute(card) {
     if (!card || card.cardPiece.faceDowned)

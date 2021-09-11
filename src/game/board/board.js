@@ -185,7 +185,8 @@ class BoardPermanentData {
       const card = index == -1 ? owner.commander : owner.allCards[index];
       const data = this.cardPieceData[i];
 
-      card.cardPiece.pieceData = data;
+      card.cardPiece.pieceData.owner = data.owner;
+      card.cardPiece.updateVisual();
       card.cardPiece.faceDownRaw(data.faceDowned);
       card.cardPiece.tap(data.tapped);
 
