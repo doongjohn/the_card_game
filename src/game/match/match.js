@@ -38,19 +38,21 @@ class Match {
     Match.turnPlayer.handUI.show();
 
 
-    // TEST: test effect
+    // TEST: test effect 'onAttack'
     const onAttackEffectP1 = new Effect(
       EffectType.MandatoryTrigger,
       Match.player1.commander,
-      (self, target) => {
+      function (target) {
         console.log(`I hit "${target.data.name}"!`);
       }
     );
     EffectEvent.add('onAttack', onAttackEffectP1);
+
+    // TEST: test effect 'onTakeDamage'
     const onTakeDamageEffectP2 = new Effect(
       EffectType.MandatoryTrigger,
       Match.player2.commander,
-      (self, attacker) => {
+      function (attacker) {
         console.log(`I took damage by "${attacker.data.name}"!`);
       }
     );

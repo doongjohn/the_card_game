@@ -51,31 +51,41 @@ class EffectEvent {
     return EffectEvent[eventName].indexOf(effect);
   }
   static invoke(eventName, self, ...args) {
+    // TODO: make user selects the order of execution
+    for (let effect of EffectEvent[eventName]) {
+      if (effect.card != self) continue;
+      console.log(
+        `Effect invoked: %c"${eventName}": ${EffectType.toString(EffectEvent[eventName][0].type)}\n` +
+        `%cPlayer${EffectEvent[eventName][0].card.cardPiece.pieceData.team}'s "${EffectEvent[eventName][0].card.data.name}"`,
+        'color: orange',
+        'color: blue'
+      );
+      effect.action(...args);
+    }
+  }
+  static invokeAll(eventName, ...args) {
     if (EffectEvent[eventName].length == 0)
       return;
 
     if (EffectEvent[eventName].length == 1) {
-      if (EffectEvent[eventName][0].card != self) return;
       console.log(
         `Effect invoked: %c"${eventName}": ${EffectType.toString(EffectEvent[eventName][0].type)}\n` +
         `%cPlayer${EffectEvent[eventName][0].card.cardPiece.pieceData.team}'s "${EffectEvent[eventName][0].card.data.name}"`,
         'color: orange',
         'color: blue'
       );
-      EffectEvent[eventName][0].action(self, ...args);
-      return;
-    }
-
-    // TODO: make user selects the order of execution
-    for (let effect of EffectEvent[eventName]) {
-      if (effect.card != self) return;
-      console.log(
-        `Effect invoked: %c"${eventName}": ${EffectType.toString(EffectEvent[eventName][0].type)}\n` +
-        `%cPlayer${EffectEvent[eventName][0].card.cardPiece.pieceData.team}'s "${EffectEvent[eventName][0].card.data.name}"`,
-        'color: orange',
-        'color: blue'
-      );
-      effect.action(self, ...args);
+      EffectEvent[eventName][0].action(...args);
+    } else {
+      // TODO: make user selects the order of execution
+      for (let effect of EffectEvent[eventName]) {
+        console.log(
+          `Effect invoked: %c"${eventName}": ${EffectType.toString(EffectEvent[eventName][0].type)}\n` +
+          `%cPlayer${EffectEvent[eventName][0].card.cardPiece.pieceData.team}'s "${EffectEvent[eventName][0].card.data.name}"`,
+          'color: orange',
+          'color: blue'
+        );
+        effect.action(...args);
+      }
     }
   }
 }
