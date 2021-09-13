@@ -28,6 +28,7 @@
 - [ ] Implement Graveyard
 - [ ] Implement Banish Zone
 - [x] Implement Undo
+- [ ] Implement Log
 - [ ] Upgrade mouse input (seperate right / left click)
   - [ ] Implement context menu
 
