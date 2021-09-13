@@ -1,19 +1,19 @@
 class MainScene extends Phaser.Scene {
   init() {
-    Game.init(this);
+    Game.init(this)
   }
 
   preload() {
-    SpriteManager.BoardBG.load();
-    SpriteManager.CardBack.load();
-    SpriteManager.CardArt.load();
+    SpriteManager.BoardBG.load()
+    SpriteManager.CardBack.load()
+    SpriteManager.CardArt.load()
   }
 
   create() {
-    SpriteManager.CardArt.createAnims();
-    Layer.init();
-    Match.init();
-    Board.init();
+    SpriteManager.CardArt.createAnims()
+    Layer.init()
+    Match.init()
+    Board.init()
   }
 
   // update(time, delta) {

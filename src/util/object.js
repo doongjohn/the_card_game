@@ -1,3 +1,3 @@
 function compose(...objects) {
-  return Object.assign(...objects);
+  return Object.assign(...objects)
 }

@@ -70,4 +70,4 @@ const CardDB = [
       maxMoveCount: 2
     }
   },
-];
+]

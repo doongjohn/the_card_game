@@ -1,6 +1,6 @@
 function initPage() {
   // disable HTML Context Menu (right click menu)
-  document.body.oncontextmenu = (e) => { e.preventDefault(); };
+  document.body.oncontextmenu = event => { event.preventDefault() }
 }
 
 function initGame(startScene) {
@@ -17,12 +17,12 @@ function initGame(startScene) {
       'Gray': GrayScalePipeline
     },
     scene: startScene
-  });
+  })
 }
 
 function main() {
-  initPage();
-  const game = initGame(new MainScene());
+  initPage()
+  const game = initGame(new MainScene())
 }
 
-main();
+main()
