@@ -262,7 +262,7 @@ class CardPiece {
       this.resetMoveCount()
       this.pieceData.health = this.card.data.health
       this.pieceData.attack = this.card.data.attack
-      if (this.card == Match.turnPlayer.selectedTile.getPermanent()) {
+      if (this.card == Match.turnPlayer.selectedTile.getPermanent()) { // FIXME: null exception
         CardInfoUI.updateInfo(this.card)
       }
       this.#faceDownVisualDeinit()
