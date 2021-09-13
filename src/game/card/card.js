@@ -160,61 +160,8 @@ const CardPieceLogicPermanent = {
 
     // target counter attack
     if (target.pieceData.health > 0 && !target.pieceData.tapped) {
-      target.promptCounterAttack(this)
+      target.doCounterAttack(this)
     }
-  },
-  promptCounterAttack(target) {
-    // update user action state
-    UserAction.setState(UserAction.StateCounterAttack)
-    Board.tiles.forEach(tile => {
-      if (!tile.fsm.curState.compare(TileStateSelected))
-        tile.fsm.setState(TileStateNoInteraction)
-    })
-
-    // TODO: remove this feature lolololol
-    let prompt = null
-
-    const bg = Game.spawn.rectangle(0, -10, 200, 60, 0x000000).setOrigin(0.5, 0.5)
-
-    const txt = Game.spawn.text(0, -20, 'counter attack?', {
-      font: '20px Play',
-      align: 'center',
-    }).setOrigin(0.5, 0.5)
-
-    const btnYes = Game.spawn.text(-25, 0, 'yes', {
-      font: '20px Play',
-      align: 'center',
-    }).setOrigin(0.5, 0.5).setInteractive().on('pointerdown', () => {
-      prompt.removeAll(true)
-      prompt.destroy()
-      // update user action state
-      UserAction.setState(UserAction.StateView)
-      Board.tiles.forEach(tile => {
-        if (!tile.fsm.curState.compare(TileStateSelected))
-          tile.fsm.setState(TileStateNormal)
-      })
-      // do counter attack
-      this.doCounterAttack(target)
-    })
-
-    const btnNo = Game.spawn.text(25, 0, 'no', {
-      font: '20px Play',
-      align: 'center',
-    }).setOrigin(0.5, 0.5).setInteractive().on('pointerdown', () => {
-      prompt.removeAll(true)
-      prompt.destroy()
-      // update user action state
-      UserAction.setState(UserAction.StateView)
-      Board.tiles.forEach(tile => {
-        if (!tile.fsm.curState.compare(TileStateSelected))
-          tile.fsm.setState(TileStateNormal)
-      })
-    })
-
-    prompt = Game.spawn.container(0, 0, [
-      bg, txt, btnYes, btnNo
-    ])
-    Game.addToWorld(Layer.UI, prompt)
   },
   doCounterAttack(target) {
     // invoke effect
