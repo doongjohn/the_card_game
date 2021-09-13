@@ -239,7 +239,7 @@ class CardPiece {
   #faceDownVisualInit() {
     this.hide()
     if (!this.cardBackSprite) {
-      this.cardBackSprite = Game.spawn.sprite(0, 0, 'CardBackDefault').setOrigin(0.5, 1.12).setScale(0.16)
+      this.cardBackSprite = Game.spawn.sprite(0, 0, 'CardBackDefault').setOrigin(0.5, 0.5).setScale(0.16)
       Game.addToWorld(Layer.Permanent, this.cardBackSprite)
     }
     this.cardBackSprite.setVisible(true)
@@ -259,6 +259,9 @@ class CardPiece {
     } else {
       // NOTE: this will not untap
       this.pieceData.faceDowned = false
+      this.resetMoveCount()
+      this.pieceData.health = this.card.data.health
+      this.pieceData.attack = this.card.data.attack
       this.#faceDownVisualDeinit()
     }
   }
@@ -269,6 +272,9 @@ class CardPiece {
       this.#faceDownVisualInit()
     } else {
       this.pieceData.faceDowned = false
+      this.resetMoveCount()
+      this.pieceData.health = this.card.data.health
+      this.pieceData.attack = this.card.data.attack
       this.#faceDownVisualDeinit()
     }
   }
