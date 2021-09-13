@@ -134,17 +134,17 @@ const CardPieceLogicPermanent = {
 
     // check death
     if (this.pieceData.health == 0) {
-      // destroy card piece
       // TODO: move this card to the graveyard
       Board.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y)
 
       // update ui
-      if (this == Match.turnPlayer.selectedCard)
+      if (this.card == Match.turnPlayer.selectedTile.getPermanent())
         CardInfoUI.hide()
     } else {
       // update ui
-      if (this == Match.turnPlayer.selectedCard)
+      if (this.card == Match.turnPlayer.selectedTile.getPermanent()) {
         CardInfoUI.updateInfo(this.card)
+      }
     }
   },
   doAttack(target) {
@@ -159,21 +159,20 @@ const CardPieceLogicPermanent = {
     UserAction.execute(CmdUnitTap, this.card)
 
     // target counter attack
-    if (target.pieceData.health > 0 && !target.pieceData.tapped)
+    if (target.pieceData.health > 0 && !target.pieceData.tapped) {
       target.promptCounterAttack(this)
+    }
   },
   promptCounterAttack(target) {
     // update user action state
     UserAction.setState(UserAction.StateCounterAttack)
-
-    // FIXME: TileStateNoInteraction not working
     Board.tiles.forEach(tile => {
       if (!tile.fsm.curState.compare(TileStateSelected))
         tile.fsm.setState(TileStateNoInteraction)
     })
 
     // TODO: display confirmation button for counter attack
-    let prompt = null;
+    let prompt = null
 
     const bg = Game.spawn.rectangle(0, -10, 200, 60, 0x000000).setOrigin(0.5, 0.5)
 
@@ -185,20 +184,31 @@ const CardPieceLogicPermanent = {
     const btnYes = Game.spawn.text(-25, 0, 'yes', {
       font: '20px Play',
       align: 'center',
-      backgroundColor: '#222222'
-    }).setOrigin(0.5, 0.5).on('pointerdown', function () {
+    }).setOrigin(0.5, 0.5).setInteractive().on('pointerdown', () => {
       prompt.removeAll(true)
       prompt.destroy()
+      // update user action state
+      UserAction.setState(UserAction.StateView)
+      Board.tiles.forEach(tile => {
+        if (!tile.fsm.curState.compare(TileStateSelected))
+          tile.fsm.setState(TileStateNormal)
+      })
+      // do counter attack
       this.doCounterAttack(target)
     })
 
     const btnNo = Game.spawn.text(25, 0, 'no', {
       font: '20px Play',
       align: 'center',
-      backgroundColor: '#222222'
-    }).setOrigin(0.5, 0.5).on('pointerdown', function () {
+    }).setOrigin(0.5, 0.5).setInteractive().on('pointerdown', () => {
       prompt.removeAll(true)
       prompt.destroy()
+      // update user action state
+      UserAction.setState(UserAction.StateView)
+      Board.tiles.forEach(tile => {
+        if (!tile.fsm.curState.compare(TileStateSelected))
+          tile.fsm.setState(TileStateNormal)
+      })
     })
 
     prompt = Game.spawn.container(0, 0, [

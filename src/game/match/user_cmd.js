@@ -364,8 +364,8 @@ class CmdUnitAttack extends UserCommand {
   execute(tile) {
     this.save(BoardPermanentData)
 
-    // attcak target permanent
-    Match.turnPlayer.selectedTile.getPermanent().cardPiece.doAttack(tile.getPermanent().cardPiece)
+    // update match action state
+    UserAction.setState(UserAction.StateView)
 
     // update tile state
     Board.tiles.forEach(t => {
@@ -373,8 +373,8 @@ class CmdUnitAttack extends UserCommand {
         t.fsm.setState(TileStateNormal)
     })
 
-    // update match action state
-    UserAction.setState(UserAction.StateView)
+    // attcak target permanent
+    Match.turnPlayer.selectedTile.getPermanent().cardPiece.doAttack(tile.getPermanent().cardPiece)
   }
   undo() {
     this.restoreAll()
