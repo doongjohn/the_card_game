@@ -171,7 +171,7 @@ const CardPieceLogicPermanent = {
         tile.fsm.setState(TileStateNoInteraction)
     })
 
-    // TODO: display confirmation button for counter attack
+    // TODO: remove this feature lolololol
     let prompt = null
 
     const bg = Game.spawn.rectangle(0, -10, 200, 60, 0x000000).setOrigin(0.5, 0.5)
