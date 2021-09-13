@@ -119,14 +119,13 @@ const CardPieceLogicPermanent = {
     this.updateVisual()
   },
   refresh() {
-    this.tap(false)
+    this.pieceData.faceDowned || this.tap(false)
     this.resetMoveCount()
   },
   takeDamage(attacker, damage) {
     // face up
-    if (this.pieceData.faceDowned) {
-      this.faceDown(false)
-    }
+    if (this.pieceData.faceDowned)
+      this.faceDownRaw(false)
 
     // update health
     this.pieceData.health = Math.max(this.pieceData.health - damage, 0)
@@ -141,12 +140,12 @@ const CardPieceLogicPermanent = {
       Board.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y)
 
       // update ui
-      if (this == Match.turnPlayer.selectedCard) {
+      if (this == Match.turnPlayer.selectedCard)
         CardInfoUI.hide()
-      }
     } else {
       // update ui
-      CardInfoUI.updateInfo(this.card)
+      if (this == Match.turnPlayer.selectedCard)
+        CardInfoUI.updateInfo(this.card)
     }
   },
   doAttack(target) {
@@ -161,7 +160,7 @@ const CardPieceLogicPermanent = {
     UserAction.execute(CmdUnitTap, this.card)
 
     // target counter attack
-    if (target.pieceData.health > 0)
+    if (target.pieceData.health > 0 && !target.pieceData.tapped)
       target.doCounterAttack(this)
   },
   doCounterAttack(target) {

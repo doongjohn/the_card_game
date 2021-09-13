@@ -242,35 +242,30 @@ class CardPiece {
       this.cardBackSprite = Game.spawn.sprite(0, 0, 'CardBackDefault').setOrigin(0.5, 1.12).setScale(0.16)
       Game.addToWorld(Layer.Permanent, this.cardBackSprite)
     }
+    this.cardBackSprite.setVisible(true)
     this.cardBackSprite.x = this.sprite.x
     this.cardBackSprite.y = this.sprite.y
   }
   #faceDownVisualDeinit() {
     this.show()
-    this.cardBackSprite?.destroy()
-    this.cardBackSprite = null
+    this.cardBackSprite?.setVisible(false)
   }
   faceDown(bool) {
-    // this will change tapped state
+    // this will change the tapped state
     if (bool) {
+      this.tap(true)
       this.pieceData.faceDowned = true
-      this.pieceData.tapped = true
-
-      // TODO: improve visual
-      this.#faceDownVisualInit()
+      this.#faceDownVisualInit() // TODO: improve visual
     } else {
+      this.tap(false)
       this.pieceData.faceDowned = false
-      this.pieceData.tapped = false
-      this.sprite.resetPipeline()
       this.#faceDownVisualDeinit()
     }
   }
   faceDownRaw(bool) {
-    // this does not change tapped state
+    // this does not change the tapped state
     if (bool) {
       this.pieceData.faceDowned = true
-
-      // TODO: improve visual
       this.#faceDownVisualInit()
     } else {
       this.pieceData.faceDowned = false
