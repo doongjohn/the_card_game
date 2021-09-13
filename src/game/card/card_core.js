@@ -168,8 +168,8 @@ class CardPiece {
     // sprite
     /** @type SpriteCardArt */
     this.sprite = new SpriteCardArt(0, 0, card.assetData.spriteName)
-      .setScale(2.0)
-      .setOrigin(0.5, 1)
+    this.sprite.setScale(2.0)
+    this.sprite.setOrigin(0.5, 1 - 30 / this.sprite.height)
 
     // add sprite to world
     let layer = null
@@ -217,7 +217,7 @@ class CardPiece {
     // set sprite world position
     const worldPos = Board.gridToWorldPos(x, y)
     this.sprite.x = worldPos.x
-    this.sprite.y = worldPos.y + 60
+    this.sprite.y = worldPos.y
 
     if (this.cardBackSprite) {
       this.cardBackSprite.x = this.sprite.x
@@ -257,7 +257,7 @@ class CardPiece {
       this.pieceData.faceDowned = true
       this.#faceDownVisualInit() // TODO: improve visual
     } else {
-      this.tap(false)
+      // NOTE: this will not untap
       this.pieceData.faceDowned = false
       this.#faceDownVisualDeinit()
     }
@@ -271,6 +271,9 @@ class CardPiece {
       this.pieceData.faceDowned = false
       this.#faceDownVisualDeinit()
     }
+  }
+  faceUpSummon() {
+    // TODO: make face up summon
   }
 }
 

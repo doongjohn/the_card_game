@@ -1,4 +1,3 @@
-// TODO: make it scriptable
 const CardDB = [
   {
     spriteAssetName: 'RagnoraTheRelentless',

@@ -68,7 +68,6 @@ const CardPieceLogicMovable = {
     // tween movement data
     const speed = 0.35
     const pos = Board.gridToWorldPos(x, y)
-    pos.y += 60
     const dist = Phaser.Math.Distance.BetweenPoints(pos, this.sprite)
 
     // tween movement
@@ -161,11 +160,53 @@ const CardPieceLogicPermanent = {
 
     // target counter attack
     if (target.pieceData.health > 0 && !target.pieceData.tapped)
-      target.doCounterAttack(this)
+      target.promptCounterAttack(this)
+  },
+  promptCounterAttack(target) {
+    // update user action state
+    UserAction.setState(UserAction.StateCounterAttack)
+
+    // FIXME: TileStateNoInteraction not working
+    Board.tiles.forEach(tile => {
+      if (!tile.fsm.curState.compare(TileStateSelected))
+        tile.fsm.setState(TileStateNoInteraction)
+    })
+
+    // TODO: display confirmation button for counter attack
+    let prompt = null;
+
+    const bg = Game.spawn.rectangle(0, -10, 200, 60, 0x000000).setOrigin(0.5, 0.5)
+
+    const txt = Game.spawn.text(0, -20, 'counter attack?', {
+      font: '20px Play',
+      align: 'center',
+    }).setOrigin(0.5, 0.5)
+
+    const btnYes = Game.spawn.text(-25, 0, 'yes', {
+      font: '20px Play',
+      align: 'center',
+      backgroundColor: '#222222'
+    }).setOrigin(0.5, 0.5).on('pointerdown', function () {
+      prompt.removeAll(true)
+      prompt.destroy()
+      this.doCounterAttack(target)
+    })
+
+    const btnNo = Game.spawn.text(25, 0, 'no', {
+      font: '20px Play',
+      align: 'center',
+      backgroundColor: '#222222'
+    }).setOrigin(0.5, 0.5).on('pointerdown', function () {
+      prompt.removeAll(true)
+      prompt.destroy()
+    })
+
+    prompt = Game.spawn.container(0, 0, [
+      bg, txt, btnYes, btnNo
+    ])
+    Game.addToWorld(Layer.UI, prompt)
   },
   doCounterAttack(target) {
-    // TODO: display confirmation button for counter attack
-
     // invoke effect
     EffectEvent.invoke('onCounterAttack', this.card, target.card)
     EffectEvent.invoke('onDealDamage', this.card, target.card)
