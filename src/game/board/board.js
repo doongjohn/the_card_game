@@ -178,19 +178,18 @@ class BoardPermanentData {
       const pos = toCoord(i)
 
       Board.removePermanentAt(pos.x, pos.y)
-      if (!owner)
-        continue
+      if (!owner) continue
 
       const index = this.cardData[i].index
-      const card = index == -1 ? owner.commander : owner.allCards[index]
       const data = this.cardPieceData[i]
-
-      card.cardPiece.pieceData.owner = data.owner
-      card.cardPiece.updateVisual()
-      card.cardPiece.faceDownRaw(data.faceDowned)
-      card.cardPiece.tap(data.tapped)
+      const card = index == -1 ? owner.commander : owner.allCards[index]
 
       Board.setPermanentAt(pos.x, pos.y, card)
+
+      card.cardPiece.pieceData = data
+      card.cardPiece.faceDownRaw(data.faceDowned)
+      card.cardPiece.tap(data.tapped)
+      card.cardPiece.updateVisual()
     }
   }
 }

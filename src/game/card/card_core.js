@@ -204,8 +204,7 @@ class CardPiece {
 
   setPos(x, y) {
     // set grid position
-    if (this.pieceData.pos) {
-      // NOTE: Board.movePermanentAt() does not change pieceData.pos
+    if (this.pieceData.pos && (this.pieceData.pos.x != x || this.pieceData.pos.y != y)) {
       Board.movePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y)
       this.pieceData.pos.x = x
       this.pieceData.pos.y = y
