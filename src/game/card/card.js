@@ -117,7 +117,7 @@ const CardPieceLogicPermanent = {
     this.pieceData.owner = team == Team.P1 ? Match.player1 : Match.player2
     this.updateVisual()
   },
-  refresh() {
+  revitalize() {
     this.pieceData.faceDowned || this.tap(false)
     this.resetMoveCount()
   },

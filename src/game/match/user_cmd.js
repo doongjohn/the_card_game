@@ -67,10 +67,11 @@ class CmdEndTurn extends UserCommand {
     Match.oppsPlayer = Match.players[Match.turn - 1]
     Match.turn = newTurn
 
-    // update stuffs
-    // TODO: refactor end of turn to action
-    Board.permanents.forEach(card => card?.cardPiece.refresh())
+    // reset tile state
     Board.setTileStateAll(TileStateNormal)
+
+    // revitalize cards
+    Board.permanents.forEach(card => card?.cardPiece.revitalize())
 
     // update ui
     Match.turnText.text = `P${Match.turn}'s turn`
@@ -89,8 +90,6 @@ class CmdEndTurn extends UserCommand {
     Match.oppsPlayer.handUI.hide()
   }
 }
-
-// TODO: maybe rename Unit to Permanent?
 
 class CmdUnitSetTeam extends UserAction {
   execute(card, team) {
@@ -176,12 +175,12 @@ class CmdUnitFaceUp extends UserCommand {
   }
 }
 
-class CmdUnitRefresh extends UserCommand {
+class CmdUnitRevitalize extends UserCommand {
   execute(card) {
     if (!card) return
 
     this.save(BoardPermanentData)
-    card.cardPiece.refresh()
+    card.cardPiece.revitalize()
   }
   undo() {
     this.restoreAll()
