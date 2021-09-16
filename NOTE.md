@@ -1,6 +1,6 @@
 # DEV Note
 
-## TODO (short term):
+## TODO:
 
 *   [x] Implement Sprite loading
 
@@ -136,4 +136,3 @@
 
 ## Inspiring images
 
-![](https://cdnb.artstation.com/p/assets/images/images/013/705/071/large/danny-huynh-danny-huynh-duelyst-redstonebattlemaplow.jpg)
