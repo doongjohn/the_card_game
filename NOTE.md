@@ -18,6 +18,8 @@
 
     *   [x] Implement movement tween
 
+*   [ ] Implement match phase
+
 *   [x] Implement Attack
 
 *   [x] Implement Counter Attack
@@ -44,13 +46,7 @@
 
 *   [x] Implement Card Placement
 
-*   [ ] Implement Card data base
-
-*   [ ] Implement Deck
-
-*   [ ] Implement Graveyard
-
-*   [ ] Implement Banish Zone
+*   [ ] Implement Card Zones
 
 *   [x] Implement Undo
 
@@ -122,17 +118,18 @@
 
 ## Duelyst ref
 
-**Duelyst Art:**\
-<https://www.artstation.com/duelyst>\
-<https://www.behance.net/gallery/72142165/Duelyst-Assets>\
-<http://kirkbarnett.blogspot.com/p/sketch-page-pros-loose-and-open-minded.html>\
-<https://github.com/Duelers/resources/tree/master/resources>
-
 **Duelyst Cards:**\
 <https://duelspot.com/cards/>
 
 **Duelyst Maps:**\
 <https://imgshare.io/album/duelyst-battlemaps.xB6t>
 
+**Duelyst Art:**\
+<https://www.artstation.com/duelyst>\
+<https://www.behance.net/gallery/72142165/Duelyst-Assets>\
+<http://kirkbarnett.blogspot.com/p/sketch-page-pros-loose-and-open-minded.html>\
+<https://github.com/Duelers/resources/tree/master/resources>
+
 ## Inspiring images
 
+![](https://jolstatic.fr/www/captures/3593/4/127794.png)
