@@ -174,6 +174,7 @@ class CardPiece {
     // add sprite to world
     let layer = null
     switch (card.type) {
+      // TODO: make other layers
       case 'permanent':
         layer = Layer.Permanent
         break
@@ -187,6 +188,8 @@ class CardPiece {
 
     /** @type Phaser.Tweens */
     this.tween = null
+
+    // init visual
     this.hide()
     this.updateVisual()
   }
@@ -262,10 +265,12 @@ class CardPiece {
       this.resetMoveCount()
       this.pieceData.health = this.card.data.health
       this.pieceData.attack = this.card.data.attack
-      if (this.card == Match.turnPlayer.selectedTile.getPermanent()) { // FIXME: null exception
+      this.#faceDownVisualDeinit()
+
+      // update ui
+      if (Match.turnPlayer.selectedTile && this.card == Match.turnPlayer.selectedTile.getPermanent()) {
         CardInfoUI.updateInfo(this.card)
       }
-      this.#faceDownVisualDeinit()
     }
   }
   faceDownRaw(bool) {
@@ -278,10 +283,12 @@ class CardPiece {
       this.resetMoveCount()
       this.pieceData.health = this.card.data.health
       this.pieceData.attack = this.card.data.attack
-      if (this.card == Match.turnPlayer.selectedTile.getPermanent()) {
+      this.#faceDownVisualDeinit()
+
+      // update ui
+      if (Match.turnPlayer.selectedTile && this.card == Match.turnPlayer.selectedTile.getPermanent()) {
         CardInfoUI.updateInfo(this.card)
       }
-      this.#faceDownVisualDeinit()
     }
   }
   faceUpSummon() {
