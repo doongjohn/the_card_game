@@ -189,7 +189,7 @@ class CmdUnitRevitalize extends UserCommand {
 
 class CmdUnitPlanTeleport {
   static execute() {
-    const card = Match.turnPlayer.selectedTile?.getPermanent()
+    const card = Match.selectedTile?.getPermanent()
     if (!card) return
 
     // update user action state
@@ -384,8 +384,8 @@ class CmdUnitPlanSummon {
     UserAction.setState(UserAction.StatePlanPermanentSpawn)
 
     // update selected card
-    Match.turnPlayer.selectedTile = null
-    Match.turnPlayer.selectedCard = card
+    Match.selectedTile = null
+    Match.selectedCard = card
     CardInfoUI.updateInfo(card)
     CardInfoUI.show()
 
@@ -433,16 +433,16 @@ class CmdUnitSummon extends UserCommand {
     UserAction.setState(UserAction.StateView)
 
     // summon a selected permanent
-    Board.setPermanentAt(tile.pos.x, tile.pos.y, Match.turnPlayer.selectedCard)
+    Board.setPermanentAt(tile.pos.x, tile.pos.y, Match.selectedCard)
 
     // remove from hand
-    Match.turnPlayer.handRemove(Match.turnPlayer.selectedCard)
+    Match.turnPlayer.handRemove(Match.selectedCard)
 
     // update tile state
     Board.setTileStateAll(TileStateNormal)
 
     // select this tile
-    Match.turnPlayer.selectedTile = tile
+    Match.selectedTile = tile
     tile.fsm.setState(TileStateSelected)
   }
   undo() {

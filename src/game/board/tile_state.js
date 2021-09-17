@@ -61,7 +61,7 @@ class TileStateSpawnPermanentSelection extends TileState {
     self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
 
     // show card info
-    CardInfoUI.updateInfo(Match.turnPlayer.selectedCard)
+    CardInfoUI.updateInfo(Match.selectedCard)
     CardInfoUI.show()
   }
   onExit(self) {
