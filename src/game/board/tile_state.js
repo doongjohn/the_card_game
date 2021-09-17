@@ -47,8 +47,8 @@ class TileStateNormal extends TileState {
     Board.tiles.forEach(tile => tile.fsm.setState(TileStateNormal))
 
     // select this tile
-    Match.turnPlayer.selectedTile = self
-    Match.turnPlayer.selectedTile.fsm.setState(TileStateSelected)
+    Match.selectedTile = self
+    Match.selectedTile.fsm.setState(TileStateSelected)
 
     // update match action state
     UserAction.setState(UserAction.StateView)

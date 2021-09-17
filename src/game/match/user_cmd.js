@@ -46,7 +46,7 @@ class CmdCancel {
     } else {
       UserAction.setState(UserAction.StateView)
       for (const tile of Board.tiles)
-        if (tile != Match.turnPlayer.selectedTile)
+        if (tile != Match.selectedTile)
           tile.fsm.setState(TileStateNormal)
     }
   }
@@ -58,8 +58,8 @@ class CmdEndTurn extends UserCommand {
     this.save(MatchData, UserActionData, BoardPermanentData)
 
     // deselect all
-    Match.turnPlayer.selectedCard = null
-    Match.turnPlayer.selectedTile = null
+    Match.selectedCard = null
+    Match.selectedTile = null
 
     // cycle turn
     const newTurn = (Match.turn % 2) + 1
@@ -210,12 +210,12 @@ class CmdUnitTeleport extends UserCommand {
     UserAction.setState(UserAction.StateView)
 
     // update selected tile
-    Match.turnPlayer.selectedTile.getPermanent().cardPiece.setPos(tile.pos.x, tile.pos.y)
-    Match.turnPlayer.selectedTile = tile
+    Match.selectedTile.getPermanent().cardPiece.setPos(tile.pos.x, tile.pos.y)
+    Match.selectedTile = tile
 
     // update tile state
     Board.tiles.forEach(t => {
-      if (t == Match.turnPlayer.selectedTile)
+      if (t == Match.selectedTile)
         t.fsm.setState(TileStateSelected)
       else
         t.fsm.setState(TileStateNormal)
@@ -228,13 +228,13 @@ class CmdUnitTeleport extends UserCommand {
 
 class CmdUnitPlanMove {
   static execute() {
-    const card = Match.turnPlayer.selectedTile?.getPermanent()
+    const card = Match.selectedTile?.getPermanent()
     if (!card || Match.turn != card.cardPiece.pieceData.owner.team) return
 
     if (card.cardPiece.pieceData.tapped || !card.cardPiece.canMove())
       return
 
-    const tile = Match.turnPlayer.selectedTile
+    const tile = Match.selectedTile
 
     function setMoveSelectionTile(x, y) {
       if (!Board.getPermanentAt(x, y))
@@ -290,12 +290,12 @@ class CmdUnitMove extends UserCommand {
     UserAction.setState(UserAction.StateView)
 
     // update selected tile
-    Match.turnPlayer.selectedTile.getPermanent().cardPiece.moveTo(tile.pos.x, tile.pos.y)
-    Match.turnPlayer.selectedTile = tile
+    Match.selectedTile.getPermanent().cardPiece.moveTo(tile.pos.x, tile.pos.y)
+    Match.selectedTile = tile
 
     // update tile state
     Board.tiles.forEach(t => {
-      if (t == Match.turnPlayer.selectedTile)
+      if (t == Match.selectedTile)
         t.fsm.setState(TileStateSelected)
       else
         t.fsm.setState(TileStateNormal)
@@ -308,11 +308,11 @@ class CmdUnitMove extends UserCommand {
 
 class CmdUnitPlanAttack {
   static execute() {
-    const card = Match.turnPlayer.selectedTile?.getPermanent()
+    const card = Match.selectedTile?.getPermanent()
     if (!card) return
     if (Match.turn != card.cardPiece.pieceData.owner.team || card.cardPiece.pieceData.tapped) return
 
-    const tile = Match.turnPlayer.selectedTile
+    const tile = Match.selectedTile
 
     // Unit Plan Attack
     UserAction.setState(UserAction.StatePlanAttack)
@@ -371,7 +371,7 @@ class CmdUnitAttack extends UserCommand {
     })
 
     // attcak target permanent
-    Match.turnPlayer.selectedTile.getPermanent().cardPiece.doAttack(tile.getPermanent().cardPiece)
+    Match.selectedTile.getPermanent().cardPiece.doAttack(tile.getPermanent().cardPiece)
   }
   undo() {
     this.restoreAll()
@@ -413,7 +413,7 @@ class CmdUnitDeclareSummon {
     Board.setTileStateAll(TileStateNoInteraction)
 
     // show some kind of indicator at selected tile
-    Match.turnPlayer.selectedTile = tile
+    Match.selectedTile = tile
     tile.fsm.setState(TileStateSelected)
     tile.canSummon = false
 

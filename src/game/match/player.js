@@ -48,9 +48,6 @@ class Player {
     this.deck = []
     this.hand = []
 
-    this.selectedTile = null
-    this.selectedCard = null
-
     this.handUI = new HandUI(this)
   }
 

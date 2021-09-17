@@ -7,6 +7,9 @@ class Match {
   static turnPlayer = null
   static oppsPlayer = null
 
+  static selectedTile = null
+  static selectedCard = null
+
   // TODO: make a card manager
   static boardarea = []
   static graveyard = []

@@ -64,17 +64,23 @@ class UserInput {
     })
 
     // cheat input
-    UserInput.keys.undo.on('down', () => UserAction.undo())
-    UserInput.keys.unitTap.on('down', () => UserAction.execute(CmdUnitTapToggle,
-      Match.turnPlayer.selectedTile.getPermanent()))
-    UserInput.keys.unitFaceToggle.on('down', () => UserAction.execute(CmdUnitFaceToggle,
-      Match.turnPlayer.selectedTile.getPermanent()))
-    UserInput.keys.unitTeleport.on('down', () => UserAction.execute(CmdUnitPlanTeleport))
+    UserInput.keys.undo.on('down',
+      () => UserAction.undo())
+    UserInput.keys.unitTap.on('down',
+      () => UserAction.execute(CmdUnitTapToggle, Match.selectedTile.getPermanent()))
+    UserInput.keys.unitFaceToggle.on('down',
+      () => UserAction.execute(CmdUnitFaceToggle, Match.selectedTile.getPermanent()))
+    UserInput.keys.unitTeleport.on('down',
+      () => UserAction.execute(CmdUnitPlanTeleport))
 
     // game input
-    UserInput.keys.cancel.on('down', () => UserAction.execute(CmdCancel))
-    UserInput.keys.endTurn.on('down', () => UserAction.execute(CmdEndTurn))
-    UserInput.keys.unitMove.on('down', () => UserAction.execute(CmdUnitPlanMove))
-    UserInput.keys.unitAttack.on('down', () => UserAction.execute(CmdUnitPlanAttack))
+    UserInput.keys.cancel.on('down',
+      () => UserAction.execute(CmdCancel))
+    UserInput.keys.endTurn.on('down',
+      () => UserAction.execute(CmdEndTurn))
+    UserInput.keys.unitMove.on('down',
+      () => UserAction.execute(CmdUnitPlanMove))
+    UserInput.keys.unitAttack.on('down',
+      () => UserAction.execute(CmdUnitPlanAttack))
   }
 }

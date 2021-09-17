@@ -51,41 +51,37 @@ const CardDataMovable = {
   curMoveCount: 0,
 }
 const CardPieceLogicMovable = {
-  resetMoveCount() {
-    this.pieceData.curMoveCount = 0
-  },
   canMove() {
     // check if curMoveCount is smaller than maxMoveCount
     return this.pieceData.curMoveCount < this.pieceData.maxMoveCount
   },
   moveTo(x, y) {
-    Board.movePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y)
-
+    // increase current move count
     ++this.pieceData.curMoveCount
+
+    // update position
+    Board.movePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y)
     this.pieceData.pos.x = x
     this.pieceData.pos.y = y
 
     // tween movement data
-    const speed = 0.35
     const pos = Board.gridToWorldPos(x, y)
+    const speed = 0.35
     const dist = Phaser.Math.Distance.BetweenPoints(pos, this.sprite)
 
     // tween movement
     this.tween?.remove()
     this.tween = Game.scene.tweens.add({
-      // tween options
       targets: this.sprite,
       repeat: 0,
       ease: 'Linear',
       duration: dist / speed,
 
-      // tween props
       props: {
         x: { from: this.sprite.x, to: pos.x },
         y: { from: this.sprite.y, to: pos.y },
       },
 
-      // on tween complete
       onCompleteParams: [this],
       onComplete: function (tween) {
         tween.remove()
@@ -100,6 +96,11 @@ const CardDataPermanent = {
   attack: 0,
 }
 const CardPieceLogicPermanent = {
+  setTeam(team) {
+    this.pieceData.owner = team == Team.P1 ? Match.player1 : Match.player2
+    this.updateVisual()
+  },
+
   tap(bool) { // overrides base function
     if (this.pieceData.faceDowned)
       return
@@ -110,17 +111,17 @@ const CardPieceLogicPermanent = {
     } else {
       this.pieceData.tapped = false
       this.sprite.resetPipeline()
-      this.resetMoveCount()
+      this.onRevitaize()
     }
   },
-  setTeam(team) {
-    this.pieceData.owner = team == Team.P1 ? Match.player1 : Match.player2
-    this.updateVisual()
+  onRevitaize() {
+    this.pieceData.curMoveCount = 0
   },
   revitalize() {
     this.pieceData.faceDowned || this.tap(false)
-    this.resetMoveCount()
+    onRevitaize()
   },
+
   takeDamage(attacker, damage) {
     // face up
     if (this.pieceData.faceDowned)
@@ -138,11 +139,11 @@ const CardPieceLogicPermanent = {
       Board.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y)
 
       // update ui
-      if (this.card == Match.turnPlayer.selectedTile.getPermanent())
+      if (this.card == Match.selectedTile.getPermanent())
         CardInfoUI.hide()
     } else {
       // update ui
-      if (this.card == Match.turnPlayer.selectedTile.getPermanent()) {
+      if (this.card == Match.selectedTile.getPermanent()) {
         CardInfoUI.updateInfo(this.card)
       }
     }

@@ -264,11 +264,11 @@ class CardPiece {
       this.pieceData.faceDowned = false
       this.pieceData.health = this.card.data.health
       this.pieceData.attack = this.card.data.attack
-      this.resetMoveCount()
+      this.pieceData.curMoveCount = 0
       this.#faceDownVisualDeinit()
 
       // update ui
-      if (Match.turnPlayer.selectedTile && this.card == Match.turnPlayer.selectedTile.getPermanent()) {
+      if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
         CardInfoUI.updateInfo(this.card)
       }
     }
@@ -282,11 +282,11 @@ class CardPiece {
       this.pieceData.faceDowned = false
       this.pieceData.health = this.card.data.health
       this.pieceData.attack = this.card.data.attack
-      this.resetMoveCount()
+      this.pieceData.curMoveCount = 0
       this.#faceDownVisualDeinit()
 
       // update ui
-      if (Match.turnPlayer.selectedTile && this.card == Match.turnPlayer.selectedTile.getPermanent()) {
+      if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
         CardInfoUI.updateInfo(this.card)
       }
     }
