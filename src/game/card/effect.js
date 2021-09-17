@@ -34,10 +34,14 @@ class EffectChain {
 
 class EffectEvent {
   // TODO: use linked list
-  static onAttack = []         // args: self, target
-  static onCounterAttack = []  // args: self, target
-  static onDealDamage = []     // args: self, target
-  static onTakeDamage = []     // args: self, attacker
+  static onAttack = []               // args: self, target
+  static onCounterAttack = []        // args: self, target
+
+  static onDealDamage = []           // args: self, target
+  static onDealLethalDamage = []     // TODO: args: self, target
+
+  static onTakeDamage = []           // args: self, attacker
+  static onTakeLethalDamage = []     // TODO: args: self, attacker
 
   static add(eventName, effect) {
     const array = EffectEvent[eventName]
@@ -77,6 +81,7 @@ class EffectEvent {
       EffectEvent[eventName][0].action(...args)
     } else {
       // TODO: make user selects the order of execution
+      // reorderable ui
       for (let effect of EffectEvent[eventName]) {
         console.log(
           `Effect invoked: %c"${eventName}": ${EffectType.toString(EffectEvent[eventName][0].type)}\n` +
