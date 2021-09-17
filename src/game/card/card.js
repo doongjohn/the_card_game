@@ -119,7 +119,7 @@ const CardPieceLogicPermanent = {
   },
   revitalize() {
     this.pieceData.faceDowned || this.tap(false)
-    onRevitaize()
+    this.onRevitaize()
   },
 
   takeDamage(attacker, damage) {
