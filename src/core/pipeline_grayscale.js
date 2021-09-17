@@ -33,7 +33,7 @@ void main()
   }
 
   onPreRender() {
-    this.set1f('Gray', this._gray)
+    this.set1f('gray', this._gray)
   }
 
   get gray() {

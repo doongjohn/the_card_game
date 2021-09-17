@@ -229,16 +229,12 @@ class CmdUnitTeleport extends UserCommand {
 class CmdUnitPlanMove {
   static execute() {
     const card = Match.turnPlayer.selectedTile?.getPermanent()
-    if (!card) return
+    if (!card || Match.turn != card.cardPiece.pieceData.owner.team) return
 
-    const tile = Match.turnPlayer.selectedTile
-    if (Match.turn != card.cardPiece.pieceData.owner.team
-      || card.cardPiece.pieceData.tapped
-      || !card.cardPiece.canMove())
+    if (card.cardPiece.pieceData.tapped || !card.cardPiece.canMove())
       return
 
-    // Unit Plan Move
-    UserAction.setState(UserAction.StatePlanMove)
+    const tile = Match.turnPlayer.selectedTile
 
     function setMoveSelectionTile(x, y) {
       if (!Board.getPermanentAt(x, y))
@@ -249,35 +245,37 @@ class CmdUnitPlanMove {
     const d = { x: tile.pos.x, y: tile.pos.y + 1 }
     const r = { x: tile.pos.x + 1, y: tile.pos.y }
     const l = { x: tile.pos.x - 1, y: tile.pos.y }
+    const rBlocked = Board.getPermanentAt(r.x, r.y) != null
+    const lBlocked = Board.getPermanentAt(l.x, l.y) != null
+    const uBlocked = Board.getPermanentAt(u.x, u.y) != null
+    const dBlocked = Board.getPermanentAt(d.x, d.y) != null
 
-    const blockedR = Board.getPermanentAt(r.x, r.y)
-    const blockedL = Board.getPermanentAt(l.x, l.y)
-    const blockedU = Board.getPermanentAt(u.x, u.y)
-    const blockedD = Board.getPermanentAt(d.x, d.y)
-
-    if (!blockedR) {
+    if (!rBlocked) {
       setMoveSelectionTile(r.x, r.y)
       setMoveSelectionTile(r.x + 1, r.y)
     }
-    if (!blockedL) {
+    if (!lBlocked) {
       setMoveSelectionTile(l.x, l.y)
       setMoveSelectionTile(l.x - 1, l.y)
     }
-    if (!blockedU) {
+    if (!uBlocked) {
       setMoveSelectionTile(u.x, u.y)
       setMoveSelectionTile(u.x, u.y - 1)
     }
-    if (!blockedD) {
+    if (!dBlocked) {
       setMoveSelectionTile(d.x, d.y)
       setMoveSelectionTile(d.x, d.y + 1)
     }
 
-    if (!blockedR || !blockedU) setMoveSelectionTile(r.x, u.y)
-    if (!blockedR || !blockedD) setMoveSelectionTile(r.x, d.y)
-    if (!blockedL || !blockedU) setMoveSelectionTile(l.x, u.y)
-    if (!blockedL || !blockedD) setMoveSelectionTile(l.x, d.y)
+    ;(!rBlocked || !uBlocked) && setMoveSelectionTile(r.x, u.y)
+    ;(!rBlocked || !dBlocked) && setMoveSelectionTile(r.x, d.y)
+    ;(!lBlocked || !uBlocked) && setMoveSelectionTile(l.x, u.y)
+    ;(!lBlocked || !dBlocked) && setMoveSelectionTile(l.x, d.y)
 
-    //  update tile state
+    // update user action
+    UserAction.setState(UserAction.StatePlanMove)
+
+    // update tile state
     Board.tiles.forEach((tile) => {
       if (!tile.fsm.curState.compare(TileStateSelected, TileStateMoveSelection))
         tile.fsm.setState(TileStateNoInteraction)
