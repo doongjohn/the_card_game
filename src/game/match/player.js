@@ -52,7 +52,7 @@ class Player {
   }
 
   cardInit() {
-    // TODO: get cards from user deck
+    // initialize cards and zones
     let i = 0
     for (let spriteAssetName of this.team == Team.P1 ? TestDeckP1 : TestDeckP2)
       this.allCards.push(createCardPermanent(i++, this, spriteAssetName))
@@ -136,8 +136,6 @@ class PlayerData {
 }
 
 class HandUI {
-  // TODO: make both players hand visible
-
   static maxCard = 5
   static y = 530
 
