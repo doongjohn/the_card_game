@@ -53,13 +53,13 @@ class Player {
 
   cardInit() {
     // spawn all cards
-    const deckData = Team.P1 ? TestDeckP1 : TestDeckP2 // TEST: wip
+    const deckData = this.team == Team.P1 ? TestDeckP1 : TestDeckP2 // TEST: wip
     for (let i in deckData)
       this.allCards.push(createCardPermanent(i, this, deckData[i]))
 
     // init deck
     this.cardZones.deck.cards = [...this.allCards]
-    this.cardZones.deck.shuffle(10)
+    this.cardZones.deck.shuffle(40)
   }
 
   handInit() {
