@@ -45,32 +45,34 @@ class Player {
     }
 
     this.allCards = []
-    this.deck = []
-    this.hand = []
-
+    this.cardZones = new CardZones()
     this.handUI = new HandUI(this)
+    // this.deck = []
+    // this.hand = []
   }
 
   cardInit() {
-    // initialize cards and zones
-    let i = 0
-    for (let spriteAssetName of this.team == Team.P1 ? TestDeckP1 : TestDeckP2)
-      this.allCards.push(createCardPermanent(i++, this, spriteAssetName))
+    // spawn all cards
+    const deckData = Team.P1 ? TestDeckP1 : TestDeckP2 // TEST: wip
+    for (let i in deckData)
+      this.allCards.push(createCardPermanent(i, this, deckData[i]))
 
-    // copy all cards to deck
-    this.deck = [...this.allCards]
-
-    // shuffle deck
-    shuffleArray(this.deck, 10)
+    // init deck
+    this.cardZones.deck.cards = [...this.allCards]
+    this.cardZones.deck.shuffle(10)
   }
 
   handInit() {
-    const num = 8
-    for (let i = 0; i < num; ++i) {
-      const card = this.deck.pop()
+    const startingCards = 8
+    for (let i = 0; i < startingCards; ++i) {
+      // move card
+      let card = this.cardZones.deck.pushTo(this.cardZones.hand, this.cardZones.deck.cards.length - 1)
+
+      // set input depth
       card.cardPaper.inputArea.setDepth(i)
+
+      // set visual depth
       Layer.moveTo(Layer.UI, card.cardPaper.visual, i)
-      this.hand.push(card)
     }
     this.handUI.init()
   }
@@ -81,36 +83,30 @@ class Player {
         break
       }
 
-      const card = this.deck.pop()
-      const depth = this.hand[this.hand.length - 1].cardPaper.inputArea.depth + 1
-      const displayIndex = Layer.getIndex(Layer.UI, this.hand[this.hand.length - 1].cardPaper.visual) + 1
+      // store last card
+      let lastCard = this.cardZones.hand.cards[this.cardZones.hand.cards.length - 1]
+
+      // move card
+      let card = this.cardZones.deck.pushTo(this.cardZones.hand, this.cardZones.deck.cards.length - 1)
+
+      // set input depth
+      const depth = lastCard.cardPaper.inputArea.depth + 1
       card.cardPaper.inputArea.setDepth(depth)
+
+      // set visual depth
+      const displayIndex = Layer.getIndex(Layer.UI, lastCard.cardPaper.visual) + 1
       Layer.moveTo(Layer.UI, card.cardPaper.visual, displayIndex)
       card.cardPaper.visual.y = HandUI.y
-      this.hand.push(card)
-    }
-    this.handUI.update()
-  }
-  handAdd(...cards) {
-    // TODO: from where? deck?
-    // make transfer cards function instead
-    for (let card of cards) {
-      const depth = this.hand[this.hand.length - 1].cardPaper.inputArea.depth + 1
-      const displayIndex = Layer.getIndex(Layer.UI, this.hand[this.hand.length - 1].cardPaper.visual) + 1
-      card.cardPaper.inputArea.setDepth(depth)
-      Layer.moveTo(Layer.UI, card.cardPaper.visual, displayIndex)
-      card.cardPaper.visual.y = HandUI.y
-      this.hand.push(card)
     }
     this.handUI.update()
   }
   handRemove(...cards) {
     // TODO: to where? graveyard?
     // make transfer cards function instead
-    for (const i in this.hand) {
-      if (cards.includes(this.hand[i])) {
-        this.hand[i].cardPaper.hide()
-        this.hand.splice(i, 1)
+    for (const i in this.cardZones.hand.cards) {
+      if (cards.includes(this.cardZones.hand.cards[i])) {
+        this.cardZones.hand.cards[i].cardPaper.hide()
+        this.cardZones.hand.cards.splice(i, 1)
       }
     }
     this.handUI.update()
@@ -118,6 +114,7 @@ class Player {
 }
 
 class PlayerData {
+  // TODO: save and restore cardZones
   constructor() {
     this.p1_deck = [...Match.player1.deck]
     this.p2_deck = [...Match.player2.deck]
@@ -141,70 +138,65 @@ class HandUI {
 
   constructor(player) {
     this.player = player
-    this.width = 250 + 10; // CardPaper width + gap
+    this.cardZones = player.cardZones
+    this.width = CardPaper.cardBg.width + 10; // CardPaper width + gap
     this.maxWidth = this.width * (HandUI.maxCard - 1)
   }
 
   getAlignData() {
-    const length = this.player.hand.length
-    return length <= HandUI.maxCard ?
+    let length = this.cardZones.hand.cards.length - 1
+    return length < HandUI.maxCard ?
       {
-        startPos: -this.width / 2 * (length - 1),
+        startPos: -this.width / 2 * length,
         gap: this.width
       } :
       {
         startPos: -this.maxWidth / 2,
-        gap: this.maxWidth / (length - 1)
+        gap: this.maxWidth / length
       }
   }
 
   init() {
     // align cards
-    const { startPos, gap } = this.getAlignData()
+    let { startPos, gap } = this.getAlignData()
     let i = 0
-    for (const card of this.player.hand) {
+    for (let card of this.cardZones.hand.cards) {
       card.cardPaper.visual.x = startPos + (gap * i++)
       card.cardPaper.visual.y = HandUI.y
       card.cardPaper.resetInputAreaPos()
     }
   }
   show() {
-    for (const card of this.player.hand) {
+    for (let card of this.cardZones.hand.cards)
       card.cardPaper.show()
-    }
   }
   hide() {
-    for (const card of this.player.hand) {
+    for (let card of this.cardZones.hand.cards)
       card.cardPaper.hide()
-    }
   }
   update() {
     // align cards
-    const { startPos, gap } = this.getAlignData()
+    let { startPos, gap } = this.getAlignData()
     let i = 0
-    for (const card of this.player.hand) {
-      const cardPaper = card.cardPaper
+    for (let card of this.cardZones.hand.cards) {
+      let cardPaper = card.cardPaper
       cardPaper.show()
       cardPaper.tween?.remove()
       cardPaper.tween = Game.scene.tweens.add({
-        // tween options
         targets: cardPaper.visual,
         repeat: 0,
         duration: 200,
         ease: 'Cubic.Out',
 
-        // tween props
         props: {
           x: { from: cardPaper.visual.x, to: startPos + (gap * i++) },
         },
 
-        // on tween update
         onUpdateParams: [this],
         onUpdate: function (tween) {
           cardPaper.resetInputAreaPos()
         },
 
-        // on tween complete
         onCompleteParams: [this],
         onComplete: function (tween) {
           tween.remove()

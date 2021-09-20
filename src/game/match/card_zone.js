@@ -4,31 +4,41 @@ class CardZone {
   constructor() {
     this.cards = []
   }
-  pushTo(target, index) {
-    target.push(this.cards[index])
-    this.cards.splice(index, 1)
+  shuffle(count) {
+    shuffleArray(this.cards, count)
   }
-  insertTo(target, targetIndex, index) {
-    target.splice(targetIndex, 0, this.cards[index])
-    this.cards.splice(index, 1)
+  pushTo(target, srcIndex) {
+    target.cards.push(this.cards[srcIndex])
+    this.cards.splice(srcIndex, 1)
+    return target.cards[target.cards.length - 1]
   }
+  insertTo(target, srcIndex, targetIndex) {
+    target.cards.splice(targetIndex, 0, this.cards[srcIndex])
+    this.cards.splice(srcIndex, 1)
+    return target.cards[targetIndex]
+  }
+}
+
+class CardZoneHand extends CardZone {
+
 }
 
 class CardZones {
   constructor() {
-    // TODO: refactor board.js
-    this.board = {
+    CardZones.board = {
       permanents: new CardZone(),
       spells: new CardZone()
     }
+
     this.deck = new CardZone()
-    this.mana = new CardZone()
     this.manaDeck = new CardZone()
     this.extraDeck = new CardZone()
+
+    this.mana = new CardZone()
     this.hand = new CardZone()
+
     this.gaveyard = new CardZone()
     this.banish = new CardZone()
     this.limbo = new CardZone()
-    this.timeStream = new CardZone()
   }
 }
