@@ -1,16 +1,19 @@
 class Game {
+  /** @type {Phaser.Scene} */
   static scene = null
-  static world = null
+  /** @type {Phaser.Cameras.Scene2D.Camera} */
   static mainCam = null
+  /** @type {Phaser.Math.Vector2} */
   static center = null
-  static spawn = null // alias to scene.add
+  /** @type {Phaser.GameObjects.GameObjectFactory} */
+  static spawn = null
   static pipeline = null
 
   static init(scene) {
     Game.scene = scene
+    Game.spawn = scene.add
     Game.mainCam = scene.cameras.main
     Game.center = new Phaser.Math.Vector2(Game.mainCam.centerX, Game.mainCam.centerY)
-    Game.spawn = scene.add
     Game.pipeline = {
       grayScale: scene.renderer.pipelines.get('Gray')
     }
@@ -18,26 +21,27 @@ class Game {
 
   // alias to Game.world.add
   static addToWorld(layer, ...objs) {
-    function logic(obj) {
+    function tryAdd(obj) {
       if (obj instanceof Phaser.GameObjects.GameObject)
         Layer.add(layer, obj)
       else if (obj.gameObject !== undefined)
         Layer.add(layer, obj.gameObject)
       else
-        console.error(`It can't be added to the world! ("${obj}": doesn't contains a gameobject)`)
+        console.error(`"${obj}": doesn't contains a gameobject!`)
     }
-    for (const obj of objs) {
+    for (let obj of objs) {
       if (Array.isArray(obj))
-        for (const o of obj) logic(o)
+        obj.forEach(o => tryAdd(o))
       else
-        logic(obj)
+        tryAdd(obj)
     }
   }
 
   static playAnimation(sprite, key) {
-    if (Game.scene.anims.exists(key))
-      sprite.play(key)
-    else
-      console.error(`Can't play animation: "${key}"\nthat animation key does not exists.`)
+    if (!Game.scene.anims.exists(key)) {
+      console.error(`Can't play animation: "${key}"\nthis animation key does not exists.`)
+      return
+    }
+    sprite.play(key)
   }
 }
