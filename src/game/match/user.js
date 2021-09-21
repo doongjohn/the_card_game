@@ -12,7 +12,6 @@ class UserAction {
   static setState(state) {
     UserAction.state = state
   }
-
   static pushCommand(cmd) {
     UserAction.commands.push(cmd)
   }
@@ -35,52 +34,39 @@ class UserAction {
   }
 }
 
-class UserActionData {
-  constructor() {
-    this.prevCommand = UserAction.getLastCommand()
-    this.state = UserAction.state
-  }
-  restore() {
-    UserAction.state = this.state
-  }
-}
-
 class UserInput {
   static init() {
-    // init key bindings
-    UserInput.keys = Game.scene.input.keyboard.addKeys({
-      // cheat input
+    // cheat input
+    UserInput.cheatKeys = Game.scene.input.keyboard.addKeys({
       undo: 'u',
       unitTap: 't',
       unitFaceToggle: 'f',
       unitTeleport: 'p',
+    })
+    UserInput.cheatKeys.undo.on('down', () =>
+      UserAction.undo())
+    UserInput.cheatKeys.unitTap.on('down', () =>
+      UserAction.execute(CmdUnitTapToggle, Match.selectedTile.getPermanent()))
+    UserInput.cheatKeys.unitFaceToggle.on('down', () =>
+      UserAction.execute(CmdUnitFaceToggle, Match.selectedTile.getPermanent()))
+    UserInput.cheatKeys.unitTeleport.on('down', () =>
+      UserAction.execute(CmdUnitPlanTeleport))
 
-      // game input
+    // game input
+    UserInput.keys = Game.scene.input.keyboard.addKeys({
       confirm: 'enter',
       cancel: 'esc',
       endTurn: 'space',
       unitMove: 'm',
       unitAttack: 'a',
     })
-
-    // cheat input
-    UserInput.keys.undo.on('down',
-      () => UserAction.undo())
-    UserInput.keys.unitTap.on('down',
-      () => UserAction.execute(CmdUnitTapToggle, Match.selectedTile.getPermanent()))
-    UserInput.keys.unitFaceToggle.on('down',
-      () => UserAction.execute(CmdUnitFaceToggle, Match.selectedTile.getPermanent()))
-    UserInput.keys.unitTeleport.on('down',
-      () => UserAction.execute(CmdUnitPlanTeleport))
-
-    // game input
-    UserInput.keys.cancel.on('down',
-      () => UserAction.execute(CmdCancel))
-    UserInput.keys.endTurn.on('down',
-      () => UserAction.execute(CmdEndTurn))
-    UserInput.keys.unitMove.on('down',
-      () => UserAction.execute(CmdUnitPlanMove))
-    UserInput.keys.unitAttack.on('down',
-      () => UserAction.execute(CmdUnitPlanAttack))
+    UserInput.keys.cancel.on('down', () =>
+      UserAction.execute(CmdCancel))
+    UserInput.keys.endTurn.on('down', () =>
+      UserAction.execute(CmdEndTurn))
+    UserInput.keys.unitMove.on('down', () =>
+      UserAction.execute(CmdUnitPlanMove))
+    UserInput.keys.unitAttack.on('down', () =>
+      UserAction.execute(CmdUnitPlanAttack))
   }
 }

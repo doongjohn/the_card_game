@@ -1,5 +1,3 @@
-// TODO: make card zone
-
 class CardZone {
   constructor() {
     this.cards = []
@@ -7,38 +5,106 @@ class CardZone {
   shuffle(count) {
     shuffleArray(this.cards, count)
   }
-  pushTo(target, srcIndex) {
-    target.cards.push(this.cards[srcIndex])
-    this.cards.splice(srcIndex, 1)
-    return target.cards[target.cards.length - 1]
+  length() {
+    return this.cards.length
   }
-  insertTo(target, srcIndex, targetIndex) {
-    target.cards.splice(targetIndex, 0, this.cards[srcIndex])
-    this.cards.splice(srcIndex, 1)
-    return target.cards[targetIndex]
+  high() {
+    return Math.max(this.cards.length - 1, 0)
+  }
+  firstCard() {
+    return this.cards[0]
+  }
+  lastCard() {
+    return this.cards[this.high()]
+  }
+
+  /**
+   * @param {{source: CardZone, sourceIndex: number, target: CardZone, targetIndex: number}}
+   * @returns {Card}
+   */
+  static moveCard({ source, sourceIndex, target, targetIndex } = {}) {
+    let card = source.cards[sourceIndex]
+    target.cards.splice(targetIndex, 0, card)
+    source.cards.splice(sourceIndex, 1)
+    return card
   }
 }
 
-class CardZoneHand extends CardZone {
 
-}
+class CardZonePlayer {
+  static list = [
+    "deck",
+    "manaDeck",
+    "extraDeck",
+    "mana",
+    "hand",
+    "gaveyard",
+    "banish",
+    "limbo",
+  ]
 
-class CardZones {
   constructor() {
-    CardZones.board = {
-      permanents: new CardZone(),
-      spells: new CardZone()
+    for (let zone of CardZonePlayer.list) {
+      this[zone] = new CardZone()
     }
+  }
+}
 
-    this.deck = new CardZone()
-    this.manaDeck = new CardZone()
-    this.extraDeck = new CardZone()
+class UndoCardZonePlayer {
+  constructor() {
+    this.player1 = {}
+    this.player2 = {}
+    for (let zone of CardZonePlayer.list) {
+      this.player1[zone] = [...Match.player1.cardZones[zone].cards]
+      this.player2[zone] = [...Match.player2.cardZones[zone].cards]
+    }
+  }
+  undo() {
+    for (let zone of CardZonePlayer.list) {
+      Match.player1.cardZones[zone].cards = [...this.player1[zone]]
+      Match.player2.cardZones[zone].cards = [...this.player2[zone]]
+    }
+  }
+}
 
-    this.mana = new CardZone()
-    this.hand = new CardZone()
 
-    this.gaveyard = new CardZone()
-    this.banish = new CardZone()
-    this.limbo = new CardZone()
+class CardZoneBoard {
+  static permanents = new CardZone()
+  static spells = new CardZone()
+}
+
+class UndoCardZoneBoard {
+  constructor() {
+    this.permanents = [...CardZoneBoard.permanents.cards]
+    this.spells = [...CardZoneBoard.spells.cards]
+
+    this.permanentData = []
+    this.permanentPieceData = []
+    for (let card of CardZoneBoard.permanents.cards) {
+      this.permanentData.push(card ? { index: card.data.index, owner: card.data.owner } : null)
+      this.permanentPieceData.push(card ? card.cardPiece.pieceData.clone() : null)
+    }
+  }
+  undo() {
+    CardZoneBoard.spells.cards = [...this.spells]
+
+    for (const i in CardZoneBoard.permanents.cards) {
+      const owner = this.permanentData[i]?.owner
+      const pos = toCoord(i)
+
+      Board.removePermanentAt(pos.x, pos.y)
+      if (!owner) continue
+
+      const index = this.permanentData[i].index
+      const data = this.permanentPieceData[i]
+      const card = index == -1 ? owner.commander : owner.allCards[index]
+
+      Board.setPermanentAt(pos.x, pos.y, card)
+
+      card.cardPiece.pieceData = data
+      card.cardPiece.faceDownRaw(data.faceDowned)
+      card.cardPiece.tap(data.tapped)
+      card.cardPiece.updateVisual()
+    }
   }
 }

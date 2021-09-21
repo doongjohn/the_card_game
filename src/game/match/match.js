@@ -10,10 +10,6 @@ class Match {
   static selectedTile = null
   static selectedCard = null
 
-  // TODO: make a card manager
-  static boardarea = []
-  static graveyard = []
-
   static init() {
     // init input
     UserInput.init()
@@ -41,24 +37,21 @@ class Match {
     Match.turnPlayer.handUI.show()
 
 
-    // TEST: test effect 'onAttack'
-    const onAttackEffectP1 = new Effect(
+    const onAttackEffectP1 = new Effect( // TEST: test effect 'onAttack'
       EffectType.MandatoryTrigger,
       Match.player1.commander,
       function (target) {
         console.log(`I hit "${target.data.name}"!`)
       }
     )
-    EffectEvent.add('onAttack', onAttackEffectP1)
-
-    // TEST: test effect 'onTakeDamage'
-    const onTakeDamageEffectP2 = new Effect(
+    const onTakeDamageEffectP2 = new Effect( // TEST: test effect 'onTakeDamage'
       EffectType.MandatoryTrigger,
       Match.player2.commander,
       function (attacker) {
         console.log(`I took damage by "${attacker.data.name}"!`)
       }
     )
+    EffectEvent.add('onAttack', onAttackEffectP1)
     EffectEvent.add('onTakeDamage', onTakeDamageEffectP2)
 
 
@@ -85,7 +78,7 @@ class Match {
   }
 }
 
-class MatchData {
+class UndoMatch {
   constructor() {
     this.turn = Match.turn
     this.turnPlayer = Match.turnPlayer

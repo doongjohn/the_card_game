@@ -45,10 +45,8 @@ class Player {
     }
 
     this.allCards = []
-    this.cardZones = new CardZones()
+    this.cardZones = new CardZonePlayer()
     this.handUI = new HandUI(this)
-    // this.deck = []
-    // this.hand = []
   }
 
   cardInit() {
@@ -66,7 +64,12 @@ class Player {
     const startingCards = 8
     for (let i = 0; i < startingCards; ++i) {
       // move card
-      let card = this.cardZones.deck.pushTo(this.cardZones.hand, this.cardZones.deck.cards.length - 1)
+      let card = CardZone.moveCard({
+        source: this.cardZones.deck,
+        sourceIndex: this.cardZones.deck.high(),
+        target: this.cardZones.hand,
+        targetIndex: this.cardZones.hand.length()
+      })
 
       // set input depth
       card.cardPaper.inputArea.setDepth(i)
@@ -84,17 +87,22 @@ class Player {
       }
 
       // store last card
-      let lastCard = this.cardZones.hand.cards[this.cardZones.hand.cards.length - 1]
+      let lastCard = this.cardZones.hand.lastCard()
 
       // move card
-      let card = this.cardZones.deck.pushTo(this.cardZones.hand, this.cardZones.deck.cards.length - 1)
+      let card = CardZone.moveCard({
+        source: this.cardZones.deck,
+        sourceIndex: this.cardZones.deck.high(),
+        target: this.cardZones.hand,
+        targetIndex: this.cardZones.hand.length()
+      })
 
       // set input depth
-      const depth = lastCard.cardPaper.inputArea.depth + 1
+      let depth = lastCard.cardPaper.inputArea.depth + 1
       card.cardPaper.inputArea.setDepth(depth)
 
       // set visual depth
-      const displayIndex = Layer.getIndex(Layer.UI, lastCard.cardPaper.visual) + 1
+      let displayIndex = Layer.getIndex(Layer.UI, lastCard.cardPaper.visual) + 1
       Layer.moveTo(Layer.UI, card.cardPaper.visual, displayIndex)
       card.cardPaper.visual.y = HandUI.y
     }
@@ -113,22 +121,15 @@ class Player {
   }
 }
 
-class PlayerData {
-  // TODO: save and restore cardZones
+class UndoPlayer {
   constructor() {
-    this.p1_deck = [...Match.player1.deck]
-    this.p2_deck = [...Match.player2.deck]
-    this.p1_hand = [...Match.player1.hand]
-    this.p2_hand = [...Match.player2.hand]
+    this.cardZones = new UndoCardZonePlayer()
   }
-  restore() {
-    Match.player1.deck = this.p1_deck
-    Match.player2.deck = this.p2_deck
-    Match.player1.hand = this.p1_hand
-    Match.player2.hand = this.p2_hand
-
-    // update ui
-    Match.turnPlayer.handUI.update()
+  undo() {
+    this.cardZones.undo()
+    Match.player1.handUI.update()
+    Match.player2.handUI.update()
+    Match.oppsPlayer.handUI.hide()
   }
 }
 

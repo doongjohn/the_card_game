@@ -34,7 +34,7 @@ class Tile {
     this.canSummon = true
 
     // get cards
-    this.getPermanent = () => Board.permanents[this.index]
+    this.getPermanent = () => CardZoneBoard.permanents.cards[this.index]
     // this.getLand = () => Board.lands[this.index]
     // this.getSpell = () => Board.spells[this.index]
     // this.getRune = () => Board.runes[this.index]

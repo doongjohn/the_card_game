@@ -7,7 +7,7 @@ class Board {
 
   // board array
   static tiles = Array(Board.size.x * Board.size.y).fill(null)
-  static permanents = Array(Board.size.x * Board.size.y).fill(null)
+  // static permanents = Array(Board.size.x * Board.size.y).fill(null)
 
   static init() {
     // spawn stage background image
@@ -58,14 +58,14 @@ class Board {
   static getPermanentAt(x, y) {
     // returns the card at x, y
     const index = toIndex(x, y)
-    return index < 0 || index >= Board.tiles.length ? null : Board.permanents[index]
+    return index < 0 || index >= Board.tiles.length ? null : CardZoneBoard.permanents.cards[index]
   }
   static setPermanentAt(x, y, card) {
     // spawns a card piece at x, y
-    if (Board.occupied(x, y, Board.permanents)) {
+    if (Board.occupied(x, y, CardZoneBoard.permanents.cards)) {
       console.log(`Can't spawn a permanent here! (tile:[${x}, ${y}] is already occupied)`)
     } else {
-      Board.permanents[toIndex(x, y)] = card
+      CardZoneBoard.permanents.cards[toIndex(x, y)] = card
       card.cardPiece.setPos(x, y)
       card.cardPiece.show()
     }
@@ -74,24 +74,24 @@ class Board {
     // moves a card piece to x, y
     let curPos = toIndex(x, y)
     let newPos = toIndex(newX, newY)
-    Board.permanents[newPos] = Board.permanents[curPos]
-    Board.permanents[curPos] = null
+    CardZoneBoard.permanents.cards[newPos] = CardZoneBoard.permanents.cards[curPos]
+    CardZoneBoard.permanents.cards[curPos] = null
   }
   static swapPermanentAt(x, y, x2, y2) {
     // swaps two cards piece at x, y, and x2, y2
     let curPos = toIndex(x, y)
     let newPos = toIndex(x2, y2)
-    [Board.permanents[newPos], Board.permanents[curPos]] =
-      [Board.permanents[curPos], Board.permanents[newPos]]
+    [CardZoneBoard.permanents.cards[newPos], CardZoneBoard.permanents.cards[curPos]] =
+      [CardZoneBoard.permanents.cards[curPos], CardZoneBoard.permanents.cards[newPos]]
   }
   static removePermanentAt(x, y) {
     // remove a card piece at x, y
     let card = Board.getPermanentAt(x, y)
-    if (card) {
-      Board.permanents[toIndex(x, y)] = null
-      card.cardPiece.pieceData.pos = null
-      card.cardPiece.hide()
-    }
+    if (!card) return
+
+    CardZoneBoard.permanents.cards[toIndex(x, y)] = null
+    card.cardPiece.pieceData.pos = null
+    card.cardPiece.hide()
   }
 }
 
@@ -125,71 +125,69 @@ function gridAlignCenter(items, gridSize, cellSize, setPosFn) {
     startY = (cellSize.y - cellSize.y * gridSize.y) * 0.5
 
   let
-    x = startX,
-    y = startY,
+    posX = startX,
+    posY = startY,
     indexX = 0,
     indexY = 0
 
   for (const item of items) {
-    if (!item)
-      continue
-
-    setPosFn(item, x, y)
+    if (!item) continue
+    setPosFn(item, posX, posY)
 
     if (indexX < gridSize.x - 1) {
       indexX += 1
-      x += cellSize.x
+      posX += cellSize.x
       continue
     }
 
     if (indexY < gridSize.y - 1) {
       indexX = 0
+      posX = startX
       indexY += 1
-      x = startX
-      y += cellSize.y
+      posY += cellSize.y
     }
   }
 }
 
-class BoardPermanentData {
-  // NOTE: this can get complex if I implement effects...
-  // and maybe there is a better way of managing history...
-  constructor() {
-    this.cardData = []
-    this.cardPieceData = []
-
-    for (const card of Board.permanents) {
-      if (!card) {
-        this.cardData.push(null)
-        this.cardPieceData.push(null)
-        continue
-      }
-
-      this.cardData.push({
-        index: card.data.index,
-        owner: card.data.owner
-      })
-      this.cardPieceData.push(card.cardPiece.pieceData.clone())
-    }
-  }
-  restore() {
-    for (const i in Board.permanents) {
-      const owner = this.cardData[i]?.owner
-      const pos = toCoord(i)
-
-      Board.removePermanentAt(pos.x, pos.y)
-      if (!owner) continue
-
-      const index = this.cardData[i].index
-      const data = this.cardPieceData[i]
-      const card = index == -1 ? owner.commander : owner.allCards[index]
-
-      Board.setPermanentAt(pos.x, pos.y, card)
-
-      card.cardPiece.pieceData = data
-      card.cardPiece.faceDownRaw(data.faceDowned)
-      card.cardPiece.tap(data.tapped)
-      card.cardPiece.updateVisual()
-    }
-  }
-}
+// class UndoBoardPermanent {
+//   // NOTE: this can get complex if I implement effects...
+//   // and maybe there is a better way of managing history...
+//   constructor() {
+//     this.cardData = []
+//     this.cardPieceData = []
+//
+//     for (const card of Board.permanents) {
+//       if (!card) {
+//         this.cardData.push(null)
+//         this.cardPieceData.push(null)
+//         continue
+//       }
+//
+//       this.cardData.push({
+//         index: card.data.index,
+//         owner: card.data.owner
+//       })
+//       this.cardPieceData.push(card.cardPiece.pieceData.clone())
+//     }
+//   }
+//   restore() {
+//     for (const i in Board.permanents) {
+//       const owner = this.cardData[i]?.owner
+//       const pos = toCoord(i)
+//
+//       Board.removePermanentAt(pos.x, pos.y)
+//       if (!owner) continue
+//
+//       const index = this.cardData[i].index
+//       const data = this.cardPieceData[i]
+//       const card = index == -1 ? owner.commander : owner.allCards[index]
+//
+//       Board.setPermanentAt(pos.x, pos.y, card)
+//
+//       card.cardPiece.pieceData = data
+//       card.cardPiece.faceDownRaw(data.faceDowned)
+//       card.cardPiece.tap(data.tapped)
+//       card.cardPiece.updateVisual()
+//     }
+//   }
+// }
