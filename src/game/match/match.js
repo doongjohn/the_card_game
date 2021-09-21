@@ -84,7 +84,7 @@ class UndoMatch {
     this.turnPlayer = Match.turnPlayer
     this.oppsPlayer = Match.oppsPlayer
   }
-  restore() {
+  undo() {
     Match.turn = this.turn
     Match.turnPlayer = this.turnPlayer
     Match.oppsPlayer = this.oppsPlayer

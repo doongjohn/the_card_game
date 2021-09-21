@@ -12,11 +12,20 @@ class UserAction {
   static setState(state) {
     UserAction.state = state
   }
+  static cancelState() {
+    if (UserAction.state == UserAction.StateEmpty)
+      return
+    if (UserAction.state == UserAction.StateView)
+      UserAction.setState(UserAction.StateEmpty)
+    else
+      UserAction.setState(UserAction.StateView)
+  }
   static pushCommand(cmd) {
     UserAction.commands.push(cmd)
   }
   static popCommand() {
-    UserAction.commands.pop()
+    let undo = UserAction.commands.pop()
+    console.log(`undo: ${undo.constructor.name}`) // TEST: show undo log
   }
   static getLastCommand() {
     return UserAction.commands[UserAction.commands.length - 1]

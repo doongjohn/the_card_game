@@ -1,3 +1,4 @@
+// TODO: refactor to better fit cardzone script
 class Board {
   // board settings
   static size = new Phaser.Math.Vector2(11, 7)

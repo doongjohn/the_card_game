@@ -37,12 +37,12 @@ class CmdCancel {
 
     if (UserAction.state == UserAction.StateView) {
       CmdCancelAll.execute()
-    } else {
-      UserAction.setState(UserAction.StateView)
-      for (const tile of Board.tiles)
-        if (tile != Match.selectedTile)
-          tile.fsm.setState(TileStateNormal)
+      return
     }
+
+    for (const tile of Board.tiles)
+      tile != Match.selectedTile && tile.fsm.setState(TileStateNormal)
+    UserAction.cancelState()
   }
 }
 

@@ -70,13 +70,13 @@ class UndoCardZonePlayer {
 
 class CardZoneBoard {
   static permanents = new CardZone()
-  static spells = new CardZone()
+  // static spells = new CardZone()
 }
 
 class UndoCardZoneBoard {
   constructor() {
     this.permanents = [...CardZoneBoard.permanents.cards]
-    this.spells = [...CardZoneBoard.spells.cards]
+    // this.spells = [...CardZoneBoard.spells.cards]
 
     this.permanentData = []
     this.permanentPieceData = []
@@ -86,7 +86,7 @@ class UndoCardZoneBoard {
     }
   }
   undo() {
-    CardZoneBoard.spells.cards = [...this.spells]
+    // CardZoneBoard.spells.cards = [...this.spells]
 
     for (const i in CardZoneBoard.permanents.cards) {
       const owner = this.permanentData[i]?.owner
