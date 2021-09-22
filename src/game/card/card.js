@@ -97,6 +97,7 @@ const CardDataPermanent = {
 }
 const CardPieceLogicPermanent = {
   setTeam(team) {
+    // FIXME: change back to original team when moved to other zone
     this.pieceData.owner = team == Team.P1 ? Match.player1 : Match.player2
     this.updateVisual()
   },
