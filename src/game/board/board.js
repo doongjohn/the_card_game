@@ -1,18 +1,15 @@
 // TODO: refactor to better fit cardzone script
 class Board {
-  // board settings
-  static size = new Phaser.Math.Vector2(11, 7)
   static gap = 3
+  static size = new Phaser.Math.Vector2(11, 7)
   static tileSize = new Phaser.Math.Vector2(105, 105)
   static cellSize = this.tileSize.clone().add({ x: Board.gap, y: Board.gap })
-
-  // board array
   static tiles = Array(Board.size.x * Board.size.y).fill(null)
-  // static permanents = Array(Board.size.x * Board.size.y).fill(null)
 
   static init() {
     // spawn stage background image
-    Game.addToWorld(Layer.BG, Game.spawn.sprite(0, -100, 'BattleMap1').setScale(0.85))
+    const background = Game.spawn.sprite(0, -100, 'BattleMap1').setScale(0.85)
+    Game.addToWorld(Layer.BG, background)
 
     // spawn tiles
     for (const i in Board.tiles) {
