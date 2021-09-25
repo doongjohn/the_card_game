@@ -64,8 +64,8 @@ class CmdEndTurn extends UserCommand {
     // reset tile state
     Board.setTileStateAll(TileStateNormal)
 
-    // revitalize cards
-    CardZoneBoard.permanents.cards.forEach(card => card?.cardPiece.revitalize())
+    // untap cards
+    CardZoneBoard.permanents.cards.forEach(card => card?.cardPiece.tap(false))
 
     // update ui
     Match.turnText.text = `P${Match.turn}'s turn`
@@ -304,7 +304,9 @@ class CmdUnitPlanAttack {
   static execute() {
     const card = Match.selectedTile?.getPermanent()
     if (!card) return
-    if (Match.turn != card.cardPiece.pieceData.owner.team || card.cardPiece.pieceData.tapped) return
+
+    if (Match.turn != card.cardPiece.pieceData.owner.team || card.cardPiece.pieceData.tapped)
+      return
 
     const tile = Match.selectedTile
 
@@ -352,7 +354,7 @@ class CmdUnitPlanAttack {
   }
 }
 class CmdUnitAttack extends UserCommand {
-  execute(tile) {
+  execute(target) {
     this.save(UndoPlayer, UndoCardZoneBoard)
 
     // update match action state
@@ -365,7 +367,27 @@ class CmdUnitAttack extends UserCommand {
     })
 
     // attcak target permanent
-    Match.selectedTile.getPermanent().cardPiece.doAttack(tile.getPermanent().cardPiece)
+    Match.selectedTile.getPermanent().cardPiece.doAttack(target.cardPiece)
+  }
+  undo() {
+    this.undoAll()
+  }
+}
+class CmdUnitCounterAttack extends UserCommand {
+  execute(self, target) {
+    this.save(UndoPlayer, UndoCardZoneBoard)
+
+    // update match action state
+    UserAction.setState(UserAction.StateView)
+
+    // update tile state
+    Board.tiles.forEach(t => {
+      if (!t.fsm.curState.compare(TileStateSelected))
+        t.fsm.setState(TileStateNormal)
+    })
+
+    // attcak target permanent
+    self.cardPiece.doCounterAttack(target.cardPiece)
   }
   undo() {
     this.undoAll()

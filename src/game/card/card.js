@@ -162,7 +162,9 @@ const CardPieceLogicPermanent = {
 
     // target counter attack
     if (target.pieceData.health > 0 && !target.pieceData.tapped) {
-      target.doCounterAttack(this)
+      // target.doCounterAttack(this)
+      console.log(target.pieceData.health)
+      UserAction.execute(CmdUnitCounterAttack, target.card, this.card)
     }
   },
   doCounterAttack(target) {

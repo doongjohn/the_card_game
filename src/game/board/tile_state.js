@@ -101,6 +101,6 @@ class TileStateAttackSelection extends TileState {
     self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
   }
   onClick(self) {
-    UserAction.execute(CmdUnitAttack, self)
+    UserAction.execute(CmdUnitAttack, self.getPermanent())
   }
 }

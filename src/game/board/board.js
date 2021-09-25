@@ -1,4 +1,34 @@
 // TODO: refactor to better fit cardzone script
+class Grid {
+  constructor({ gap, size, tileSize }) {
+    this.gap = gap
+    this.size = size
+    this.tileSize = tileSize
+    this.cellSize = new Phaser.Math.Vector2(this.tileSize.x + gap, this.tileSize.y + gap)
+    this.tiles = Array(this.size.x * this.size.y).fill(null)
+  }
+
+  /**
+   * @callback iterTilesCallback
+   * @param {number} index
+   * @param {any} item
+   */
+
+  /**
+   * @param {iterTilesCallback} fn
+   */
+  iterTiles(fn) {
+    for (let i in this.tiles)
+      fn(i, this.tiles[i])
+  }
+
+  getTileAt(x, y) {
+    // returns a tile object at x, y
+    const index = toIndex(x, y)
+    return index < 0 || index >= Board.tiles.length ? null : Board.tiles[index]
+  }
+}
+
 class Board {
   static gap = 3
   static size = new Phaser.Math.Vector2(11, 7)
@@ -20,10 +50,10 @@ class Board {
 
     // align tiles
     gridAlignCenter(Board.tiles, Board.size, Board.cellSize, (tile, x, y) => {
-      tile.gameObject.setPosition(x, y)
+      tile.gameObject.setPosition(x, y - 85)
     })
-    Board.tiles.forEach(tile => tile.gameObject.y -= 85)
 
+    // TODO: refactor to cardzone
     // set commanders
     Board.setPermanentAt(1, 3, Match.player1.commander)
     Board.setPermanentAt(9, 3, Match.player2.commander)
@@ -146,46 +176,3 @@ function gridAlignCenter(items, gridSize, cellSize, setPosFn) {
     }
   }
 }
-
-// class UndoBoardPermanent {
-//   // NOTE: this can get complex if I implement effects...
-//   // and maybe there is a better way of managing history...
-//   constructor() {
-//     this.cardData = []
-//     this.cardPieceData = []
-//
-//     for (const card of Board.permanents) {
-//       if (!card) {
-//         this.cardData.push(null)
-//         this.cardPieceData.push(null)
-//         continue
-//       }
-//
-//       this.cardData.push({
-//         index: card.data.index,
-//         owner: card.data.owner
-//       })
-//       this.cardPieceData.push(card.cardPiece.pieceData.clone())
-//     }
-//   }
-//   restore() {
-//     for (const i in Board.permanents) {
-//       const owner = this.cardData[i]?.owner
-//       const pos = toCoord(i)
-//
-//       Board.removePermanentAt(pos.x, pos.y)
-//       if (!owner) continue
-//
-//       const index = this.cardData[i].index
-//       const data = this.cardPieceData[i]
-//       const card = index == -1 ? owner.commander : owner.allCards[index]
-//
-//       Board.setPermanentAt(pos.x, pos.y, card)
-//
-//       card.cardPiece.pieceData = data
-//       card.cardPiece.faceDownRaw(data.faceDowned)
-//       card.cardPiece.tap(data.tapped)
-//       card.cardPiece.updateVisual()
-//     }
-//   }
-// }

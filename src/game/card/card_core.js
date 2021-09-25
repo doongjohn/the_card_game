@@ -146,15 +146,15 @@ class CardPaper {
 
 class CardPieceData {
   constructor(data) {
-    this.owner = data.owner
-    this.team = data.owner.team
+    this.owner = data.owner     // this can not change
+    this.team = data.owner.team // but this may change
     this.tapped = false
     this.faceDowned = false
-    this.pos = null // x, y
+    this.pos = null
   }
   clone() {
-    const copy = compose(new CardPieceData(this), this) // this is for cloning dynamic data
-    copy.pos = this.pos ? { ...this.pos } : null
+    // this is for cloning dynamically added data
+    let copy = compose(new CardPieceData(this), this)
     return copy
   }
 }

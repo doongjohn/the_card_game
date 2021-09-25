@@ -99,9 +99,8 @@ class UndoCardZoneBoard {
       const data = this.permanentPieceData[i]
       const card = index == -1 ? owner.commander : owner.allCards[index]
 
-      Board.setPermanentAt(pos.x, pos.y, card)
-
       card.cardPiece.pieceData = data
+      Board.setPermanentAt(pos.x, pos.y, card)
       card.cardPiece.faceDownRaw(data.faceDowned)
       card.cardPiece.tap(data.tapped)
       card.cardPiece.updateVisual()
