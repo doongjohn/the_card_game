@@ -82,6 +82,9 @@
 **Text input field:**\
 <https://phasergames.com/phaser-3-input-text-form-ui-part-1/>
 
+**Bitmap Mask:**\
+<https://phaser.io/examples/v3/search?search=mask>
+
 ## Duelyst reference
 
 **Duelyst Cards:**\
