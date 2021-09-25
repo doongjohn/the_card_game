@@ -112,15 +112,11 @@ const CardPieceLogicPermanent = {
     } else {
       this.pieceData.tapped = false
       this.sprite.resetPipeline()
-      this.onRevitaize()
+      this.revitalize()
     }
   },
-  onRevitaize() {
-    this.pieceData.curMoveCount = 0
-  },
   revitalize() {
-    this.pieceData.faceDowned || this.tap(false)
-    this.onRevitaize()
+    this.pieceData.curMoveCount = 0
   },
 
   takeDamage(attacker, damage) {
@@ -162,8 +158,6 @@ const CardPieceLogicPermanent = {
 
     // target counter attack
     if (target.pieceData.health > 0 && !target.pieceData.tapped) {
-      // target.doCounterAttack(this)
-      console.log(target.pieceData.health)
       UserAction.execute(CmdUnitCounterAttack, target.card, this.card)
     }
   },

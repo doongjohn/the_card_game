@@ -1,3 +1,5 @@
+// TODO: refactor this as generic function
+
 class UserCommand {
   constructor() {
     this.saves = []
@@ -375,6 +377,7 @@ class CmdUnitAttack extends UserCommand {
 }
 class CmdUnitCounterAttack extends UserCommand {
   execute(self, target) {
+    // FIXME: health gets reset???
     this.save(UndoPlayer, UndoCardZoneBoard)
 
     // update match action state
