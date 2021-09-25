@@ -1,74 +1,40 @@
-# DEV Note
+# Note
 
-## TODO:
+## TODO
 
-*   [x] Implement Sprite loading
+* [x] Implement Sprite loading
+  * [x] Implement lazy Sprite loading (maybe not?)
+* [x] Implement Sprite animation
+  * [ ] Implement Sprite action animation (attack, take damage, death, etc...)
+* [x] Implement Tile state
+* [x] Implement Basic Turn
+* [x] Implement Basic Movement
+  * [x] Implement movement tween
+* [ ] Implement match phase
+* [x] Implement Attack
+* [x] Implement Counter Attack
+* [ ] Implement Face-down spawn
+* [ ] Implement Effect (partially done)
+* [ ] Implement Effect Chain
+* [ ] Implement UI
+  * [x] Hand (improvement is needed)
+  * [ ] End Turn
+* [x] Implement Hand
+* [x] Implement Card Placement
+* [ ] Implement Card Zones
+* [x] Implement Undo
+* [ ] Implement Log
 
-    *   [x] Implement lazy Sprite loading (maybe not?)
+## TODO (long term)
 
-*   [x] Implement Sprite animation
-
-    *   [ ] Implement Sprite action animation (attack, take damage, death, etc...)
-
-*   [x] Implement Tile state
-
-*   [x] Implement Basic Turn
-
-*   [x] Implement Basic Movement
-
-    *   [x] Implement movement tween
-
-*   [ ] Implement match phase
-
-*   [x] Implement Attack
-
-*   [x] Implement Counter Attack
-
-*   [ ] Implement Face-down spawn
-
-*   [ ] Implement Effect (partially done)
-
-*   [ ] Implement Effect Chain
-
-*   [ ] Implement UI
-
-    *   [x] Detailed Card Info
-
-    *   [x] Hand (improvement is needed)
-
-    *   [ ] End Turn
-
-    *   [ ] Commander HP
-
-    *   [ ] Mana
-
-*   [x] Implement Hand
-
-*   [x] Implement Card Placement
-
-*   [ ] Implement Card Zones
-
-*   [x] Implement Undo
-
-*   [ ] Implement Log
-
-*   [ ] Upgrade mouse input (seperate right / left click)
-
-    *   [ ] Implement context menu
-
-## TODO (long term):
-
-*   [ ] Add original arts
-
-*   [ ] Implement multiplayer
-
-    *   [ ] Add spectator mode
-
-    *   [ ] Add game replay
+* [ ] Add original arts
+* [ ] Implement multiplayer
+  * [ ] Add spectator mode
+  * [ ] Add game replay
 
 ## Reminder
 
-**Attack**\
+**Combat phase**\
 `turn player` **Select** Attack target ➜\
 `turn player` **Effect** On Attack ➜\
 `turn player` Deal damage (Attack) ➜\
@@ -81,7 +47,7 @@
 `opps player` **Effect** On Deal Damage ➜\
 `turn player` **Effect** On Take Damage
 
-## Phaser ref
+## Phaser3 reference
 
 **Depth sorting:**\
 <https://phaser.discourse.group/t/container-sorting/4479>
@@ -116,7 +82,7 @@
 **Text input field:**\
 <https://phasergames.com/phaser-3-input-text-form-ui-part-1/>
 
-## Duelyst ref
+## Duelyst reference
 
 **Duelyst Cards:**\
 <https://duelspot.com/cards/>
@@ -132,4 +98,4 @@
 
 ## Inspiring images
 
-![](https://jolstatic.fr/www/captures/3593/4/127794.png)
+![img](https://jolstatic.fr/www/captures/3593/4/127794.png)
