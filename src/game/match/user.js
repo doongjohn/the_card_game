@@ -1,3 +1,4 @@
+// remove undo logic from UserAction
 class UserAction {
   static StateEmpty = 0
   static StateView = 1
@@ -20,27 +21,27 @@ class UserAction {
     else
       UserAction.setState(UserAction.StateView)
   }
-  static pushCommand(cmd) {
-    UserAction.commands.push(cmd)
-  }
-  static popCommand() {
-    let undo = UserAction.commands.pop()
-    console.log(`undo: ${undo.constructor.name}`) // TEST: show undo log
-  }
-  static getLastCommand() {
-    return UserAction.commands[UserAction.commands.length - 1]
-  }
+  // static pushCommand(cmd) {
+  //   UserAction.commands.push(cmd)
+  // }
+  // static popCommand() {
+  //   let undo = UserAction.commands.pop()
+  //   console.log(`undo: ${undo.constructor.name}`) // TEST: show undo log
+  // }
+  // static getLastCommand() {
+  //   return UserAction.commands[UserAction.commands.length - 1]
+  // }
 
-  static execute() {
-    const cmd = arguments[0]
-    const args = [...arguments].slice(1)
-    cmd.prototype instanceof UserCommand
-      ? new cmd().cmd_execute(...args)
-      : cmd.execute(...args)
-  }
-  static undo() {
-    UserAction.getLastCommand()?.cmd_undo()
-  }
+  // static execute() {
+  //   const cmd = arguments[0]
+  //   const args = [...arguments].slice(1)
+  //   cmd.prototype instanceof UserCommand
+  //     ? new cmd().cmd_execute(...args)
+  //     : cmd.execute(...args)
+  // }
+  // static undo() {
+  //   UserAction.getLastCommand()?.cmd_undo()
+  // }
 }
 
 class UserInput {
@@ -53,13 +54,13 @@ class UserInput {
       unitTeleport: 'p',
     })
     UserInput.cheatKeys.undo.on('down', () =>
-      UserAction.undo())
+      History.undo())
     UserInput.cheatKeys.unitTap.on('down', () =>
-      UserAction.execute(CmdUnitTapToggle, Match.selectedTile.getPermanent()))
+      Cmd.permanentTapToggle(Match.selectedTile.getPermanent()))
     UserInput.cheatKeys.unitFaceToggle.on('down', () =>
-      UserAction.execute(CmdUnitFaceToggle, Match.selectedTile.getPermanent()))
+      Cmd.permanentFaceToggle(Match.selectedTile.getPermanent()))
     UserInput.cheatKeys.unitTeleport.on('down', () =>
-      UserAction.execute(CmdUnitPlanTeleport))
+      Cmd.permanentPlanTeleport())
 
     // game input
     UserInput.keys = Game.scene.input.keyboard.addKeys({
@@ -70,12 +71,12 @@ class UserInput {
       unitAttack: 'a',
     })
     UserInput.keys.cancel.on('down', () =>
-      UserAction.execute(CmdCancel))
+      Cmd.cancel())
     UserInput.keys.endTurn.on('down', () =>
-      UserAction.execute(CmdEndTurn))
+      Cmd.endTurn())
     UserInput.keys.unitMove.on('down', () =>
-      UserAction.execute(CmdUnitPlanMove))
+      Cmd.permanentPlanMove())
     UserInput.keys.unitAttack.on('down', () =>
-      UserAction.execute(CmdUnitPlanAttack))
+      Cmd.permanentPlanAttack())
   }
 }

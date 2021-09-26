@@ -76,7 +76,7 @@ class Match {
   }
 }
 
-class UndoMatch {
+class HistMatch {
   constructor() {
     this.turn = Match.turn
     this.turnPlayer = Match.turnPlayer
@@ -86,5 +86,8 @@ class UndoMatch {
     Match.turn = this.turn
     Match.turnPlayer = this.turnPlayer
     Match.oppsPlayer = this.oppsPlayer
+
+    // update ui
+    Match.turnText.text = `P${Match.turn}'s turn`
   }
 }

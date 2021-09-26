@@ -69,7 +69,7 @@ class TileStateSpawnPermanentSelection extends TileState {
     CardInfoUI.hide()
   }
   onClick(self) {
-    UserAction.execute(CmdUnitDeclareSummon, self)
+    Cmd.permanentDeclareSummon(self)
   }
 }
 
@@ -82,13 +82,13 @@ class TileStateChangePosSelection extends TileState {
     self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
   }
   onClick(self) {
-    UserAction.execute(CmdUnitTeleport, self)
+    Cmd.permanentTeleport(self)
   }
 }
 
 class TileStateMoveSelection extends TileStateChangePosSelection {
   onClick(self) {
-    UserAction.execute(CmdUnitMove, self)
+    Cmd.permanentMove(self)
   }
 }
 
@@ -101,6 +101,6 @@ class TileStateAttackSelection extends TileState {
     self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
   }
   onClick(self) {
-    UserAction.execute(CmdUnitAttack, self.getPermanent())
+    Cmd.permanentAttack(self.getPermanent())
   }
 }

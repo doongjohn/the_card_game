@@ -110,24 +110,24 @@ class Player {
   handSummon(x, y, card) {
     for (let i = 0; i < this.cardZones.hand.cards.length; ++i) {
       if (card == this.cardZones.hand.cards[i]) {
-        card.cardPaper.hide()
-        let summoned = this.cardZones.moveCard({
+        this.cardZones.moveCard({
           source: 'hand',
           sourceIndex: i,
           target: 'permanents',
           targetIndex: tileGrid.coordToIndex(x, y)
         })
-        summoned.cardPiece.setPos(x, y)
-        summoned.cardPiece.show()
+        card.cardPaper.hide()
+        card.cardPiece.setPos(x, y)
+        card.cardPiece.show()
       }
     }
     this.handUI.update()
   }
 }
 
-class UndoPlayer {
+class HistPlayer {
   constructor() {
-    this.cardZones = new UndoCardZonePlayer()
+    this.cardZones = new HistCardZonePlayer()
   }
   undo() {
     this.cardZones.undo()

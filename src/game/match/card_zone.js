@@ -79,7 +79,7 @@ class CardZonePlayer {
   }
 }
 
-class UndoCardZonePlayer {
+class HistCardZonePlayer {
   constructor() {
     this.player1 = {}
     this.player2 = {}
@@ -163,7 +163,7 @@ class CardZoneBoard {
   }
 }
 
-class UndoCardZoneBoard {
+class HistCardZoneBoard {
   constructor() {
     this.permanents = [...CardZoneBoard.permanents.cards]
     this.permanentInfo = []

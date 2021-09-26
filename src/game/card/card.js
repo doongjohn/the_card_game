@@ -41,7 +41,7 @@ class CardPaperHandInteraction {
   }
   onClick() {
     // plan spawn this card
-    UserAction.execute(CmdUnitPlanSummon, this.card)
+    Cmd.permanentPlanSummon(this.card)
   }
 }
 
@@ -153,11 +153,11 @@ const CardPieceLogicPermanent = {
     target.takeDamage(this.card, this.pieceData.attack)
 
     // tap this card piece
-    UserAction.execute(CmdUnitTap, this.card)
+    Cmd.permanentTap(this.card)
 
     // target counter attack
     if (target.pieceData.health > 0 && !target.pieceData.tapped) {
-      UserAction.execute(CmdUnitCounterAttack, target.card, this.card)
+      Cmd.permanentCounterAttack(target.card, this.card)
     }
   },
   doCounterAttack(target) {

@@ -1,15 +1,14 @@
 // TODO: refactor undo function as generic function
-
 class UserCommand {
   constructor() {
-    this.saves = []
+    this.history = []
   }
   save() {
     for (const arg of arguments)
-      this.saves.push(new arg())
+      this.history.push(new arg())
   }
   undoAll() {
-    for (const save of this.saves)
+    for (const save of this.history)
       save.undo()
   }
   cmd_execute() {
@@ -24,6 +23,21 @@ class UserCommand {
   execute() { /* interface function */ }
   undo() { /* interface function */ }
 }
+
+class History {
+  static commands = []
+  static save() {
+    let cmd = []
+    History.commands.push(cmd)
+    for (let arg of arguments)
+      cmd.push(new arg())
+  }
+  static undo() {
+    for (let cmd of History.commands.pop())
+      cmd.undo()
+  }
+}
+
 
 class CmdCancelAll {
   static execute() {
@@ -51,7 +65,7 @@ class CmdCancel {
 class CmdEndTurn extends UserCommand {
   execute() {
     // save data
-    this.save(UndoMatch, UndoPlayer, UndoCardZoneBoard)
+    this.save(HistMatch, HistPlayer, HistCardZoneBoard)
 
     // deselect all
     Match.selectedCard = null
@@ -95,7 +109,7 @@ class CmdUnitSetTeam extends UserAction {
     if (!card)
       return
 
-    this.save(UndoCardZoneBoard)
+    this.save(HistCardZoneBoard)
     card.cardPiece.setTeam(team)
   }
   undo() {
@@ -108,7 +122,7 @@ class CmdUnitTapToggle extends UserCommand {
     if (!card || card.cardPiece.faceDowned)
       return
 
-    this.save(UndoCardZoneBoard)
+    this.save(HistCardZoneBoard)
     card.cardPiece.tap(!card.cardPiece.pieceData.tapped)
   }
   undo() {
@@ -120,7 +134,7 @@ class CmdUnitTap extends UserCommand {
     if (!card || card.cardPiece.faceDowned)
       return
 
-    this.save(UndoCardZoneBoard)
+    this.save(HistCardZoneBoard)
     card.cardPiece.tap(true)
   }
   undo() {
@@ -132,7 +146,7 @@ class CmdUnitUntap extends UserCommand {
     if (!card || card.cardPiece.faceDowned)
       return
 
-    this.save(UndoCardZoneBoard)
+    this.save(HistCardZoneBoard)
     card.cardPiece.tap(false)
   }
   undo() {
@@ -144,7 +158,7 @@ class CmdUnitFaceToggle extends UserCommand {
   execute(card) {
     if (!card) return
 
-    this.save(UndoCardZoneBoard)
+    this.save(HistCardZoneBoard)
     card.cardPiece.faceDown(!card.cardPiece.pieceData.faceDowned)
   }
   undo() {
@@ -155,7 +169,7 @@ class CmdUnitFaceDown extends UserCommand {
   execute(card) {
     if (!card) return
 
-    this.save(UndoCardZoneBoard)
+    this.save(HistCardZoneBoard)
     card.cardPiece.faceDown(true)
   }
   undo() {
@@ -166,7 +180,7 @@ class CmdUnitFaceUp extends UserCommand {
   execute(card) {
     if (!card) return
 
-    this.save(UndoCardZoneBoard)
+    this.save(HistCardZoneBoard)
     card.cardPiece.faceDown(false)
   }
   undo() {
@@ -178,7 +192,7 @@ class CmdUnitRevitalize extends UserCommand {
   execute(card) {
     if (!card) return
 
-    this.save(UndoCardZoneBoard)
+    this.save(HistCardZoneBoard)
     card.cardPiece.revitalize()
   }
   undo() {
@@ -203,7 +217,7 @@ class CmdUnitPlanTeleport {
 }
 class CmdUnitTeleport extends UserCommand {
   execute(tile) {
-    this.save(UndoCardZoneBoard)
+    this.save(HistCardZoneBoard)
 
     // update user action state
     UserAction.setState(UserAction.StateView)
@@ -288,7 +302,7 @@ class CmdUnitPlanMove {
 }
 class CmdUnitMove extends UserCommand {
   execute(tile) {
-    this.save(UndoCardZoneBoard)
+    this.save(HistCardZoneBoard)
 
     // update match action state
     UserAction.setState(UserAction.StateView)
@@ -370,7 +384,7 @@ class CmdUnitPlanAttack {
 }
 class CmdUnitAttack extends UserCommand {
   execute(target) {
-    this.save(UndoPlayer, UndoCardZoneBoard)
+    this.save(HistPlayer, HistCardZoneBoard)
 
     // update match action state
     UserAction.setState(UserAction.StateView)
@@ -390,7 +404,7 @@ class CmdUnitAttack extends UserCommand {
 }
 class CmdUnitCounterAttack extends UserCommand {
   execute(self, target) {
-    this.save(UndoPlayer, UndoCardZoneBoard)
+    this.save(HistPlayer, HistCardZoneBoard)
 
     // update match action state
     UserAction.setState(UserAction.StateView)
@@ -458,7 +472,7 @@ class CmdUnitDeclareSummon {
 }
 class CmdUnitSummon extends UserCommand {
   execute(tile) {
-    this.save(UndoPlayer, UndoCardZoneBoard)
+    this.save(HistPlayer, HistCardZoneBoard)
 
     // update user action state
     UserAction.setState(UserAction.StateView)
