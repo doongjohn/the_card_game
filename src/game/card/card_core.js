@@ -210,6 +210,8 @@ class CardPiece {
       this.pieceData.pos.x = x
       this.pieceData.pos.y = y
     } else {
+      // FIXME
+      CardZoneBoard.setPermanentAt(x, y, this)
       this.pieceData.pos = { x: x, y: y }
     }
 

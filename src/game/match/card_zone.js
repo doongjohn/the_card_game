@@ -101,6 +101,8 @@ class CardZoneBoard {
     let card2 = cards[newPos]
     cards[newPos] = card1
     cards[curPos] = card2
+    card1?.cardPiece?.setPos(x2, y2)
+    card2?.cardPiece?.setPos(x, y)
   }
 
   static removePermanentAt(x, y) {
