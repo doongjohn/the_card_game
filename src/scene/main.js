@@ -12,11 +12,9 @@ class MainScene extends Phaser.Scene {
   create() {
     SpriteManager.CardArt.createAnims()
     Layer.init()
-    Match.init()
-    Board.init()
-  }
 
-  // update(time, delta) {
-  //   // runs every frame
-  // }
+    Match.init()
+    tileGrid.init()
+    CardZoneBoard.init()
+  }
 }

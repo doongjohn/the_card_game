@@ -44,7 +44,7 @@ class TileStateNormal extends TileState {
   }
   onClick(self) {
     // update tile state
-    Board.tiles.forEach(tile => tile.fsm.setState(TileStateNormal))
+    tileGrid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal))
 
     // select this tile
     Match.selectedTile = self

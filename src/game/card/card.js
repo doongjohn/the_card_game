@@ -60,12 +60,12 @@ const CardPieceLogicMovable = {
     ++this.pieceData.curMoveCount
 
     // update position
-    Board.movePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y)
+    CardZoneBoard.swapPermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y)
     this.pieceData.pos.x = x
     this.pieceData.pos.y = y
 
     // tween movement data
-    const pos = Board.gridToWorldPos(x, y)
+    const pos = tileGrid.coordToWorldPos(x, y)
     const speed = 0.35
     const dist = Phaser.Math.Distance.BetweenPoints(pos, this.sprite)
 
@@ -133,7 +133,7 @@ const CardPieceLogicPermanent = {
     // check death
     if (this.pieceData.health == 0) {
       // TODO: move this card to the graveyard
-      Board.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y)
+      CardZoneBoard.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y)
 
       // update ui
       if (this.card == Match.selectedTile.getPermanent())

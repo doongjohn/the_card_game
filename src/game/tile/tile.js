@@ -14,7 +14,7 @@ class Tile {
   constructor(index, size, gap) {
     this.gameObject = this.initGameObject(size, gap)
     this.index = index
-    this.pos = toCoord(index)
+    this.pos = tileGrid.indexToCoord(index)
 
     // init fsm
     this.fsm = new FSM(this, TileStateNormal, (obj) => {
@@ -35,9 +35,8 @@ class Tile {
 
     // get cards
     this.getPermanent = () => CardZoneBoard.permanents.cards[this.index]
-    // this.getLand = () => Board.lands[this.index]
-    // this.getSpell = () => Board.spells[this.index]
-    // this.getRune = () => Board.runes[this.index]
+    // this.getSpell = () => CardZoneBoard.spells.cards[this.index]
+    // this.getRune = () => CardZoneBoard.runes.cards[this.index]
   }
 
   initGameObject(size, gap) {

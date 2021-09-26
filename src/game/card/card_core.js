@@ -206,7 +206,7 @@ class CardPiece {
   setPos(x, y) {
     // set grid position
     if (this.pieceData.pos && (this.pieceData.pos.x != x || this.pieceData.pos.y != y)) {
-      Board.movePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y)
+      CardZoneBoard.swapPermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y)
       this.pieceData.pos.x = x
       this.pieceData.pos.y = y
     } else {
@@ -218,7 +218,7 @@ class CardPiece {
     this.tween = null
 
     // set sprite world position
-    const worldPos = Board.gridToWorldPos(x, y)
+    const worldPos = tileGrid.coordToWorldPos(x, y)
     this.sprite.x = worldPos.x
     this.sprite.y = worldPos.y
 

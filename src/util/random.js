@@ -1,4 +1,4 @@
-function shuffleArray(array, n = 1) {
-  for (let i = 0; i < n; ++i)
+Array.shuffle = function (array, count) {
+  for (let i = 0; i < count; ++i)
     array.sort(() => Math.random() - 0.5)
 }

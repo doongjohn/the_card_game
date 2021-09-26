@@ -3,7 +3,7 @@ class CardZone {
     this.cards = []
   }
   shuffle(count) {
-    shuffleArray(this.cards, count)
+    Array.shuffle(this.cards, count)
   }
   length() {
     return this.cards.length
@@ -71,38 +71,82 @@ class UndoCardZonePlayer {
 class CardZoneBoard {
   static permanents = new CardZone()
   // static spells = new CardZone()
+
+  static init() {
+    // set commanders
+    CardZoneBoard.setPermanentAt(1, 3, Match.player1.commander)
+    CardZoneBoard.setPermanentAt(9, 3, Match.player2.commander)
+  }
+
+  static getPermanentAt(x, y) {
+    const index = tileGrid.coordToIndex(x, y)
+    return index < 0 || index >= tileGrid.tiles.length ? null : CardZoneBoard.permanents.cards[index]
+  }
+
+  static setPermanentAt(x, y, card) {
+    if (CardZoneBoard.getPermanentAt(x, y)) {
+      console.log(`Can't set permanent here! (CardZoneBoard.permanent: [${x}, ${y}] is already occupied)`)
+    } else {
+      CardZoneBoard.permanents.cards[tileGrid.coordToIndex(x, y)] = card
+      card.cardPiece.setPos(x, y)
+      card.cardPiece.show()
+    }
+  }
+
+  static swapPermanentAt(x, y, x2, y2) {
+    let curPos = tileGrid.coordToIndex(x, y)
+    let newPos = tileGrid.coordToIndex(x2, y2)
+    let cards = CardZoneBoard.permanents.cards
+    let card1 = cards[curPos]
+    let card2 = cards[newPos]
+    cards[newPos] = card1
+    cards[curPos] = card2
+  }
+
+  static removePermanentAt(x, y) {
+    let card = CardZoneBoard.getPermanentAt(x, y)
+    if (!card) return
+
+    CardZoneBoard.permanents.cards[tileGrid.coordToIndex(x, y)] = null
+    card.cardPiece.pieceData.pos = null
+    card.cardPiece.hide() // FIXME
+  }
 }
 
 class UndoCardZoneBoard {
   constructor() {
     this.permanents = [...CardZoneBoard.permanents.cards]
-    // this.spells = [...CardZoneBoard.spells.cards]
-
-    this.permanentData = []
+    this.permanentInfo = []
     this.permanentPieceData = []
     for (let card of CardZoneBoard.permanents.cards) {
-      this.permanentData.push(card ? { index: card.data.index, owner: card.data.owner } : null)
-      this.permanentPieceData.push(card ? card.cardPiece.pieceData.clone() : null)
+      if (card) {
+        this.permanentInfo.push({
+          index: card.data.index,
+          owner: card.data.owner
+        })
+        this.permanentPieceData.push(card.cardPiece.pieceData.clone())
+      } else {
+        this.permanentInfo.push(null)
+        this.permanentPieceData.push(null)
+      }
     }
   }
   undo() {
-    // CardZoneBoard.spells.cards = [...this.spells]
-
     for (const i in CardZoneBoard.permanents.cards) {
-      const owner = this.permanentData[i]?.owner
-      const pos = toCoord(i)
+      const owner = this.permanentInfo[i]?.owner
+      const pos = tileGrid.indexToCoord(i)
 
-      Board.removePermanentAt(pos.x, pos.y)
+      CardZoneBoard.removePermanentAt(pos.x, pos.y)
       if (!owner) continue
 
-      const index = this.permanentData[i].index
-      const data = this.permanentPieceData[i]
+      const index = this.permanentInfo[i].index
       const card = index == -1 ? owner.commander : owner.allCards[index]
+      const pieceData = this.permanentPieceData[i]
 
-      card.cardPiece.pieceData = data
-      Board.setPermanentAt(pos.x, pos.y, card)
-      card.cardPiece.faceDownRaw(data.faceDowned)
-      card.cardPiece.tap(data.tapped)
+      CardZoneBoard.setPermanentAt(pos.x, pos.y, card)
+      card.cardPiece.faceDownRaw(pieceData.faceDowned)
+      card.cardPiece.tap(pieceData.tapped)
+      card.cardPiece.pieceData = pieceData
       card.cardPiece.updateVisual()
     }
   }

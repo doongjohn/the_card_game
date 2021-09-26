@@ -28,7 +28,7 @@ class UserCommand {
 class CmdCancelAll {
   static execute() {
     UserAction.setState(UserAction.StateEmpty)
-    Board.setTileStateAll(TileStateNormal)
+    tileGrid.setTileStateAll(TileStateNormal)
     CardInfoUI.hide()
   }
 }
@@ -42,7 +42,7 @@ class CmdCancel {
       return
     }
 
-    for (const tile of Board.tiles)
+    for (const tile of tileGrid.tiles)
       tile != Match.selectedTile && tile.fsm.setState(TileStateNormal)
     UserAction.cancelState()
   }
@@ -64,7 +64,7 @@ class CmdEndTurn extends UserCommand {
     Match.turn = newTurn
 
     // reset tile state
-    Board.setTileStateAll(TileStateNormal)
+    tileGrid.setTileStateAll(TileStateNormal)
 
     // untap cards
     CardZoneBoard.permanents.cards.forEach(card => card?.cardPiece.tap(false))
@@ -192,7 +192,7 @@ class CmdUnitPlanTeleport {
     UserAction.setState(UserAction.StatePlanMove)
 
     // update tile state
-    Board.tiles.forEach(tile => {
+    tileGrid.tiles.forEach(tile => {
       if (!tile.fsm.curState.compare(TileStateSelected))
         tile.fsm.setState(tile.getPermanent() ? TileStateNoInteraction : TileStateChangePosSelection)
     })
@@ -210,7 +210,7 @@ class CmdUnitTeleport extends UserCommand {
     Match.selectedTile = tile
 
     // update tile state
-    Board.tiles.forEach(t => {
+    tileGrid.tiles.forEach(t => {
       if (t == Match.selectedTile)
         t.fsm.setState(TileStateSelected)
       else
@@ -233,18 +233,18 @@ class CmdUnitPlanMove {
     const tile = Match.selectedTile
 
     function setMoveSelectionTile(x, y) {
-      if (!Board.getPermanentAt(x, y))
-        Board.getTileAt(x, y)?.fsm.setState(TileStateMoveSelection)
+      if (!CardZoneBoard.getPermanentAt(x, y))
+        tileGrid.getTileAtCoord(x, y)?.fsm.setState(TileStateMoveSelection)
     }
 
     const u = { x: tile.pos.x, y: tile.pos.y - 1 }
     const d = { x: tile.pos.x, y: tile.pos.y + 1 }
     const r = { x: tile.pos.x + 1, y: tile.pos.y }
     const l = { x: tile.pos.x - 1, y: tile.pos.y }
-    const rBlocked = Board.getPermanentAt(r.x, r.y) != null
-    const lBlocked = Board.getPermanentAt(l.x, l.y) != null
-    const uBlocked = Board.getPermanentAt(u.x, u.y) != null
-    const dBlocked = Board.getPermanentAt(d.x, d.y) != null
+    const rBlocked = CardZoneBoard.getPermanentAt(r.x, r.y) != null
+    const lBlocked = CardZoneBoard.getPermanentAt(l.x, l.y) != null
+    const uBlocked = CardZoneBoard.getPermanentAt(u.x, u.y) != null
+    const dBlocked = CardZoneBoard.getPermanentAt(d.x, d.y) != null
 
     if (!rBlocked) {
       setMoveSelectionTile(r.x, r.y)
@@ -272,7 +272,7 @@ class CmdUnitPlanMove {
     UserAction.setState(UserAction.StatePlanMove)
 
     // update tile state
-    Board.tiles.forEach((tile) => {
+    tileGrid.tiles.forEach((tile) => {
       if (!tile.fsm.curState.compare(TileStateSelected, TileStateMoveSelection))
         tile.fsm.setState(TileStateNoInteraction)
     })
@@ -290,7 +290,7 @@ class CmdUnitMove extends UserCommand {
     Match.selectedTile = tile
 
     // update tile state
-    Board.tiles.forEach(t => {
+    tileGrid.tiles.forEach(t => {
       if (t == Match.selectedTile)
         t.fsm.setState(TileStateSelected)
       else
@@ -316,9 +316,9 @@ class CmdUnitPlanAttack {
     UserAction.setState(UserAction.StatePlanAttack)
 
     function setAttackSelectionTile(x, y) {
-      const target = Board.getPermanentAt(x, y)
+      const target = CardZoneBoard.getPermanentAt(x, y)
       if (target && target.cardPiece.pieceData.owner.team != card.cardPiece.pieceData.owner.team) {
-        Board.getTileAt(x, y).fsm.setState(TileStateAttackSelection)
+        tileGrid.getTileAtCoord(x, y).fsm.setState(TileStateAttackSelection)
         return 1
       }
       return 0
@@ -349,7 +349,7 @@ class CmdUnitPlanAttack {
     }
 
     // update tile state
-    Board.tiles.forEach((tile) => {
+    tileGrid.tiles.forEach((tile) => {
       if (!tile.fsm.curState.compare(TileStateSelected, TileStateAttackSelection))
         tile.fsm.setState(TileStateNoInteraction)
     })
@@ -363,7 +363,7 @@ class CmdUnitAttack extends UserCommand {
     UserAction.setState(UserAction.StateView)
 
     // update tile state
-    Board.tiles.forEach(t => {
+    tileGrid.tiles.forEach(t => {
       if (!t.fsm.curState.compare(TileStateSelected))
         t.fsm.setState(TileStateNormal)
     })
@@ -384,7 +384,7 @@ class CmdUnitCounterAttack extends UserCommand {
     UserAction.setState(UserAction.StateView)
 
     // update tile state
-    Board.tiles.forEach(t => {
+    tileGrid.tiles.forEach(t => {
       if (!t.fsm.curState.compare(TileStateSelected))
         t.fsm.setState(TileStateNormal)
     })
@@ -409,7 +409,7 @@ class CmdUnitPlanSummon {
     CardInfoUI.show()
 
     // update tile state
-    Board.tiles.forEach(tile => {
+    tileGrid.tiles.forEach(tile => {
       tile.fsm.setState(
         tile.getPermanent() || !tile.canSummon
           ? TileStateNoInteraction
@@ -429,7 +429,7 @@ class CmdUnitDeclareSummon {
     // occupy the selected tile
 
     // update tile state
-    Board.setTileStateAll(TileStateNoInteraction)
+    tileGrid.setTileStateAll(TileStateNoInteraction)
 
     // show some kind of indicator at selected tile
     Match.selectedTile = tile
@@ -452,13 +452,13 @@ class CmdUnitSummon extends UserCommand {
     UserAction.setState(UserAction.StateView)
 
     // summon a selected permanent
-    Board.setPermanentAt(tile.pos.x, tile.pos.y, Match.selectedCard)
+    tileGrid.setPermanentAt(tile.pos.x, tile.pos.y, Match.selectedCard)
 
     // remove from hand
     Match.turnPlayer.handRemove(Match.selectedCard)
 
     // update tile state
-    Board.setTileStateAll(TileStateNormal)
+    tileGrid.setTileStateAll(TileStateNormal)
 
     // select this tile
     Match.selectedTile = tile
