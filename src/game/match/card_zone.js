@@ -76,8 +76,8 @@ class CardZoneBoard {
     // set commanders
     CardZoneBoard.setPermanentAt(1, 3, Match.player1.commander)
     CardZoneBoard.setPermanentAt(9, 3, Match.player2.commander)
-    Match.player1.commander.cardPiece.updateVisual()
-    Match.player2.commander.cardPiece.updateVisual()
+    Match.player1.commander.cardPiece.visualUpdate()
+    Match.player2.commander.cardPiece.visualUpdate()
   }
 
   static getPermanentAt(x, y) {
@@ -160,7 +160,7 @@ class UndoCardZoneBoard {
       card.cardPiece.faceDownRaw(pieceData.faceDowned)
       card.cardPiece.tap(pieceData.tapped)
       card.cardPiece.pieceData = pieceData
-      card.cardPiece.updateVisual()
+      card.cardPiece.visualUpdate()
     }
   }
 }

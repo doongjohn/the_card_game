@@ -191,7 +191,7 @@ class CardPiece {
 
     // init visual
     this.hide()
-    this.updateVisual()
+    this.visualUpdate()
   }
 
   hide() {
@@ -220,7 +220,7 @@ class CardPiece {
       this.cardBackSprite.y = this.sprite.y
     }
   }
-  updateVisual() {
+  visualUpdate() {
     this.visualUpdateTeam()
     this.visualUpdatePos()
   }

@@ -463,6 +463,7 @@ class CmdUnitSummon extends UserCommand {
 
     // summon a selected permanent
     CardZoneBoard.setPermanentAt(tile.pos.x, tile.pos.y, Match.selectedCard)
+    Match.selectedCard.cardPiece.visualUpdatePos()
 
     // remove from hand
     Match.turnPlayer.handRemove(Match.selectedCard)
