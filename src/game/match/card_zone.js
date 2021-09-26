@@ -17,36 +17,65 @@ class CardZone {
   lastCard() {
     return this.cards[this.high()]
   }
-
-  /**
-   * @param {{source: CardZone, sourceIndex: number, target: CardZone, targetIndex: number}}
-   * @returns {Card}
-   */
-  static moveCard({ source, sourceIndex, target, targetIndex } = {}) {
-    let card = source.cards[sourceIndex]
-    target.cards.splice(targetIndex, 0, card)
-    source.cards.splice(sourceIndex, 1)
-    return card
-  }
 }
 
 
 class CardZonePlayer {
   static list = [
-    "deck",
-    "manaDeck",
-    "extraDeck",
-    "mana",
-    "hand",
-    "gaveyard",
-    "banish",
-    "limbo",
+    'deck',
+    'manaDeck',
+    'extraDeck',
+    'mana',
+    'hand',
+    'gaveyard',
+    'banish',
+    'limbo',
   ]
+  /**
+   * @typedef {(
+   *  'deck'|
+   *  'manaDeck'|
+   *  'extraDeck'|
+   *  'mana'|
+   *  'hand'|
+   *  'gaveyard'|
+   *  'banish'|
+   *  'limbo'|
+   *  'permanents'
+   * )} CardZoneList
+   */
 
   constructor() {
-    for (let zone of CardZonePlayer.list) {
+    for (let zone of CardZonePlayer.list)
       this[zone] = new CardZone()
-    }
+  }
+
+  /**
+   * @param {{
+   *  source: CardZoneList,
+   *  sourceIndex: number,
+   *  target: CardZoneList,
+   *  targetIndex: number
+   * }}
+   * @returns {Card}
+   */
+  moveCard({ source, sourceIndex, target, targetIndex } = {}) {
+    let isSourceBoard = CardZoneBoard.list.includes(source)
+    let isTargetBoard = CardZoneBoard.list.includes(target)
+
+    let card = isSourceBoard
+      ? CardZoneBoard[source].cards[sourceIndex]
+      : this[source].cards[sourceIndex]
+
+    isTargetBoard
+      ? CardZoneBoard[target].cards[targetIndex] = card
+      : this[target].cards.splice(targetIndex, 0, card)
+
+    isSourceBoard
+      ? CardZoneBoard[source].cards[sourceIndex] = null
+      : this[source].cards.splice(sourceIndex, 1)
+
+    return card
   }
 }
 
@@ -60,17 +89,27 @@ class UndoCardZonePlayer {
     }
   }
   undo() {
+    function forEachCard(card) {
+      card.cardPiece.resetTeam()
+      card.cardPiece.visualUpdateTeam()
+      card.cardPaper.hide()
+    }
     for (let zone of CardZonePlayer.list) {
       Match.player1.cardZones[zone].cards = [...this.player1[zone]]
       Match.player2.cardZones[zone].cards = [...this.player2[zone]]
-      Match.player1.cardZones[zone].cards.forEach(card => card.cardPaper.hide())
-      Match.player2.cardZones[zone].cards.forEach(card => card.cardPaper.hide())
+      Match.player1.cardZones[zone].cards.forEach(card => forEachCard(card))
+      Match.player2.cardZones[zone].cards.forEach(card => forEachCard(card))
     }
   }
 }
 
 
 class CardZoneBoard {
+  static list = [
+    'permanents',
+    'spells'
+  ]
+
   static permanents = new CardZone()
   // static spells = new CardZone()
 

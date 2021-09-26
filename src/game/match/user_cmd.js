@@ -390,7 +390,6 @@ class CmdUnitAttack extends UserCommand {
 }
 class CmdUnitCounterAttack extends UserCommand {
   execute(self, target) {
-    // FIXME: health gets reset???
     this.save(UndoPlayer, UndoCardZoneBoard)
 
     // update match action state
@@ -464,12 +463,9 @@ class CmdUnitSummon extends UserCommand {
     // update user action state
     UserAction.setState(UserAction.StateView)
 
-    // summon a selected permanent
-    CardZoneBoard.setPermanentAt(tile.pos.x, tile.pos.y, Match.selectedCard)
+    // move card from hand to board
+    Match.turnPlayer.handSummon(tile.pos.x, tile.pos.y, Match.selectedCard)
     Match.selectedCard.cardPiece.visualUpdatePos()
-
-    // remove from hand
-    Match.turnPlayer.handRemove(Match.selectedCard)
 
     // update tile state
     tileGrid.setTileStateAll(TileStateNormal)

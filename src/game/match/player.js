@@ -1,34 +1,40 @@
 // TEST: Deck
-const TestDeckP1 = [
-  'ZirAnSunforge',
-  'ZirAnSunforge',
-  'ZirAnSunforge',
-  'ZirAnSunforge',
-  'Sojourner',
-  'Sojourner',
-  'Sojourner',
-  'Sojourner',
-  'KaleosXaan',
-  'KaleosXaan',
-  'KaleosXaan',
-  'KaleosXaan',
-]
-const TestDeckP2 = [
-  'RazorcragGolem',
-  'RazorcragGolem',
-  'RazorcragGolem',
-  'RazorcragGolem',
-  'RazorcragGolem',
-  'RazorcragGolem',
-  'RazorcragGolem',
-  'Rex',
-  'Rex',
-  'Rex',
-  'Rex',
-  'Rex',
-  'Rex',
-  'Rex',
-]
+const TestDeckP1 = {
+  commander: 'ArgeonHighmayne',
+  deck: [
+    'ZirAnSunforge',
+    'ZirAnSunforge',
+    'ZirAnSunforge',
+    'ZirAnSunforge',
+    'Sojourner',
+    'Sojourner',
+    'Sojourner',
+    'Sojourner',
+    'KaleosXaan',
+    'KaleosXaan',
+    'KaleosXaan',
+    'KaleosXaan',
+  ]
+}
+const TestDeckP2 = {
+  commander: 'RagnoraTheRelentless',
+  deck: [
+    'RazorcragGolem',
+    'RazorcragGolem',
+    'RazorcragGolem',
+    'RazorcragGolem',
+    'RazorcragGolem',
+    'RazorcragGolem',
+    'RazorcragGolem',
+    'Rex',
+    'Rex',
+    'Rex',
+    'Rex',
+    'Rex',
+    'Rex',
+    'Rex',
+  ]
+}
 
 
 class Team {
@@ -38,6 +44,8 @@ class Team {
 }
 
 class Player {
+  static startingHand = 5
+
   constructor(team) {
     this.team = team
     this.commander = null
@@ -56,10 +64,16 @@ class Player {
   }
 
   cardInit() {
-    // spawn all cards
-    const deckData = this.team == Team.P1 ? TestDeckP1 : TestDeckP2 // TEST: wip
-    for (let i in deckData)
-      this.allCards.push(createCardPermanent(i, this, deckData[i]))
+    // TEST: get test deck
+    const deckObj = this.team == Team.P1 ? TestDeckP1 : TestDeckP2
+
+    // TODO: track commanders health and determine the game result
+    // spawn commander
+    this.commander = createCardPermanent(-1, this, deckObj.commander)
+
+    // spawn deck
+    for (let i in deckObj.deck)
+      this.allCards.push(createCardPermanent(i, this, deckObj.deck[i]))
 
     // init deck
     this.cardZones.deck.cards = [...this.allCards]
@@ -67,12 +81,12 @@ class Player {
   }
 
   handInit() {
-    const startingCards = 5
-    for (let i = 0; i < startingCards; ++i) {
-      CardZone.moveCard({
-        source: this.cardZones.deck,
+    let i = 0
+    while (i++ < Player.startingHand) {
+      this.cardZones.moveCard({
+        source: 'deck',
         sourceIndex: this.cardZones.deck.high(),
-        target: this.cardZones.hand,
+        target: 'hand',
         targetIndex: this.cardZones.hand.length()
       })
     }
@@ -84,22 +98,27 @@ class Player {
         console.log('no more card in the deck!')
         break
       }
-      CardZone.moveCard({
-        source: this.cardZones.deck,
+      this.cardZones.moveCard({
+        source: 'deck',
         sourceIndex: this.cardZones.deck.high(),
-        target: this.cardZones.hand,
+        target: 'hand',
         targetIndex: this.cardZones.hand.length()
       })
     }
     this.handUI.update()
   }
-  handRemove(...cards) {
-    // TODO: to where? graveyard?
-    // make transfer cards function instead
-    for (const i in this.cardZones.hand.cards) {
-      if (cards.includes(this.cardZones.hand.cards[i])) {
-        this.cardZones.hand.cards[i].cardPaper.hide()
-        this.cardZones.hand.cards.splice(i, 1)
+  handSummon(x, y, card) {
+    for (let i = 0; i < this.cardZones.hand.cards.length; ++i) {
+      if (card == this.cardZones.hand.cards[i]) {
+        card.cardPaper.hide()
+        let summoned = this.cardZones.moveCard({
+          source: 'hand',
+          sourceIndex: i,
+          target: 'permanents',
+          targetIndex: tileGrid.coordToIndex(x, y)
+        })
+        summoned.cardPiece.setPos(x, y)
+        summoned.cardPiece.show()
       }
     }
     this.handUI.update()

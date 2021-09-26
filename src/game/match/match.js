@@ -7,6 +7,7 @@ class Match {
   static turnPlayer = null
   static oppsPlayer = null
 
+  // TODO: multiple tiles and cards can be selected
   static selectedTile = null
   static selectedCard = null
 
@@ -20,11 +21,6 @@ class Match {
     Match.players = [Match.player1, Match.player2]
     Match.turnPlayer = Match.player1
     Match.oppsPlayer = Match.player2
-
-    // init commanders
-    // TODO: track commanders health and determine the game result
-    Match.player1.commander = createCardPermanent(-1, Match.player1, 'ArgeonHighmayne')
-    Match.player2.commander = createCardPermanent(-1, Match.player2, 'RagnoraTheRelentless')
 
     // init players cards
     Match.player1.cardInit()

@@ -95,12 +95,16 @@ const CardDataPermanent = {
   attack: 0,
 }
 const CardPieceLogicPermanent = {
-  setTeam(team) {
-    // FIXME: change back to original team when moved to other zone
-    this.pieceData.owner = team == Team.P1 ? Match.player1 : Match.player2
-    this.visualUpdate()
+  resetTeam() {
+    this.pieceData.owner = this.card.data.owner
   },
-
+  setTeam(team) {
+    this.pieceData.owner = team == Team.P1 ? Match.player1 : Match.player2
+    this.visualUpdateTeam()
+  },
+  revitalize() {
+    this.pieceData.curMoveCount = 0
+  },
   tap(bool) { // overrides base function
     if (this.pieceData.faceDowned)
       return
@@ -114,10 +118,6 @@ const CardPieceLogicPermanent = {
       this.revitalize()
     }
   },
-  revitalize() {
-    this.pieceData.curMoveCount = 0
-  },
-
   takeDamage(attacker, damage) {
     // face up
     if (this.pieceData.faceDowned)
