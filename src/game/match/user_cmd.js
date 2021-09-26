@@ -1,4 +1,4 @@
-// TODO: refactor this as generic function
+// TODO: refactor undo function as generic function
 
 class UserCommand {
   constructor() {

@@ -23,6 +23,7 @@
 * [x] Implement Card Placement
 * [ ] Implement Card Zones
 * [x] Implement Undo
+  * [ ] Refactor undo function
 * [ ] Implement Log
 
 ## TODO (long term)
