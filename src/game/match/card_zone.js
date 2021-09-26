@@ -76,6 +76,8 @@ class CardZoneBoard {
     // set commanders
     CardZoneBoard.setPermanentAt(1, 3, Match.player1.commander)
     CardZoneBoard.setPermanentAt(9, 3, Match.player2.commander)
+    Match.player1.commander.cardPiece.updateVisual()
+    Match.player2.commander.cardPiece.updateVisual()
   }
 
   static getPermanentAt(x, y) {
@@ -85,12 +87,12 @@ class CardZoneBoard {
 
   static setPermanentAt(x, y, card) {
     if (CardZoneBoard.getPermanentAt(x, y)) {
-      console.log(`Can't set permanent here! (CardZoneBoard.permanent: [${x}, ${y}] is already occupied)`)
-    } else {
-      CardZoneBoard.permanents.cards[tileGrid.coordToIndex(x, y)] = card
-      card.cardPiece.setPos(x, y)
-      card.cardPiece.show()
+      console.error(`Can't set permanent here!\nCardZoneBoard.permanent: [${x}, ${y}] is already occupied`)
+      return
     }
+    CardZoneBoard.permanents.cards[tileGrid.coordToIndex(x, y)] = card
+    card.cardPiece.setPos(x, y)
+    card.cardPiece.show()
   }
 
   static swapPermanentAt(x, y, x2, y2) {
@@ -103,6 +105,11 @@ class CardZoneBoard {
     cards[curPos] = card2
     card1?.cardPiece?.setPos(x2, y2)
     card2?.cardPiece?.setPos(x, y)
+  }
+
+  static setPermanentPos(card, x, y) {
+    let pos = card.cardPiece.pieceData.pos
+    pos && CardZoneBoard.swapPermanentAt(pos.x, pos.y, x, y)
   }
 
   static removePermanentAt(x, y) {

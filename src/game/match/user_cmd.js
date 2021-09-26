@@ -205,8 +205,13 @@ class CmdUnitTeleport extends UserCommand {
     // update user action state
     UserAction.setState(UserAction.StateView)
 
+    // update permanent
+    let card = Match.selectedTile.getPermanent()
+    CardZoneBoard.setPermanentPos(card, tile.pos.x, tile.pos.y)
+    card.cardPiece.visualRemoveTween()
+    card.cardPiece.visualUpdatePos()
+
     // update selected tile
-    Match.selectedTile.getPermanent().cardPiece.setPos(tile.pos.x, tile.pos.y)
     Match.selectedTile = tile
 
     // update tile state
@@ -285,8 +290,13 @@ class CmdUnitMove extends UserCommand {
     // update match action state
     UserAction.setState(UserAction.StateView)
 
+    // update permanent
+    let card = Match.selectedTile.getPermanent()
+    CardZoneBoard.setPermanentPos(card, tile.pos.x, tile.pos.y)
+    card.cardPiece.moveTo(tile.pos.x, tile.pos.y)
+    card.cardPiece.visualTweenPosTo(tile.pos.x, tile.pos.y)
+
     // update selected tile
-    Match.selectedTile.getPermanent().cardPiece.moveTo(tile.pos.x, tile.pos.y)
     Match.selectedTile = tile
 
     // update tile state

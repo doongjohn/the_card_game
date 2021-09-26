@@ -63,13 +63,12 @@ const CardPieceLogicMovable = {
     CardZoneBoard.swapPermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y)
     this.pieceData.pos.x = x
     this.pieceData.pos.y = y
-
-    // tween movement data
+  },
+  visualTweenPosTo(x, y) {
     const pos = tileGrid.coordToWorldPos(x, y)
     const speed = 0.35
     const dist = Phaser.Math.Distance.BetweenPoints(pos, this.sprite)
 
-    // tween movement
     this.tween?.remove()
     this.tween = Game.scene.tweens.add({
       targets: this.sprite,

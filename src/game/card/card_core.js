@@ -193,34 +193,25 @@ class CardPiece {
     this.hide()
     this.updateVisual()
   }
+
   hide() {
     this.sprite.setVisible(false)
   }
   show() {
     this.sprite.setVisible(true)
   }
-  updateVisual() {
-    this.sprite.flipX = this.pieceData.owner.team != Team.P1
-  }
-
-  setPos(x, y) {
-    // set grid position
-    if (this.pieceData.pos && (this.pieceData.pos.x != x || this.pieceData.pos.y != y)) {
-      CardZoneBoard.swapPermanentAt(this.pieceData.pos.x, this.pieceData.pos.y, x, y)
-      this.pieceData.pos.x = x
-      this.pieceData.pos.y = y
-    } else {
-      // FIXME
-      CardZoneBoard.setPermanentAt(x, y, this)
-      this.pieceData.pos = { x: x, y: y }
-    }
-
-    // remove tween
+  visualRemoveTween() {
     this.tween?.remove()
     this.tween = null
+  }
+  visualUpdateTeam() {
+    this.sprite.flipX = this.pieceData.owner.team != Team.P1
+  }
+  visualUpdatePos() {
+    let pos = this.pieceData.pos
+    if (!pos) return
 
-    // set sprite world position
-    const worldPos = tileGrid.coordToWorldPos(x, y)
+    let worldPos = tileGrid.coordToWorldPos(pos.x, pos.y)
     this.sprite.x = worldPos.x
     this.sprite.y = worldPos.y
 
@@ -229,6 +220,15 @@ class CardPiece {
       this.cardBackSprite.y = this.sprite.y
     }
   }
+  updateVisual() {
+    this.visualUpdateTeam()
+    this.visualUpdatePos()
+  }
+
+  setPos(x, y) {
+    this.pieceData.pos = { x: x, y: y }
+  }
+
   tap(bool) {
     if (this.pieceData.faceDowned)
       return
@@ -241,6 +241,7 @@ class CardPiece {
       this.sprite.resetPipeline()
     }
   }
+
   #faceDownVisualInit() {
     this.hide()
     if (!this.cardBackSprite) {
