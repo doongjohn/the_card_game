@@ -63,6 +63,9 @@ class CmdEndTurn extends UserCommand {
     Match.oppsPlayer = Match.players[Match.turn - 1]
     Match.turn = newTurn
 
+    // TODO: refactor this
+    Match.turnPlayer.handDraw()
+
     // reset tile state
     tileGrid.setTileStateAll(TileStateNormal)
 

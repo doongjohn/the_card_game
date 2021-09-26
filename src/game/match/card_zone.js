@@ -63,6 +63,8 @@ class UndoCardZonePlayer {
     for (let zone of CardZonePlayer.list) {
       Match.player1.cardZones[zone].cards = [...this.player1[zone]]
       Match.player2.cardZones[zone].cards = [...this.player2[zone]]
+      Match.player1.cardZones[zone].cards.forEach(card => card.cardPaper.hide())
+      Match.player2.cardZones[zone].cards.forEach(card => card.cardPaper.hide())
     }
   }
 }

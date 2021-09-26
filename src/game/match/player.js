@@ -18,6 +18,12 @@ const TestDeckP2 = [
   'RazorcragGolem',
   'RazorcragGolem',
   'RazorcragGolem',
+  'RazorcragGolem',
+  'RazorcragGolem',
+  'RazorcragGolem',
+  'Rex',
+  'Rex',
+  'Rex',
   'Rex',
   'Rex',
   'Rex',
@@ -61,50 +67,29 @@ class Player {
   }
 
   handInit() {
-    const startingCards = 8
+    const startingCards = 5
     for (let i = 0; i < startingCards; ++i) {
-      // move card
-      let card = CardZone.moveCard({
+      CardZone.moveCard({
         source: this.cardZones.deck,
         sourceIndex: this.cardZones.deck.high(),
         target: this.cardZones.hand,
         targetIndex: this.cardZones.hand.length()
       })
-
-      // set input depth
-      card.cardPaper.inputArea.setDepth(i)
-
-      // set visual depth
-      Layer.moveTo(Layer.UI, card.cardPaper.visual, i)
     }
     this.handUI.init()
   }
   handDraw(num = 1) {
     for (let i = 0; i < num; ++i) {
-      if (this.deck.length < 1) {
+      if (this.cardZones.deck.length() < 1) {
         console.log('no more card in the deck!')
         break
       }
-
-      // store last card
-      let lastCard = this.cardZones.hand.lastCard()
-
-      // move card
-      let card = CardZone.moveCard({
+      CardZone.moveCard({
         source: this.cardZones.deck,
         sourceIndex: this.cardZones.deck.high(),
         target: this.cardZones.hand,
         targetIndex: this.cardZones.hand.length()
       })
-
-      // set input depth
-      let depth = lastCard.cardPaper.inputArea.depth + 1
-      card.cardPaper.inputArea.setDepth(depth)
-
-      // set visual depth
-      let displayIndex = Layer.getIndex(Layer.UI, lastCard.cardPaper.visual) + 1
-      Layer.moveTo(Layer.UI, card.cardPaper.visual, displayIndex)
-      card.cardPaper.visual.y = HandUI.y
     }
     this.handUI.update()
   }
@@ -127,9 +112,10 @@ class UndoPlayer {
   }
   undo() {
     this.cardZones.undo()
-    Match.player1.handUI.update()
-    Match.player2.handUI.update()
+    Match.oppsPlayer.handUI.update()
+    Match.turnPlayer.handUI.update()
     Match.oppsPlayer.handUI.hide()
+    Match.turnPlayer.handUI.show()
   }
 }
 
@@ -162,6 +148,7 @@ class HandUI {
     let { startPos, gap } = this.getAlignData()
     let i = 0
     for (let card of this.cardZones.hand.cards) {
+      card.cardPaper.inputArea.setDepth(i)
       card.cardPaper.visual.x = startPos + (gap * i++)
       card.cardPaper.visual.y = HandUI.y
       card.cardPaper.resetInputAreaPos()
@@ -181,7 +168,11 @@ class HandUI {
     let i = 0
     for (let card of this.cardZones.hand.cards) {
       let cardPaper = card.cardPaper
-      cardPaper.show()
+
+      cardPaper.inputArea.setDepth(i)
+      cardPaper.visual.y = HandUI.y
+      Layer.moveTo(Layer.UI, cardPaper.visual, i)
+
       cardPaper.tween?.remove()
       cardPaper.tween = Game.scene.tweens.add({
         targets: cardPaper.visual,
