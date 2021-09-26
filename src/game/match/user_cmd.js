@@ -452,7 +452,7 @@ class CmdUnitSummon extends UserCommand {
     UserAction.setState(UserAction.StateView)
 
     // summon a selected permanent
-    tileGrid.setPermanentAt(tile.pos.x, tile.pos.y, Match.selectedCard)
+    CardZoneBoard.setPermanentAt(tile.pos.x, tile.pos.y, Match.selectedCard)
 
     // remove from hand
     Match.turnPlayer.handRemove(Match.selectedCard)
