@@ -274,6 +274,7 @@ class CardPiece {
     }
   }
   faceDownRaw(bool) {
+    // TODO: this api can be improved
     // this does not change the tapped state
     if (bool) {
       this.pieceData.faceDowned = true

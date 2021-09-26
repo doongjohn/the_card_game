@@ -2,4 +2,4 @@
 
 Work in progress card game.
 
-inspired by `duelyst`, `yu-gi-oh`, `mtg`, `faeria`
+inspired by `duelyst` , `yu-gi-oh` , `mtg` , `faeria`
