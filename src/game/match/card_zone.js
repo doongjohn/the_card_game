@@ -109,7 +109,7 @@ class CardZoneBoard {
 
     CardZoneBoard.permanents.cards[tileGrid.coordToIndex(x, y)] = null
     card.cardPiece.pieceData.pos = null
-    card.cardPiece.hide() // FIXME
+    card.cardPiece.hide()
   }
 }
 
@@ -132,15 +132,19 @@ class UndoCardZoneBoard {
     }
   }
   undo() {
+    // reset board
+    for (const i in CardZoneBoard.permanents.cards) {
+      const pos = tileGrid.indexToCoord(i)
+      CardZoneBoard.removePermanentAt(pos.x, pos.y)
+    }
+    // restore board state
     for (const i in CardZoneBoard.permanents.cards) {
       const owner = this.permanentInfo[i]?.owner
-      const pos = tileGrid.indexToCoord(i)
-
-      CardZoneBoard.removePermanentAt(pos.x, pos.y)
       if (!owner) continue
 
-      const index = this.permanentInfo[i].index
-      const card = index == -1 ? owner.commander : owner.allCards[index]
+      const pos = tileGrid.indexToCoord(i)
+      const cardIndex = this.permanentInfo[i].index
+      const card = cardIndex == -1 ? owner.commander : owner.allCards[cardIndex]
       const pieceData = this.permanentPieceData[i]
 
       CardZoneBoard.setPermanentAt(pos.x, pos.y, card)
