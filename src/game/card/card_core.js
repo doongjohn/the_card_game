@@ -242,6 +242,12 @@ class CardPiece {
     }
   }
 
+  resetStats() {
+    this.pieceData.health = this.card.data.health
+    this.pieceData.attack = this.card.data.attack
+    this.pieceData.curMoveCount = 0
+  }
+
   #faceDownVisualInit() {
     this.hide()
     if (!this.cardBackSprite) {
@@ -264,10 +270,8 @@ class CardPiece {
       this.#faceDownVisualInit() // TODO: improve visual
     } else {
       // NOTE: this will not untap
+      this.resetStats()
       this.pieceData.faceDowned = false
-      this.pieceData.health = this.card.data.health
-      this.pieceData.attack = this.card.data.attack
-      this.pieceData.curMoveCount = 0
       this.#faceDownVisualDeinit()
 
       // update ui
@@ -283,10 +287,8 @@ class CardPiece {
       this.pieceData.faceDowned = true
       this.#faceDownVisualInit()
     } else {
+      this.resetStats()
       this.pieceData.faceDowned = false
-      this.pieceData.health = this.card.data.health
-      this.pieceData.attack = this.card.data.attack
-      this.pieceData.curMoveCount = 0
       this.#faceDownVisualDeinit()
 
       // update ui
@@ -297,6 +299,19 @@ class CardPiece {
   }
   faceUpSummon() {
     // TODO: make face up summon
+    if (!this.pieceData.faceDowned)
+      return
+
+    this.resetStats()
+    this.pieceData.faceDowned = false
+    this.#faceDownVisualDeinit()
+
+    // invoke on summon event
+
+    // update ui
+    if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
+      CardInfoUI.updateInfo(this.card)
+    }
   }
 }
 
