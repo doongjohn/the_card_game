@@ -92,7 +92,7 @@ class Player {
     }
     this.handUI.init()
   }
-  handDraw(num = 1) {
+  handDrawFromDeck(num = 1) {
     for (let i = 0; i < num; ++i) {
       if (this.cardZones.deck.length() < 1) {
         console.log('no more card in the deck!')

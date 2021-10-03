@@ -20,7 +20,7 @@ Cmd.cancel = function () {
 }
 Cmd.endTurn = function () {
   // save data
-  History.save(HistMatch, HistPlayer, HistCardZoneBoard)
+  MatchHist.save(HistMatch, HistPlayer, HistCardZoneBoard)
 
   // deselect all
   Match.selectedCard = null
@@ -32,8 +32,8 @@ Cmd.endTurn = function () {
   Match.oppsPlayer = Match.players[Match.turn - 1]
   Match.turn = newTurn
 
-  // TODO: refactor this
-  Match.turnPlayer.handDraw()
+  // TODO: refactor this (make game phases)
+  Match.turnPlayer.handDrawFromDeck()
 
   // reset tile state
   tileGrid.setTileStateAll(TileStateNormal)
@@ -52,14 +52,14 @@ Cmd.permanentSetTeam = function (card, team) {
   if (!card)
     return
 
-  History.save(HistCardZoneBoard)
+  MatchHist.save(HistCardZoneBoard)
   card.cardPiece.setTeam(team)
 }
 
 Cmd.permanentRevitalize = function (card) {
   if (!card) return
 
-  History.save(HistCardZoneBoard)
+  MatchHist.save(HistCardZoneBoard)
   card.cardPiece.revitalize()
 }
 
@@ -67,45 +67,44 @@ Cmd.permanentTapToggle = function (card) {
   if (!card || card.cardPiece.faceDowned)
     return
 
-  History.save(HistCardZoneBoard)
+  MatchHist.save(HistCardZoneBoard)
   card.cardPiece.tap(!card.cardPiece.pieceData.tapped)
 }
 Cmd.permanentTap = function (card) {
   if (!card || card.cardPiece.faceDowned)
     return
 
-  History.save(HistCardZoneBoard)
+  MatchHist.save(HistCardZoneBoard)
   card.cardPiece.tap(true)
 }
 Cmd.permanentUntap = function (card) {
   if (!card || card.cardPiece.faceDowned)
     return
 
-  History.save(HistCardZoneBoard)
+  MatchHist.save(HistCardZoneBoard)
   card.cardPiece.tap(false)
 }
 
 Cmd.permanentFaceToggle = function (card) {
   if (!card) return
 
-  History.save(HistCardZoneBoard)
+  MatchHist.save(HistCardZoneBoard)
   card.cardPiece.faceDown(!card.cardPiece.pieceData.faceDowned)
 }
 Cmd.permanentFaceDown = function (card) {
   if (!card) return
 
-  History.save(HistCardZoneBoard)
+  MatchHist.save(HistCardZoneBoard)
   card.cardPiece.faceDown(true)
 }
 Cmd.permanentFaceUp = function (card) {
   if (!card) return
 
-  History.save(HistCardZoneBoard)
+  MatchHist.save(HistCardZoneBoard)
   card.cardPiece.faceDown(false)
 }
 
-Cmd.permanentPlanTeleport = function () {
-  let card = Match.selectedTile?.getPermanent()
+Cmd.permanentPlanTeleport = function (card) {
   if (!card) return
 
   // update user action state
@@ -118,7 +117,7 @@ Cmd.permanentPlanTeleport = function () {
   })
 }
 Cmd.permanentTeleport = function (tile) {
-  History.save(HistCardZoneBoard)
+  MatchHist.save(HistCardZoneBoard)
 
   // update user action state
   UserAction.setState(UserAction.StateView)
@@ -196,7 +195,7 @@ Cmd.permanentPlanMove = function () {
   })
 }
 Cmd.permanentMove = function (tile) {
-  History.save(HistCardZoneBoard)
+  MatchHist.save(HistCardZoneBoard)
 
   // update match action state
   UserAction.setState(UserAction.StateView)
@@ -271,7 +270,7 @@ Cmd.permanentPlanAttack = function () {
   })
 }
 Cmd.permanentAttack = function (target) {
-  History.save(HistPlayer, HistCardZoneBoard)
+  MatchHist.save(HistPlayer, HistCardZoneBoard)
 
   // update match action state
   UserAction.setState(UserAction.StateView)
@@ -286,7 +285,7 @@ Cmd.permanentAttack = function (target) {
   Match.selectedTile.getPermanent().cardPiece.doAttack(target.cardPiece)
 }
 Cmd.permanentCounterAttack = function (self, target) {
-  History.save(HistPlayer, HistCardZoneBoard)
+  MatchHist.save(HistPlayer, HistCardZoneBoard)
 
   // update match action state
   UserAction.setState(UserAction.StateView)
@@ -344,7 +343,7 @@ Cmd.permanentDeclareSummon = function (tile) {
   tile.canSummon = true
 }
 Cmd.permanentSummon = function (tile) {
-  History.save(HistPlayer, HistCardZoneBoard)
+  MatchHist.save(HistPlayer, HistCardZoneBoard)
 
   // update user action state
   UserAction.setState(UserAction.StateView)

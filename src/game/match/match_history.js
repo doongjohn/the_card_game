@@ -1,4 +1,4 @@
-class History {
+class MatchHist {
   static commands = []
   static save(...saves) {
     this.commands.push(saves.map(save => new save()))

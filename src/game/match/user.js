@@ -21,27 +21,6 @@ class UserAction {
     else
       UserAction.setState(UserAction.StateView)
   }
-  // static pushCommand(cmd) {
-  //   UserAction.commands.push(cmd)
-  // }
-  // static popCommand() {
-  //   let undo = UserAction.commands.pop()
-  //   console.log(`undo: ${undo.constructor.name}`) // TEST: show undo log
-  // }
-  // static getLastCommand() {
-  //   return UserAction.commands[UserAction.commands.length - 1]
-  // }
-
-  // static execute() {
-  //   const cmd = arguments[0]
-  //   const args = [...arguments].slice(1)
-  //   cmd.prototype instanceof UserCommand
-  //     ? new cmd().cmd_execute(...args)
-  //     : cmd.execute(...args)
-  // }
-  // static undo() {
-  //   UserAction.getLastCommand()?.cmd_undo()
-  // }
 }
 
 class UserInput {
@@ -56,11 +35,11 @@ class UserInput {
     UserInput.cheatKeys.undo.on('down', () =>
       History.undo())
     UserInput.cheatKeys.unitTap.on('down', () =>
-      Cmd.permanentTapToggle(Match.selectedTile.getPermanent()))
+      Cmd.permanentTapToggle(Match.selectedTile?.getPermanent()))
     UserInput.cheatKeys.unitFaceToggle.on('down', () =>
-      Cmd.permanentFaceToggle(Match.selectedTile.getPermanent()))
+      Cmd.permanentFaceToggle(Match.selectedTile?.getPermanent()))
     UserInput.cheatKeys.unitTeleport.on('down', () =>
-      Cmd.permanentPlanTeleport())
+      Cmd.permanentPlanTeleport(Match.selectedTile?.getPermanent()))
 
     // game input
     UserInput.keys = Game.scene.input.keyboard.addKeys({
