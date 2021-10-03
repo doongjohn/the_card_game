@@ -33,7 +33,7 @@ class UserInput {
       unitTeleport: 'p',
     })
     UserInput.cheatKeys.undo.on('down', () =>
-      History.undo())
+      MatchHist.undo())
     UserInput.cheatKeys.unitTap.on('down', () =>
       Cmd.permanentTapToggle(Match.selectedTile?.getPermanent()))
     UserInput.cheatKeys.unitFaceToggle.on('down', () =>
