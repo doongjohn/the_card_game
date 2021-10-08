@@ -1,6 +1,3 @@
-// TODO: big refactoring using actions!
-// - card effects can be described as series of actions
-
 class CardAssetData {
   // this is an asset data for this card
   // this data must not change
@@ -28,7 +25,6 @@ class CardData {
     this.desc = desc
   }
 }
-
 
 class CardPaper {
   // this is a paper that exists in the deck, hand, etc...
@@ -154,8 +150,7 @@ class CardPieceData {
   }
   clone() {
     // this is for cloning dynamically added data
-    let copy = compose(new CardPieceData(this), this)
-    return copy
+    return compose(new CardPieceData(this), this)
   }
 }
 class CardPiece {
@@ -225,30 +220,41 @@ class CardPiece {
     this.visualUpdatePos()
   }
 
-  setPos(x, y) {
-    this.pieceData.pos = { x: x, y: y }
-  }
-
-  tap(bool) {
-    if (this.pieceData.faceDowned)
-      return
-
-    if (bool) {
-      this.pieceData.tapped = true
-      this.sprite.setPipeline(Game.pipeline.grayScale)
-    } else {
-      this.pieceData.tapped = false
-      this.sprite.resetPipeline()
-    }
-  }
-
   resetStats() {
     this.pieceData.health = this.card.data.health
     this.pieceData.attack = this.card.data.attack
     this.pieceData.curMoveCount = 0
   }
+  resetTeam() {
+    this.pieceData.owner = this.card.data.owner
+  }
+  setTeam(team) {
+    this.pieceData.owner = team == Team.P1 ? Match.player1 : Match.player2
+    this.visualUpdateTeam()
+  }
+  setPos(x, y) {
+    this.pieceData.pos = { x: x, y: y }
+  }
 
-  #faceDownVisualInit() {
+  tap() {
+    this.pieceData.tapped = true
+    this.sprite.setPipeline(Game.pipeline.grayScale)
+  }
+  untap() {
+    this.pieceData.tapped = false
+    this.sprite.resetPipeline()
+  }
+  setTap(bool) {
+    if (this.pieceData.faceDowned)
+      return
+
+    if (bool)
+      this.tap()
+    else
+      this.untap()
+  }
+
+  #visualFaceDownInit() {
     this.hide()
     if (!this.cardBackSprite) {
       this.cardBackSprite = Game.spawn.sprite(0, 0, 'CardBackDefault').setOrigin(0.5, 0.5).setScale(0.16)
@@ -258,44 +264,32 @@ class CardPiece {
     this.cardBackSprite.y = this.sprite.y
     this.cardBackSprite.setVisible(true)
   }
-  #faceDownVisualDeinit() {
+  #visualFaceDownDeinit() {
     this.show()
     this.cardBackSprite?.setVisible(false)
   }
-  faceDown(bool) {
-    // this will change the tapped state
-    if (bool) {
-      this.tap(true)
-      this.pieceData.faceDowned = true
-      this.#faceDownVisualInit() // TODO: improve visual
-    } else {
-      // NOTE: this will not untap
-      this.resetStats()
-      this.pieceData.faceDowned = false
-      this.#faceDownVisualDeinit()
 
-      // update ui
-      if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
-        CardInfoUI.updateInfo(this.card)
-      }
+  faceDown() {
+    // NOTE: what happens to this cards stats when face downed?
+    this.pieceData.faceDowned = true
+    this.#visualFaceDownInit()
+  }
+  faceUp() {
+    // NOTE: card gets reset when face up
+    this.resetStats()
+    this.pieceData.faceDowned = false
+    this.#visualFaceDownDeinit()
+
+    // update ui
+    if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
+      CardInfoUI.updateInfo(this.card)
     }
   }
-  faceDownRaw(bool) {
-    // TODO: this api can be improved
-    // this does not change the tapped state
-    if (bool) {
-      this.pieceData.faceDowned = true
-      this.#faceDownVisualInit()
-    } else {
-      this.resetStats()
-      this.pieceData.faceDowned = false
-      this.#faceDownVisualDeinit()
-
-      // update ui
-      if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
-        CardInfoUI.updateInfo(this.card)
-      }
-    }
+  setFaceDown(bool) {
+    if (bool)
+      this.faceDown()
+    else
+      this.faceUp()
   }
   faceUpSummon() {
     // TODO: make face up summon
@@ -304,7 +298,7 @@ class CardPiece {
 
     this.resetStats()
     this.pieceData.faceDowned = false
-    this.#faceDownVisualDeinit()
+    this.#visualFaceDownDeinit()
 
     // invoke on summon event
 

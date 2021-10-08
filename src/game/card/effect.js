@@ -1,4 +1,5 @@
 // TODO: make effect system
+// Some action does not start the chain
 
 class EffectType {
   static Activated = 0
@@ -14,15 +15,6 @@ class EffectType {
   }
 }
 
-class Effect {
-  constructor(type, card, action) {
-    this.index = 0
-    this.type = type
-    this.card = card
-    this.action = action
-  }
-}
-
 class EffectChain {
   // TODO: make effect chain
   // if you add an effect to a chain
@@ -30,6 +22,15 @@ class EffectChain {
   // if the chain is complete (no new effect is added)
   // it will execute effects in chain in reversed order (end --> start)
   static effects = []
+}
+
+class Effect {
+  constructor(type, card, action) {
+    this.index = EffectChain.effects.length - 1
+    this.type = type
+    this.card = card
+    this.action = action
+  }
 }
 
 class EffectEvent {
@@ -56,6 +57,7 @@ class EffectEvent {
   }
   static invoke(eventName, self, ...args) {
     // TODO: make user selects the order of execution
+    // NOTE: maybe make cards own effects...?
     for (let effect of EffectEvent[eventName]) {
       if (effect.card != self) continue
       console.log(

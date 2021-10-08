@@ -39,7 +39,7 @@ Cmd.endTurn = function () {
   tileGrid.setTileStateAll(TileStateNormal)
 
   // untap cards
-  CardZoneBoard.permanents.cards.forEach(card => card?.cardPiece.tap(false))
+  CardZoneBoard.permanents.cards.forEach(card => card?.cardPiece.setTap(false))
 
   // update ui
   Match.turnText.text = `P${Match.turn}'s turn`
@@ -68,40 +68,40 @@ Cmd.permanentTapToggle = function (card) {
     return
 
   MatchHist.save(HistCardZoneBoard)
-  card.cardPiece.tap(!card.cardPiece.pieceData.tapped)
+  card.cardPiece.setTap(!card.cardPiece.pieceData.tapped)
 }
 Cmd.permanentTap = function (card) {
   if (!card || card.cardPiece.faceDowned)
     return
 
   MatchHist.save(HistCardZoneBoard)
-  card.cardPiece.tap(true)
+  card.cardPiece.setTap(true)
 }
 Cmd.permanentUntap = function (card) {
   if (!card || card.cardPiece.faceDowned)
     return
 
   MatchHist.save(HistCardZoneBoard)
-  card.cardPiece.tap(false)
+  card.cardPiece.setTap(false)
 }
 
 Cmd.permanentFaceToggle = function (card) {
   if (!card) return
 
   MatchHist.save(HistCardZoneBoard)
-  card.cardPiece.faceDown(!card.cardPiece.pieceData.faceDowned)
+  card.cardPiece.setFaceDown(!card.cardPiece.pieceData.faceDowned)
 }
 Cmd.permanentFaceDown = function (card) {
   if (!card) return
 
   MatchHist.save(HistCardZoneBoard)
-  card.cardPiece.faceDown(true)
+  card.cardPiece.setFaceDown(true)
 }
 Cmd.permanentFaceUp = function (card) {
   if (!card) return
 
   MatchHist.save(HistCardZoneBoard)
-  card.cardPiece.faceDown(false)
+  card.cardPiece.setFaceDown(false)
 }
 
 Cmd.permanentPlanTeleport = function (card) {

@@ -95,33 +95,17 @@ const CardDataPermanent = {
   attack: 0,
 }
 const CardPieceLogicPermanent = {
-  resetTeam() {
-    this.pieceData.owner = this.card.data.owner
-  },
-  setTeam(team) {
-    this.pieceData.owner = team == Team.P1 ? Match.player1 : Match.player2
-    this.visualUpdateTeam()
-  },
   revitalize() {
     this.pieceData.curMoveCount = 0
   },
-  tap(bool) { // overrides base function
-    if (this.pieceData.faceDowned)
-      return
-
-    if (bool) {
-      this.pieceData.tapped = true
-      this.sprite.setPipeline(Game.pipeline.grayScale)
-    } else {
-      this.pieceData.tapped = false
-      this.sprite.resetPipeline()
-      this.revitalize()
-    }
+  untap() { // override
+    this.pieceData.tapped = false
+    this.sprite.resetPipeline()
+    this.revitalize()
   },
   takeDamage(attacker, damage) {
     // face up
-    if (this.pieceData.faceDowned)
-      this.faceDownRaw(false)
+    this.pieceData.faceDowned && this.faceUp()
 
     // update health
     this.pieceData.health = Math.max(this.pieceData.health - damage, 0)
@@ -129,20 +113,18 @@ const CardPieceLogicPermanent = {
     // invoke effect
     EffectEvent.invoke('onTakeDamage', this.card, attacker)
 
-    // check death
+    // on death
     if (this.pieceData.health == 0) {
+      // invoke effect
+      EffectEvent.invoke('onTakeLethalDamage', this.card, attacker)
+
       // TODO: move this card to the graveyard
       CardZoneBoard.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y)
-
-      // update ui
-      if (this.card == Match.selectedTile.getPermanent())
-        CardInfoUI.hide()
-    } else {
-      // update ui
-      if (this.card == Match.selectedTile.getPermanent()) {
-        CardInfoUI.updateInfo(this.card)
-      }
     }
+
+    // update ui
+    if (this.card == Match.selectedTile.getPermanent())
+      CardInfoUI.hide()
   },
   doAttack(target) {
     // invoke effect
