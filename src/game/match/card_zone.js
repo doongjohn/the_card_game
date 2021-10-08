@@ -198,8 +198,8 @@ class HistCardZoneBoard {
       const pieceData = this.permanentPieceData[i]
 
       CardZoneBoard.setPermanentAt(pos.x, pos.y, card)
-      pieceData.faceDowned && card.cardPiece.faceDown()
-      card.cardPiece.setTap(pieceData.tapped)
+      pieceData.faceDowned || card.cardPiece.setTap(pieceData.tapped)
+      card.cardPiece.setFaceDown(pieceData.faceDowned)
       card.cardPiece.pieceData = pieceData
       card.cardPiece.visualUpdate()
     }

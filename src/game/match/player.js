@@ -119,6 +119,7 @@ class Player {
         card.cardPaper.hide()
         card.cardPiece.setPos(x, y)
         card.cardPiece.show()
+        card.cardPiece.summon()
       }
     }
     this.handUI.update()

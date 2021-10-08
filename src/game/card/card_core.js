@@ -237,17 +237,18 @@ class CardPiece {
   }
 
   tap() {
-    this.pieceData.tapped = true
-    this.sprite.setPipeline(Game.pipeline.grayScale)
+    if (!this.pieceData.faceDowned) {
+      this.pieceData.tapped = true
+      this.sprite.setPipeline(Game.pipeline.grayScale)
+    }
   }
   untap() {
-    this.pieceData.tapped = false
-    this.sprite.resetPipeline()
+    if (!this.pieceData.faceDowned) {
+      this.pieceData.tapped = false
+      this.sprite.resetPipeline()
+    }
   }
   setTap(bool) {
-    if (this.pieceData.faceDowned)
-      return
-
     if (bool)
       this.tap()
     else
@@ -271,6 +272,7 @@ class CardPiece {
 
   faceDown() {
     // NOTE: what happens to this cards stats when face downed?
+    this.tap() // FIXME: does not get tapped when face up
     this.pieceData.faceDowned = true
     this.#visualFaceDownInit()
   }
@@ -291,14 +293,9 @@ class CardPiece {
     else
       this.faceUp()
   }
-  faceUpSummon() {
-    // TODO: make face up summon
-    if (!this.pieceData.faceDowned)
-      return
 
-    this.resetStats()
-    this.pieceData.faceDowned = false
-    this.#visualFaceDownDeinit()
+  summon() {
+    // TODO: make summon
 
     // invoke on summon event
 
@@ -306,6 +303,15 @@ class CardPiece {
     if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
       CardInfoUI.updateInfo(this.card)
     }
+  }
+  faceUpSummon() {
+    if (this.pieceData.faceDowned) {
+      this.faceUp()
+      this.summon()
+    }
+  }
+  effectSummon() {
+    // TODO: make effect summon
   }
 }
 
