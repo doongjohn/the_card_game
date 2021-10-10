@@ -273,14 +273,12 @@ class CardPiece {
   }
 
   faceDown() {
-    // NOTE: what happens to this cards stats when face downed?
-    this.tap() // FIXME: does not get tapped when face up
+    this.resetStats()
+    this.tap()
     this.pieceData.faceDowned = true
     this.#visualFaceDownInit()
   }
   faceUp() {
-    // NOTE: card gets reset when face up
-    this.resetStats()
     this.pieceData.faceDowned = false
     this.#visualFaceDownDeinit()
 
