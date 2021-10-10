@@ -386,6 +386,7 @@ Cmd.permanentSummon = function (tile) {
   tileGrid.setTileStateAll(TileStateNormal)
 
   // select this tile
+  console.log(tile)
   Match.selectedTile = tile
-  tile.fsm.setState(TileStateSelected)
+  Match.selectedTile.fsm.setState(TileStateSelected)
 }

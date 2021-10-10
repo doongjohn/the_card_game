@@ -83,12 +83,9 @@ class Player {
   handInit() {
     let i = 0
     while (i++ < Player.startingHand) {
-      this.cardZones.moveCard({
-        source: 'deck',
-        sourceIndex: this.cardZones.deck.high(),
-        target: 'hand',
-        targetIndex: this.cardZones.hand.length()
-      })
+      this.cardZones.deck
+        .takeLast()
+        .appendTo(this.cardZones.hand)
     }
     this.handUI.init()
   }
@@ -98,23 +95,17 @@ class Player {
         console.log('no more card in the deck!')
         break
       }
-      this.cardZones.moveCard({
-        source: 'deck',
-        sourceIndex: this.cardZones.deck.high(),
-        target: 'hand',
-        targetIndex: this.cardZones.hand.length()
-      })
+      this.cardZones.deck
+        .takeLast()
+        .appendTo(this.cardZones.hand)
     }
     this.handUI.update()
   }
   handSummon(x, y, card) {
-    let i = this.cardZones.hand.cards.indexOf(card)
-    this.cardZones.moveCard({
-      source: 'hand',
-      sourceIndex: i,
-      target: 'permanents',
-      targetIndex: tileGrid.coordToIndex(x, y)
-    })
+    this.cardZones.hand
+      .take(this.cardZones.hand.cards.indexOf(card))
+      .insertTo(CardZoneBoard.permanents, tileGrid.coordToIndex(x, y))
+
     card.cardPaper.hide()
     card.cardPiece.setPos(x, y)
     card.cardPiece.visualUpdatePos()

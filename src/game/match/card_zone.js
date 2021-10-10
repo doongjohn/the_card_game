@@ -1,9 +1,23 @@
+class CardWrapper {
+  constructor(card) {
+    this.card = card
+  }
+  insertTo(otherZone, i) {
+    otherZone.cards.splice(i, 0, this.card)
+    return otherZone
+  }
+  prependTo(otherZone) {
+    otherZone.cards.push(this.card)
+    return otherZone
+  }
+  appendTo(otherZone) {
+    otherZone.cards.unshift(this.card)
+  }
+}
+
 class CardZone {
   constructor() {
     this.cards = []
-  }
-  shuffle(count) {
-    Array.shuffle(this.cards, count)
   }
   length() {
     return this.cards.length
@@ -16,6 +30,23 @@ class CardZone {
   }
   lastCard() {
     return this.cards[this.high()]
+  }
+  shuffle(count) {
+    Array.shuffle(this.cards, count)
+    return this
+  }
+  take(i) {
+    if (i < 0 || i >= this.cards.length)
+      return null
+    let took = new CardWrapper(this.cards[i])
+    this.cards.splice(i, 1)
+    return took
+  }
+  takeFirst() {
+    return this.take(0)
+  }
+  takeLast() {
+    return this.take(this.high())
   }
 }
 

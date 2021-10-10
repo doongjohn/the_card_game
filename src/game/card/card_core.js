@@ -300,6 +300,8 @@ class CardPiece {
   }
 
   summon() {
+    // NOTE: this is a normal summon
+
     // TODO: make summon
 
     // invoke on summon event
