@@ -1,12 +1,21 @@
 // TODO: make effect system
 // Some action does not start the chain
 
+// Effect execution order
+// MandatoryTrigger ->
+// Trigger ->
+// Quick
+// My main phase:
+// Activated
+
+// Event can be stacked
+
 class EffectType {
   static Activated = 0
   static MandatoryTrigger = 1
   static Trigger = 2
   static Quick = 3
-  static Continues = 4
+  static Continues = 4 // Continues effects only executes when the effect owning card is on the board
   static Lingering = 5
 
   static toString(num) {

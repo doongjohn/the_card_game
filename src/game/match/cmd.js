@@ -42,7 +42,11 @@ Cmd.endTurn = function () {
   tileGrid.setTileStateAll(TileStateNormal)
 
   // untap cards
-  CardZoneBoard.permanents.cards.forEach(card => card?.cardPiece.setTap(false))
+  CardZoneBoard.permanents.cards.forEach(card => {
+    if (card && !card.cardPiece.faceDowned) {
+      card.cardPiece.untap()
+    }
+  })
 
   // update ui
   Match.turnText.text = `P${Match.turn}'s turn`
@@ -112,7 +116,8 @@ Cmd.permanentFaceDown = function (card) {
   MatchHist.push(HistCardZoneBoard)
   MatchHist.save()
 
-  card.cardPiece.setFaceDown(true)
+  card.cardPiece.tap()
+  card.cardPiece.faceDown()
 }
 Cmd.permanentFaceUp = function (card) {
   if (!card) return
@@ -120,7 +125,7 @@ Cmd.permanentFaceUp = function (card) {
   MatchHist.push(HistCardZoneBoard)
   MatchHist.save()
 
-  card.cardPiece.setFaceDown(false)
+  card.cardPiece.faceUp()
 }
 
 Cmd.permanentPlanTeleport = function (card) {

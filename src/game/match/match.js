@@ -1,3 +1,6 @@
+// TODO: add card query function
+// TODO: add tile query function
+
 class Match {
   static player1 = null
   static player2 = null
