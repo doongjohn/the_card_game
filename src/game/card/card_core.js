@@ -277,6 +277,11 @@ class CardPiece {
     this.tap()
     this.pieceData.faceDowned = true
     this.#visualFaceDownInit()
+
+    // update ui
+    if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
+      CardInfoUI.updateInfo(this.card)
+    }
   }
   faceUp() {
     this.pieceData.faceDowned = false
