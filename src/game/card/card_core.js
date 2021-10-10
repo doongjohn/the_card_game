@@ -206,6 +206,8 @@ class CardPiece {
     let pos = this.pieceData.pos
     if (!pos) return
 
+    this.visualRemoveTween()
+
     let worldPos = tileGrid.coordToWorldPos(pos.x, pos.y)
     this.sprite.x = worldPos.x
     this.sprite.y = worldPos.y

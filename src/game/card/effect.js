@@ -25,10 +25,10 @@ class EffectChain {
 }
 
 class Effect {
-  constructor(type, card, action) {
-    this.index = EffectChain.effects.length - 1
+  constructor(type, card, when, action) {
     this.type = type
     this.card = card
+    this.when = when
     this.action = action
   }
 }
@@ -44,55 +44,54 @@ class EffectEvent {
   static onTakeDamage = []           // args: self, attacker
   static onTakeLethalDamage = []     // TODO: args: self, attacker
 
-  static add(eventName, effect) {
-    const array = EffectEvent[eventName]
-    effect.index = array.length
-    array.push(effect)
+  static find(effect) {
+    return EffectEvent[effect.when].indexOf(effect)
   }
-  static remove(eventName, effect) {
-    EffectEvent[eventName].splice(effect.index, 1)
+  static add(effect) {
+    EffectEvent[effect.when].push(effect)
   }
-  static find(eventName, effect) {
-    return EffectEvent[eventName].indexOf(effect)
+  static remove(effect) {
+    EffectEvent[effect.when].splice(EffectEvent.find(effect), 1)
   }
-  static invoke(eventName, self, ...args) {
+  static invoke(when, self, ...args) {
     // TODO: make user selects the order of execution
-    // NOTE: maybe make cards own effects...?
-    for (let effect of EffectEvent[eventName]) {
-      if (effect.card != self) continue
+    // reorderable ui
+    for (let effect of EffectEvent[when]) {
+      // check self
+      if (effect.card != self)
+        continue
+
       console.log(
-        `Effect invoked: %c"${eventName}": ${EffectType.toString(EffectEvent[eventName][0].type)}\n` +
-        `%cPlayer${EffectEvent[eventName][0].card.cardPiece.pieceData.team}'s "${EffectEvent[eventName][0].card.data.name}"`,
+        `Effect invoked: %c"${when}": ${EffectType.toString(effect.type)}\n` +
+        `%cPlayer${effect.card.cardPiece.pieceData.team}'s "${effect.card.data.name}"`,
         'color: orange',
         'color: blue'
       )
       effect.action(...args)
     }
   }
-  static invokeAll(eventName, ...args) {
-    if (EffectEvent[eventName].length == 0)
-      return
-
-    if (EffectEvent[eventName].length == 1) {
+  static invokeAll(when, ...args) {
+    // TODO: make user selects the order of execution
+    // reorderable ui
+    for (let effect of EffectEvent[when]) {
       console.log(
-        `Effect invoked: %c"${eventName}": ${EffectType.toString(EffectEvent[eventName][0].type)}\n` +
-        `%cPlayer${EffectEvent[eventName][0].card.cardPiece.pieceData.team}'s "${EffectEvent[eventName][0].card.data.name}"`,
+        `Effect invoked: %c"${when}": ${EffectType.toString(effect.type)}\n` +
+        `%cPlayer${effect.card.cardPiece.pieceData.team}'s "${effect.card.data.name}"`,
         'color: orange',
         'color: blue'
       )
-      EffectEvent[eventName][0].action(...args)
-    } else {
-      // TODO: make user selects the order of execution
-      // reorderable ui
-      for (let effect of EffectEvent[eventName]) {
-        console.log(
-          `Effect invoked: %c"${eventName}": ${EffectType.toString(EffectEvent[eventName][0].type)}\n` +
-          `%cPlayer${EffectEvent[eventName][0].card.cardPiece.pieceData.team}'s "${EffectEvent[eventName][0].card.data.name}"`,
-          'color: orange',
-          'color: blue'
-        )
-        effect.action(...args)
-      }
+      effect.action(...args)
+    }
+  }
+}
+
+class EffectData {
+  constructor() {
+    this.effects = []
+  }
+  removeAll() {
+    for (let effect of this.effects) {
+      EffectEvent.remove(effect)
     }
   }
 }

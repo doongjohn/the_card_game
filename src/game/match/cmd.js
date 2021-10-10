@@ -20,7 +20,10 @@ Cmd.cancel = function () {
 }
 Cmd.endTurn = function () {
   // save data
-  MatchHist.save(HistMatch, HistPlayer, HistCardZoneBoard)
+  MatchHist.push(HistMatch)
+  MatchHist.push(HistPlayer)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
 
   // deselect all
   Match.selectedCard = null
@@ -52,14 +55,18 @@ Cmd.permanentSetTeam = function (card, team) {
   if (!card)
     return
 
-  MatchHist.save(HistCardZoneBoard)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
+
   card.cardPiece.setTeam(team)
 }
 
 Cmd.permanentRevitalize = function (card) {
   if (!card) return
 
-  MatchHist.save(HistCardZoneBoard)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
+
   card.cardPiece.revitalize()
 }
 
@@ -67,40 +74,52 @@ Cmd.permanentTapToggle = function (card) {
   if (!card || card.cardPiece.faceDowned)
     return
 
-  MatchHist.save(HistCardZoneBoard)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
+
   card.cardPiece.setTap(!card.cardPiece.pieceData.tapped)
 }
 Cmd.permanentTap = function (card) {
   if (!card || card.cardPiece.faceDowned)
     return
 
-  MatchHist.save(HistCardZoneBoard)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
+
   card.cardPiece.setTap(true)
 }
 Cmd.permanentUntap = function (card) {
   if (!card || card.cardPiece.faceDowned)
     return
 
-  MatchHist.save(HistCardZoneBoard)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
+
   card.cardPiece.setTap(false)
 }
 
 Cmd.permanentFaceToggle = function (card) {
   if (!card) return
 
-  MatchHist.save(HistCardZoneBoard)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
+
   card.cardPiece.setFaceDown(!card.cardPiece.pieceData.faceDowned)
 }
 Cmd.permanentFaceDown = function (card) {
   if (!card) return
 
-  MatchHist.save(HistCardZoneBoard)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
+
   card.cardPiece.setFaceDown(true)
 }
 Cmd.permanentFaceUp = function (card) {
   if (!card) return
 
-  MatchHist.save(HistCardZoneBoard)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
+
   card.cardPiece.setFaceDown(false)
 }
 
@@ -117,7 +136,8 @@ Cmd.permanentPlanTeleport = function (card) {
   })
 }
 Cmd.permanentTeleport = function (tile) {
-  MatchHist.save(HistCardZoneBoard)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
 
   // update user action state
   UserAction.setState(UserAction.StateView)
@@ -125,7 +145,6 @@ Cmd.permanentTeleport = function (tile) {
   // update permanent
   let card = Match.selectedTile.getPermanent()
   CardZoneBoard.setPermanentPos(card, tile.pos.x, tile.pos.y)
-  card.cardPiece.visualRemoveTween()
   card.cardPiece.visualUpdatePos()
 
   // update selected tile
@@ -195,7 +214,8 @@ Cmd.permanentPlanMove = function () {
   })
 }
 Cmd.permanentMove = function (tile) {
-  MatchHist.save(HistCardZoneBoard)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
 
   // update match action state
   UserAction.setState(UserAction.StateView)
@@ -270,7 +290,9 @@ Cmd.permanentPlanAttack = function () {
   })
 }
 Cmd.permanentAttack = function (target) {
-  MatchHist.save(HistPlayer, HistCardZoneBoard)
+  MatchHist.push(HistPlayer)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
 
   // update match action state
   UserAction.setState(UserAction.StateView)
@@ -285,7 +307,9 @@ Cmd.permanentAttack = function (target) {
   Match.selectedTile.getPermanent().cardPiece.doAttack(target.cardPiece)
 }
 Cmd.permanentCounterAttack = function (self, target) {
-  MatchHist.save(HistPlayer, HistCardZoneBoard)
+  MatchHist.push(HistPlayer)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
 
   // update match action state
   UserAction.setState(UserAction.StateView)
@@ -343,14 +367,15 @@ Cmd.permanentDeclareSummon = function (tile) {
   tile.canSummon = true
 }
 Cmd.permanentSummon = function (tile) {
-  MatchHist.save(HistPlayer, HistCardZoneBoard)
+  MatchHist.push(HistPlayer)
+  MatchHist.push(HistCardZoneBoard)
+  MatchHist.save()
 
   // update user action state
   UserAction.setState(UserAction.StateView)
 
   // move card from hand to board
   Match.turnPlayer.handSummon(tile.pos.x, tile.pos.y, Match.selectedCard)
-  Match.selectedCard.cardPiece.visualUpdatePos()
 
   // update tile state
   tileGrid.setTileStateAll(TileStateNormal)

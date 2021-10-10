@@ -108,20 +108,18 @@ class Player {
     this.handUI.update()
   }
   handSummon(x, y, card) {
-    for (let i = 0; i < this.cardZones.hand.cards.length; ++i) {
-      if (card == this.cardZones.hand.cards[i]) {
-        this.cardZones.moveCard({
-          source: 'hand',
-          sourceIndex: i,
-          target: 'permanents',
-          targetIndex: tileGrid.coordToIndex(x, y)
-        })
-        card.cardPaper.hide()
-        card.cardPiece.setPos(x, y)
-        card.cardPiece.show()
-        card.cardPiece.summon()
-      }
-    }
+    let i = this.cardZones.hand.cards.indexOf(card)
+    this.cardZones.moveCard({
+      source: 'hand',
+      sourceIndex: i,
+      target: 'permanents',
+      targetIndex: tileGrid.coordToIndex(x, y)
+    })
+    card.cardPaper.hide()
+    card.cardPiece.setPos(x, y)
+    card.cardPiece.visualUpdatePos()
+    card.cardPiece.show()
+    card.cardPiece.summon()
     this.handUI.update()
   }
 }

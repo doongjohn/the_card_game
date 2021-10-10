@@ -123,8 +123,9 @@ const CardPieceLogicPermanent = {
     }
 
     // update ui
-    if (this.card == Match.selectedTile.getPermanent())
-      CardInfoUI.hide()
+    if (this.card == Match.selectedTile.getPermanent()) {
+      CardInfoUI.updateInfo(this.card)
+    }
   },
   doAttack(target) {
     // invoke effect

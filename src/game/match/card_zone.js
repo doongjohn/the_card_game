@@ -21,22 +21,12 @@ class CardZone {
 
 
 class CardZonePlayer {
-  static list = [
-    'deck',
-    'manaDeck',
-    'extraDeck',
-    'mana',
-    'hand',
-    'gaveyard',
-    'banish',
-    'limbo',
-  ]
   /**
    * @typedef {(
    *  'deck'|
-   *  'manaDeck'|
+   *  'pactDeck'|
    *  'extraDeck'|
-   *  'mana'|
+   *  'pact'|
    *  'hand'|
    *  'gaveyard'|
    *  'banish'|
@@ -44,6 +34,16 @@ class CardZonePlayer {
    *  'permanents'
    * )} CardZoneList
    */
+   static list = [
+    'deck',
+    'pactDeck',
+    'extraDeck',
+    'pact',
+    'hand',
+    'gaveyard',
+    'banish',
+    'limbo',
+  ]
 
   constructor() {
     for (let zone of CardZonePlayer.list)

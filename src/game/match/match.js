@@ -33,24 +33,25 @@ class Match {
     Match.turnPlayer.handUI.show()
 
 
-    // TEST: test effect 'onAttack'
-    const onAttackEffectP1 = new Effect(
+    // TEST: test effect
+    const cardEffectP1 = new Effect(
       EffectType.MandatoryTrigger,
       Match.player1.commander,
+      'onAttack',
       function (target) {
         console.log(`I hit "${target.data.name}"!`)
       }
     )
-    // TEST: test effect 'onTakeDamage'
-    const onTakeDamageEffectP2 = new Effect(
+    const cardEffectP2 = new Effect(
       EffectType.MandatoryTrigger,
       Match.player2.commander,
+      'onTakeDamage',
       function (attacker) {
         console.log(`I took damage by "${attacker.data.name}"!`)
       }
     )
-    EffectEvent.add('onAttack', onAttackEffectP1)
-    EffectEvent.add('onTakeDamage', onTakeDamageEffectP2)
+    EffectEvent.add(cardEffectP1)
+    EffectEvent.add(cardEffectP2)
 
 
     // TEST: turn indicator

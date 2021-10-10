@@ -29,9 +29,7 @@ class TileStateSelected extends TileState {
     }
   }
   onExit(self) {
-    const permanent = self.getPermanent()
-    if (permanent)
-      CardInfoUI.hide()
+    CardInfoUI.hide()
   }
   onHoverEnter(self) { }
   onHoverExit(self) { }
@@ -63,10 +61,6 @@ class TileStateSpawnPermanentSelection extends TileState {
     // show card info
     CardInfoUI.updateInfo(Match.selectedCard)
     CardInfoUI.show()
-  }
-  onExit(self) {
-    // hide card info
-    CardInfoUI.hide()
   }
   onClick(self) {
     Cmd.permanentDeclareSummon(self)
