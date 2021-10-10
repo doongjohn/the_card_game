@@ -1,14 +1,22 @@
 // TODO: make effect system
-// Some action does not start the chain
+
+// Only effects can start a Chain
 
 // Effect execution order
-// MandatoryTrigger ->
-// Trigger ->
-// Quick
-// My main phase:
-// Activated
+// TurnPlayer MandatoryTrigger -> OppsPlayer MandatoryTrigger
+// TurnPlayer Trigger          -> OppsPlayer Trigger
+// TurnPlayer Quick            -> OppsPlayer Quick
 
-// Event can be stacked
+// At my main phase TurnPlayer can activate:
+// Activated or Quick spells
+
+// Continues: 는 발동이 되는게 아님. 그냥 적용되는 거임.
+
+// Cost는 그 즉시 사용됨.
+// 그래서 Event들이 stack 될 수 있음.
+// 그 스택된 Event들의 타이밍은 Chain이 resolve 되기 전까지 유효함.
+// Cost가 아닌 명시된 Effect들은 Chain이 resolve하는 동안 실행됨.
+// Chain이 resolve 되는 동안에는 Continues Effect를 제외하고 아무것도 할 수 없음.
 
 class EffectType {
   static Activated = 0
