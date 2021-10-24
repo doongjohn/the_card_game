@@ -11,14 +11,6 @@ class UserAction {
   static setState(state) {
     UserAction.state = state
   }
-  static cancelState() {
-    if (UserAction.state == UserAction.StateEmpty)
-      return
-    if (UserAction.state == UserAction.StateView)
-      UserAction.setState(UserAction.StateEmpty)
-    else
-      UserAction.setState(UserAction.StateView)
-  }
 }
 
 class UserInput {

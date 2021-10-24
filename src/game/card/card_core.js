@@ -230,6 +230,10 @@ class CardPiece {
   isActiveTurn() {
     return this.pieceData.owner.team == Match.turn
   }
+  compareTeam(cardPiece) {
+    if (!cardPiece) return false
+    return this.pieceData.owner.team == cardPiece.pieceData.owner.team
+  }
   resetTeam() {
     this.pieceData.owner = this.card.data.owner
   }

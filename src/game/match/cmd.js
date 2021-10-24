@@ -6,17 +6,16 @@ Cmd.cancelAll = function () {
   CardInfoUI.hide()
 }
 Cmd.cancel = function () {
-  if (UserAction.state == UserAction.StateEmpty)
-    return
-
+  if (UserAction.state == UserAction.StateEmpty) return
   if (UserAction.state == UserAction.StateView) {
-    CmdCancelAll.execute()
+    Cmd.cancelAll()
     return
   }
 
-  for (const tile of tileGrid.tiles)
-    tile != Match.selectedTile && tile.fsm.setState(TileStateNormal)
-  UserAction.cancelState()
+  UserAction.setState(UserAction.StateView)
+  for (const tile of tileGrid.tiles) {
+    !tile.fsm.curState.is(TileStateSelected) && tile.fsm.setState(TileStateNormal)
+  }
 }
 Cmd.endTurn = function () {
   // save data
@@ -170,41 +169,33 @@ Cmd.permanentPlanMove = function (card) {
 
   const tile = Match.selectedTile
 
-  function setMoveSelectionTile(x, y) {
-    if (!CardZoneBoard.getPermanentAt(x, y))
-      tileGrid.getTileAtCoord(x, y)?.fsm.setState(TileStateMoveSelection)
+  let blocked = new Array(4).fill(true) // top, down, right, left
+  let blockedIdx = -1
+  for (let pos of GridUtil.getCoordNearbyStraight(tile.pos)) {
+    ++blockedIdx
+    if (tileGrid.coordToIndex(pos) >= 0 && !CardZoneBoard.getPermanentAt(pos.x, pos.y)) {
+      tileGrid.getTileAtCoord(pos.x, pos.y)?.fsm.setState(TileStateMoveSelection)
+      blocked[blockedIdx] = false
+    }
   }
 
-  const u = { x: tile.pos.x, y: tile.pos.y - 1 }
-  const d = { x: tile.pos.x, y: tile.pos.y + 1 }
-  const r = { x: tile.pos.x + 1, y: tile.pos.y }
-  const l = { x: tile.pos.x - 1, y: tile.pos.y }
-  const rBlocked = CardZoneBoard.getPermanentAt(r.x, r.y) != null
-  const lBlocked = CardZoneBoard.getPermanentAt(l.x, l.y) != null
-  const uBlocked = CardZoneBoard.getPermanentAt(u.x, u.y) != null
-  const dBlocked = CardZoneBoard.getPermanentAt(d.x, d.y) != null
+  !blocked[0] && !CardZoneBoard.getPermanentAt(tile.pos.x, tile.pos.y - 2)
+    && tileGrid.getTileAtCoord(tile.pos.x, tile.pos.y - 2)?.fsm.setState(TileStateMoveSelection)
+  !blocked[1] && !CardZoneBoard.getPermanentAt(tile.pos.x, tile.pos.y + 2)
+    && tileGrid.getTileAtCoord(tile.pos.x, tile.pos.y + 2)?.fsm.setState(TileStateMoveSelection)
+  !blocked[2] && !CardZoneBoard.getPermanentAt(tile.pos.x + 2, tile.pos.y)
+    && tileGrid.getTileAtCoord(tile.pos.x + 2, tile.pos.y)?.fsm.setState(TileStateMoveSelection)
+  !blocked[3] && !CardZoneBoard.getPermanentAt(tile.pos.x - 2, tile.pos.y)
+    && tileGrid.getTileAtCoord(tile.pos.x - 2, tile.pos.y)?.fsm.setState(TileStateMoveSelection)
 
-  if (!rBlocked) {
-    setMoveSelectionTile(r.x, r.y)
-    setMoveSelectionTile(r.x + 1, r.y)
-  }
-  if (!lBlocked) {
-    setMoveSelectionTile(l.x, l.y)
-    setMoveSelectionTile(l.x - 1, l.y)
-  }
-  if (!uBlocked) {
-    setMoveSelectionTile(u.x, u.y)
-    setMoveSelectionTile(u.x, u.y - 1)
-  }
-  if (!dBlocked) {
-    setMoveSelectionTile(d.x, d.y)
-    setMoveSelectionTile(d.x, d.y + 1)
-  }
-
-  ; (!rBlocked || !uBlocked) && setMoveSelectionTile(r.x, u.y)
-    ; (!rBlocked || !dBlocked) && setMoveSelectionTile(r.x, d.y)
-    ; (!lBlocked || !uBlocked) && setMoveSelectionTile(l.x, u.y)
-    ; (!lBlocked || !dBlocked) && setMoveSelectionTile(l.x, d.y)
+  !(blocked[2] && blocked[0]) && !CardZoneBoard.getPermanentAt(tile.pos.x + 1, tile.pos.y - 1)
+    && tileGrid.getTileAtCoord(tile.pos.x + 1, tile.pos.y - 1)?.fsm.setState(TileStateMoveSelection)
+  !(blocked[2] && blocked[1]) && !CardZoneBoard.getPermanentAt(tile.pos.x + 1, tile.pos.y + 1)
+    && tileGrid.getTileAtCoord(tile.pos.x + 1, tile.pos.y + 1)?.fsm.setState(TileStateMoveSelection)
+  !(blocked[3] && blocked[0]) && !CardZoneBoard.getPermanentAt(tile.pos.x - 1, tile.pos.y - 1)
+    && tileGrid.getTileAtCoord(tile.pos.x - 1, tile.pos.y - 1)?.fsm.setState(TileStateMoveSelection)
+  !(blocked[3] && blocked[1]) && !CardZoneBoard.getPermanentAt(tile.pos.x - 1, tile.pos.y + 1)
+    && tileGrid.getTileAtCoord(tile.pos.x - 1, tile.pos.y + 1)?.fsm.setState(TileStateMoveSelection)
 
   // update user action
   UserAction.setState(UserAction.StatePlanMove)
@@ -249,35 +240,20 @@ Cmd.permanentPlanAttack = function (card) {
   // Unit Plan Attack
   UserAction.setState(UserAction.StatePlanAttack)
 
-  function setAttackSelectionTile(x, y) {
-    const target = CardZoneBoard.getPermanentAt(x, y)
-    if (target && target.cardPiece.pieceData.owner.team != card.cardPiece.pieceData.owner.team) {
-      tileGrid.getTileAtCoord(x, y).fsm.setState(TileStateAttackSelection)
-      return 1
-    }
-    return 0
-  }
-
-  function getNearbyEnemyCount() {
-    const u = { x: tile.pos.x, y: tile.pos.y - 1 }
-    const d = { x: tile.pos.x, y: tile.pos.y + 1 }
-    const r = { x: tile.pos.x + 1, y: tile.pos.y }
-    const l = { x: tile.pos.x - 1, y: tile.pos.y }
-
+  function highlightNearbyEnemies() {
     let count = 0
-    count += setAttackSelectionTile(r.x, r.y)
-    count += setAttackSelectionTile(l.x, l.y)
-    count += setAttackSelectionTile(u.x, u.y)
-    count += setAttackSelectionTile(d.x, d.y)
-    count += setAttackSelectionTile(r.x, u.y)
-    count += setAttackSelectionTile(r.x, d.y)
-    count += setAttackSelectionTile(l.x, u.y)
-    count += setAttackSelectionTile(l.x, d.y)
+    for (let t of tileGrid.getNearby(tile.pos)) {
+      let target = t.getPermanent()
+      if (target && !card.cardPiece.compareTeam(target.cardPiece)) {
+        t.fsm.setState(TileStateAttackSelection)
+        ++count
+      }
+    }
     return count
   }
 
   // check enemies nearby
-  if (!getNearbyEnemyCount()) {
+  if (!highlightNearbyEnemies()) {
     console.log('[Match] There is no attack target nearby.')
     return
   }

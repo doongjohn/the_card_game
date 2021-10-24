@@ -24,8 +24,28 @@ class TileGrid extends Grid {
     }
   }
   setStateAll(state) {
-    for (const tile of tileGrid.tiles)
+    for (const tile of tileGrid.tiles) {
       tile.fsm.setState(state)
+    }
+  }
+
+  getNearbyStraight(pos) {
+    let result = []
+    for (let p of GridUtil.getCoordNearbyStraight(pos))
+      this.coordToIndex(p) > 0 && (result.push(this.getTileAtCoord(p.x, p.y)))
+    return result
+  }
+  getNearbyDiagonal(pos) {
+    let result = []
+    for (let p of GridUtil.getCoordNearbyDiagonal(pos))
+      this.coordToIndex(p) > 0 && (result.push(this.getTileAtCoord(p.x, p.y)))
+    return result
+  }
+  getNearby(pos) {
+    let result = []
+    for (let p of GridUtil.getCoordNearby(pos))
+      this.coordToIndex(p) > 0 && (result.push(this.getTileAtCoord(p.x, p.y)))
+    return result
   }
 }
 

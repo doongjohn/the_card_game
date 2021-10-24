@@ -10,13 +10,14 @@ class MatchHist {
     MatchHist.histSet.clear()
   }
   static undo() {
-    if (this.commands.length > 0)
-      for (let save of this.commands.pop()) save.undo()
+    if (this.commands.length < 1) return
+
+    for (let save of this.commands.pop())
+      save.undo()
 
     let permanent = Match.selectedTile?.getPermanent()
-    if (permanent)
-      CardInfoUI.update(permanent)
-    else
-      CardInfoUI.hide()
+    permanent ? CardInfoUI.update(permanent) : CardInfoUI.hide()
+
+    Cmd.cancel()
   }
 }
