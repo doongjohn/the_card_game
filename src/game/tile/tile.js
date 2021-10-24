@@ -18,7 +18,7 @@ class Tile {
     this.allowSummon = true
 
     // init fsm
-    this.fsm = new FSM(this, TileStateNormal, obj => {
+    this.fsm = new Fsm(this, TileStateNormal, obj => {
       obj.setEventHoverEnter(() => {
         Tile.hoveringTile = obj
         obj.fsm.curState.onHoverEnter(obj)

@@ -1,4 +1,4 @@
-class TileState extends FSMState {
+class TileState extends FsmState {
   onHoverEnter(tile) {
     tile.tileFg.setFillStyle(TileColor.FG.hover.rgb, TileColor.FG.hover.alpha)
   }

@@ -13,7 +13,7 @@ class MatchHist {
     if (this.commands.length > 0)
       for (let save of this.commands.pop()) save.undo()
 
-    let permanent = Match.selectedTile.getPermanent()
+    let permanent = Match.selectedTile?.getPermanent()
     if (permanent)
       CardInfoUI.update(permanent)
     else

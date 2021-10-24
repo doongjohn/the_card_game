@@ -1,5 +1,5 @@
-class FSMState {
-  /** @param {...FSMState} states */
+class FsmState {
+  /** @param {...FsmState} states */
   is(...states) {
     for (const state of states)
       if (this == state.prototype)
@@ -10,7 +10,7 @@ class FSMState {
   onStateExit(obj) { }
 }
 
-class FSM {
+class Fsm {
   constructor(obj, defaultState, onStateChange) {
     this.obj = obj
     this.prevState = null
@@ -20,7 +20,7 @@ class FSM {
     this.onStateChange(this.obj)
   }
 
-  /** @param {FSMState} state */
+  /** @param {FsmState} state */
   setState(state) {
     if (!state || state.prototype == this.curState)
       return
