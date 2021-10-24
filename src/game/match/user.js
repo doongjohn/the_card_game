@@ -1,4 +1,3 @@
-// remove undo logic from UserAction
 class UserAction {
   static StateEmpty = 0
   static StateView = 1
