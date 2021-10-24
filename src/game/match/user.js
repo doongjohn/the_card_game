@@ -8,7 +8,6 @@ class UserAction {
   static StatePlanPermanentSpawn = 5
   static StateDeclarePermanentSpawn = 6
   static state = UserAction.StateEmpty
-  static commands = []
 
   static setState(state) {
     UserAction.state = state
