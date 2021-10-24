@@ -56,8 +56,8 @@ class GridUtil {
   }
   static getCoordNearby(pos) {
     return [
-      ...getCoordNearbyStraight(pos),
-      ...getCoordNearbyDiagonal(pos),
+      ...GridUtil.getCoordNearbyStraight(pos),
+      ...GridUtil.getCoordNearbyDiagonal(pos),
     ]
   }
 }
