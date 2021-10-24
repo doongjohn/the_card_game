@@ -16,8 +16,9 @@ class CardWrapper {
 }
 
 class CardZone {
-  constructor() {
-    this.cards = []
+  constructor({ initLen = 0, maxLen = 0 } = {}) {
+    this.cards = new Array(initLen)
+    this.maxLen = maxLen
   }
   length() {
     return this.cards.length
@@ -136,13 +137,11 @@ class HistCardZonePlayer {
 
 
 class CardZoneBoard {
-  static list = [
-    'permanents',
-    'spells'
-  ]
-
-  static permanents = new CardZone()
-  // static spells = new CardZone()
+  static size = { x: 11, y: 7 }
+  static permanents = new CardZone({
+    initLen: CardZoneBoard.size.x * CardZoneBoard.size.y,
+    maxLen: CardZoneBoard.size.x * CardZoneBoard.size.y,
+  })
 
   static init() {
     // set commanders

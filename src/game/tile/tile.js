@@ -15,62 +15,45 @@ class Tile {
     this.gameObject = this.initGameObject(size, gap)
     this.index = index
     this.pos = tileGrid.indexToCoord(index)
+    this.allowSummon = true
 
     // init fsm
-    this.fsm = new FSM(this, TileStateNormal, (obj) => {
-      obj.setHoverEnter(() => {
+    this.fsm = new FSM(this, TileStateNormal, obj => {
+      obj.setEventHoverEnter(() => {
         Tile.hoveringTile = obj
         obj.fsm.curState.onHoverEnter(obj)
       })
-      obj.setHoverExit(() => {
+      obj.setEventHoverExit(() => {
         Tile.hoveringTile = null
         obj.fsm.curState.onHoverExit(obj)
       })
       if (Tile.hoveringTile == obj)
         Tile.hoveringTile.fsm.curState.onHoverEnter(obj)
     })
-
-    // user action properties
-    this.allowSummon = true
-
-    // get cards
-    this.getPermanent = () => CardZoneBoard.permanents.cards[this.index]
-    // this.getSpell = () => CardZoneBoard.spells.cards[this.index]
-    // this.getRune = () => CardZoneBoard.runes.cards[this.index]
   }
 
   initGameObject(size, gap) {
-    this.tileBg = Game.spawn.rectangle(
-      0, 0,
-      size.x,
-      size.y,
-      TileColor.BG.rgb
-    )
+    this.tileBg = Game.spawn.rectangle(0, 0, size.x, size.y, TileColor.BG.rgb)
+    this.tileFg =
+      Game.spawn.rectangle(0, 0, size.x + gap, size.y + gap, TileColor.FG.rgb, TileColor.FG.alpha)
+        .setInteractive()
+        .on('pointerdown', () => this.fsm.curState.onClick(this))
 
-    this.tileFg = Game.spawn.rectangle(
-      0, 0,
-      size.x + gap,
-      size.y + gap,
-      TileColor.FG.rgb,
-      TileColor.FG.alpha
-    )
-      .setInteractive()
-      .on('pointerdown', () => this.fsm.curState.onClick(this))
-
-    return Game.spawn.container(0, 0, [
-      this.tileBg,
-      this.tileFg
-    ])
+    return Game.spawn.container(0, 0, [this.tileBg, this.tileFg])
   }
 
-  setHoverEnter(func) {
+  setEventHoverEnter(func) {
     this.tileFg.removeAllListeners('pointerover')
     this.tileFg.on('pointerover', func)
   }
-  setHoverExit(func) {
+  setEventHoverExit(func) {
     this.tileFg.removeAllListeners('pointerout')
     this.tileFg.on('pointerout', func)
     Game.scene.input.removeAllListeners('gameout')
     Game.scene.input.on('gameout', func)
+  }
+
+  getPermanent() {
+    return CardZoneBoard.permanents.cards[this.index]
   }
 }
