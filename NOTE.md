@@ -1,54 +1,65 @@
 # Note
 
+## Working on
+
+- refactoring tile.js
+- refactoring cmd.js
+- implement match phase
+
 ## TODO
 
-* [x] Implement Sprite loading
-  * [x] Implement lazy Sprite loading (maybe not?)
-* [x] Implement Sprite animation
-  * [ ] Implement Sprite action animation (attack, take damage, death, etc...)
-* [x] Implement Tile state
-* [x] Implement Basic Turn
-* [x] Implement Basic Movement
-  * [x] Implement movement tween
-* [ ] Implement match phase
-* [x] Implement Attack
-* [x] Implement Counter Attack
-* [ ] Implement Face-down spawn
-* [ ] Implement Effect (partially done)
-* [ ] Implement Effect Chain
-* [ ] Implement UI
-  * [x] Hand (improvement is needed)
-  * [ ] End Turn
-* [x] Implement Hand
-* [x] Implement Card Placement
-* [ ] Implement Card Zones
-* [x] Implement Undo
-  * [ ] Refactor undo function
-* [ ] Implement Log
+- [x] Implement Sprite loading
+  - [x] Implement lazy Sprite loading (maybe not?)
+- [x] Implement Sprite animation
+  - [ ] Implement Sprite action animation (attack, take damage, death, etc...)
+- [x] Implement Tile state
+- [x] Implement Basic Turn
+- [x] Implement Basic Movement
+  - [x] Implement movement tween
+- [ ] Implement match phase
+- [x] Implement Attack
+- [x] Implement Counter Attack
+- [ ] Implement Face-down spawn
+- [ ] Implement Effect (partially done)
+- [ ] Implement Effect Chain
+- [ ] Implement UI
+  - [x] Hand (improvement is needed)
+  - [ ] End Turn
+- [x] Implement Hand
+- [x] Implement Card Placement
+- [ ] Implement Card Zones
+- [x] Implement Undo
+  - [ ] Refactor undo function
+- [ ] Implement Log
 
 ## TODO (long term)
 
-* [ ] Add original arts
-* [ ] Implement multiplayer
-  * [ ] Add spectator mode
-  * [ ] Add game replay
+- [ ] Add original arts
+- [ ] Implement multiplayer
+  - [ ] Add spectator mode
+  - [ ] Add game replay
 
 ## Reminder
 
-**Combat phase**\
-`turn player` **Select** Attack target ➜\
-`turn player` **Effect** On Attack ➜\
-`turn player` Deal damage (Attack) ➜\
-`turn player` **Effect** On Deal Damage ➜\
-`opps player` Take damage ➜\
-`opps player` **Effect** On Take Damage ➜\
-`turn player` Tap ➜\
-`opps player` **Effect** On Counter Attack ➜\
-`opps player` Deal damage (Counter attack) ➜\
-`opps player` **Effect** On Deal Damage ➜\
-`turn player` **Effect** On Take Damage
+### Combat phase
 
-## Phaser3 reference
+`Turn P` **Select** Attack target ➜\
+`Turn P` **Effect** On Attack ➜\
+`Turn P` Deal damage (Attack) ➜\
+`Turn P` **Effect** On Deal Damage ➜\
+\
+`Opps P` Take damage ➜\
+`Opps P` **Effect** On Take Damage ➜\
+\
+`Turn P` Tap ➜\
+\
+`Opps P` **Effect** On Counter Attack ➜\
+`Opps P` Deal damage (Counter attack) ➜\
+`Opps P` **Effect** On Deal Damage ➜\
+\
+`Turn P` **Effect** On Take Damage
+
+## Phaser 3 reference
 
 **Depth sorting:**\
 <https://phaser.discourse.group/t/container-sorting/4479>
