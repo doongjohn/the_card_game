@@ -2,8 +2,9 @@
 
 ## Working on
 
-- refactoring tile.js
+- refactoring tile.js, tile_state.js
 - refactoring cmd.js
+- improve fsm
 - implement match phase
 
 ## TODO
