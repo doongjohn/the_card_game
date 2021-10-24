@@ -15,7 +15,7 @@ class MatchHist {
 
     let permanent = Match.selectedTile.getPermanent()
     if (permanent)
-      CardInfoUI.updateInfo(permanent)
+      CardInfoUI.update(permanent)
     else
       CardInfoUI.hide()
   }

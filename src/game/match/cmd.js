@@ -2,7 +2,7 @@ class Cmd { }
 
 Cmd.cancelAll = function () {
   UserAction.setState(UserAction.StateEmpty)
-  tileGrid.setTileStateAll(TileStateNormal)
+  tileGrid.setStateAll(TileStateNormal)
   CardInfoUI.hide()
 }
 Cmd.cancel = function () {
@@ -39,14 +39,14 @@ Cmd.endTurn = function () {
   Match.turnPlayer.handDrawFromDeck()
 
   // reset tile state
-  tileGrid.setTileStateAll(TileStateNormal)
+  tileGrid.setStateAll(TileStateNormal)
 
   // untap cards
-  CardZoneBoard.permanents.cards.forEach(card => {
+  for (let card of CardZoneBoard.permanents.cards) {
     if (card && !card.cardPiece.faceDowned) {
       card.cardPiece.untap()
     }
-  })
+  }
 
   // update ui
   Match.turnText.text = `P${Match.turn}'s turn`
@@ -135,10 +135,10 @@ Cmd.permanentPlanTeleport = function (card) {
   UserAction.setState(UserAction.StatePlanMove)
 
   // update tile state
-  tileGrid.tiles.forEach(tile => {
-    if (!tile.fsm.curState.compare(TileStateSelected))
+  for (let tile of tileGrid.tiles) {
+    if (!tile.fsm.curState.is(TileStateSelected))
       tile.fsm.setState(tile.getPermanent() ? TileStateNoInteraction : TileStateChangePosSelection)
-  })
+  }
 }
 Cmd.permanentTeleport = function (tile) {
   MatchHist.push(HistCardZoneBoard)
@@ -156,19 +156,16 @@ Cmd.permanentTeleport = function (tile) {
   Match.selectedTile = tile
 
   // update tile state
-  tileGrid.tiles.forEach(t => {
+  for (let t of tileGrid.tiles) {
     if (t == Match.selectedTile)
       t.fsm.setState(TileStateSelected)
     else
       t.fsm.setState(TileStateNormal)
-  })
+  }
 }
 
-Cmd.permanentPlanMove = function () {
-  let card = Match.selectedTile?.getPermanent()
-  if (!card || Match.turn != card.cardPiece.pieceData.owner.team) return
-
-  if (card.cardPiece.pieceData.tapped || !card.cardPiece.canMove())
+Cmd.permanentPlanMove = function (card) {
+  if (!card || !card.cardPiece.isActiveTurn() || !card.cardPiece.canMove())
     return
 
   const tile = Match.selectedTile
@@ -213,10 +210,10 @@ Cmd.permanentPlanMove = function () {
   UserAction.setState(UserAction.StatePlanMove)
 
   // update tile state
-  tileGrid.tiles.forEach((tile) => {
-    if (!tile.fsm.curState.compare(TileStateSelected, TileStateMoveSelection))
+  for (let tile of tileGrid.tiles) {
+    if (!tile.fsm.curState.is(TileStateSelected, TileStateMoveSelection))
       tile.fsm.setState(TileStateNoInteraction)
-  })
+  }
 }
 Cmd.permanentMove = function (tile) {
   MatchHist.push(HistCardZoneBoard)
@@ -235,19 +232,16 @@ Cmd.permanentMove = function (tile) {
   Match.selectedTile = tile
 
   // update tile state
-  tileGrid.tiles.forEach(t => {
+  for (let t of tileGrid.tiles) {
     if (t == Match.selectedTile)
       t.fsm.setState(TileStateSelected)
     else
       t.fsm.setState(TileStateNormal)
-  })
+  }
 }
 
-Cmd.permanentPlanAttack = function () {
-  let card = Match.selectedTile?.getPermanent()
-  if (!card) return
-
-  if (Match.turn != card.cardPiece.pieceData.owner.team || card.cardPiece.pieceData.tapped)
+Cmd.permanentPlanAttack = function (card) {
+  if (!card || !card.cardPiece.isActiveTurn() || !card.cardPiece.canAttack())
     return
 
   const tile = Match.selectedTile
@@ -289,10 +283,10 @@ Cmd.permanentPlanAttack = function () {
   }
 
   // update tile state
-  tileGrid.tiles.forEach((tile) => {
-    if (!tile.fsm.curState.compare(TileStateSelected, TileStateAttackSelection))
+  for (let tile of tileGrid.tiles) {
+    if (!tile.fsm.curState.is(TileStateSelected, TileStateAttackSelection))
       tile.fsm.setState(TileStateNoInteraction)
-  })
+  }
 }
 Cmd.permanentAttack = function (target) {
   MatchHist.push(HistPlayer)
@@ -303,10 +297,10 @@ Cmd.permanentAttack = function (target) {
   UserAction.setState(UserAction.StateView)
 
   // update tile state
-  tileGrid.tiles.forEach(t => {
-    if (!t.fsm.curState.compare(TileStateSelected))
+  for (let t of tileGrid.tiles) {
+    if (!t.fsm.curState.is(TileStateSelected))
       t.fsm.setState(TileStateNormal)
-  })
+  }
 
   // attcak target permanent
   Match.selectedTile.getPermanent().cardPiece.doAttack(target.cardPiece)
@@ -320,10 +314,10 @@ Cmd.permanentCounterAttack = function (self, target) {
   UserAction.setState(UserAction.StateView)
 
   // update tile state
-  tileGrid.tiles.forEach(t => {
-    if (!t.fsm.curState.compare(TileStateSelected))
+  for (let t of tileGrid.tiles) {
+    if (!t.fsm.curState.is(TileStateSelected))
       t.fsm.setState(TileStateNormal)
-  })
+  }
 
   // attcak target permanent
   self.cardPiece.doCounterAttack(target.cardPiece)
@@ -336,17 +330,17 @@ Cmd.permanentPlanSummon = function (card) {
   // update selected card
   Match.selectedTile = null
   Match.selectedCard = card
-  CardInfoUI.updateInfo(card)
+  CardInfoUI.update(card)
   CardInfoUI.show()
 
   // update tile state
-  tileGrid.tiles.forEach(tile => {
+  for (let tile of tileGrid.tiles) {
     tile.fsm.setState(
-      tile.getPermanent() || !tile.canSummon
+      tile.getPermanent() || !tile.allowSummon
         ? TileStateNoInteraction
         : TileStateSpawnPermanentSelection
     )
-  })
+  }
 }
 Cmd.permanentDeclareSummon = function (tile) {
   // update user action state
@@ -355,21 +349,21 @@ Cmd.permanentDeclareSummon = function (tile) {
   // show declared card paper
 
   // occupy the selected tile
+  tile.allowSummon = false
 
   // update tile state
-  tileGrid.setTileStateAll(TileStateNoInteraction)
+  tileGrid.setStateAll(TileStateNoInteraction)
 
   // show some kind of indicator at selected tile
   Match.selectedTile = tile
   tile.fsm.setState(TileStateSelected)
-  tile.canSummon = false
 
   // TODO: wait for the opponent respose
   // - if opponent cancels the summon: this card will return to hand and selected tile will be empty
   // - else: set the card on the selected tile
   Cmd.permanentSummon(tile)
 
-  tile.canSummon = true
+  tile.allowSummon = true
 }
 Cmd.permanentSummon = function (tile) {
   MatchHist.push(HistPlayer)
@@ -383,10 +377,9 @@ Cmd.permanentSummon = function (tile) {
   Match.turnPlayer.handSummon(tile.pos.x, tile.pos.y, Match.selectedCard)
 
   // update tile state
-  tileGrid.setTileStateAll(TileStateNormal)
+  tileGrid.setStateAll(TileStateNormal)
 
   // select this tile
-  console.log(tile)
   Match.selectedTile = tile
   Match.selectedTile.fsm.setState(TileStateSelected)
 }

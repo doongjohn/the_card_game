@@ -67,7 +67,7 @@ class CardInfoUI {
   static hide() {
     CardInfoUI.visual.setVisible(false)
   }
-  static updateInfo(card) {
+  static update(card) {
     CardInfoUI.cardName.setText(card.data.name)
     CardInfoUI.cardDesc.setText(card.data.desc)
 

@@ -52,8 +52,7 @@ const CardDataMovable = {
 }
 const CardPieceLogicMovable = {
   canMove() {
-    // check if curMoveCount is smaller than maxMoveCount
-    return this.pieceData.curMoveCount < this.pieceData.maxMoveCount
+    return !this.pieceData.tapped && this.pieceData.curMoveCount < this.pieceData.maxMoveCount
   },
   moveTo(x, y) {
     // increase current move count
@@ -103,29 +102,9 @@ const CardPieceLogicPermanent = {
     this.sprite.resetPipeline()
     this.revitalize()
   },
-  takeDamage(attacker, damage) {
-    // face up
-    this.pieceData.faceDowned && this.faceUp()
-
-    // update health
-    this.pieceData.health = Math.max(this.pieceData.health - damage, 0)
-
-    // invoke effect
-    EffectEvent.invoke('onTakeDamage', this.card, attacker)
-
-    // on death
-    if (this.pieceData.health == 0) {
-      // invoke effect
-      EffectEvent.invoke('onTakeLethalDamage', this.card, attacker)
-
-      // TODO: move this card to the graveyard
-      CardZoneBoard.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y)
-    }
-
-    // update ui
-    if (this.card == Match.selectedTile.getPermanent()) {
-      CardInfoUI.updateInfo(this.card)
-    }
+  canAttack() {
+    // TODO: make this variable useful
+    return !this.pieceData.tapped
   },
   doAttack(target) {
     // invoke effect
@@ -150,6 +129,30 @@ const CardPieceLogicPermanent = {
 
     // deal damage to target
     target.takeDamage(this.card, this.pieceData.attack)
+  },
+  takeDamage(attacker, damage) {
+    // face up
+    this.pieceData.faceDowned && this.faceUp()
+
+    // update health
+    this.pieceData.health = Math.max(this.pieceData.health - damage, 0)
+
+    // invoke effect
+    EffectEvent.invoke('onTakeDamage', this.card, attacker)
+
+    // on death
+    if (this.pieceData.health == 0) {
+      // invoke effect
+      EffectEvent.invoke('onTakeLethalDamage', this.card, attacker)
+
+      // TODO: move this card to the graveyard
+      CardZoneBoard.removePermanentAt(this.pieceData.pos.x, this.pieceData.pos.y)
+    }
+
+    // update ui
+    if (this.card == Match.selectedTile.getPermanent()) {
+      CardInfoUI.update(this.card)
+    }
   }
 }
 

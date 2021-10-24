@@ -1,12 +1,13 @@
 class FSMState {
-  compare() {
-    for (const arg of arguments)
-      if (this == arg.prototype)
+  /** @param {...FSMState} states */
+  is(...states) {
+    for (const state of states)
+      if (this == state.prototype)
         return true
     return false
   }
-  onEnter(obj) { }
-  onExit(obj) { }
+  onStateEnter(obj) { }
+  onStateExit(obj) { }
 }
 
 class FSM {
@@ -14,24 +15,19 @@ class FSM {
     this.obj = obj
     this.prevState = null
     this.curState = defaultState.prototype
-    this.curState.onEnter(this.obj)
+    this.curState.onStateEnter(this.obj)
     this.onStateChange = onStateChange
     this.onStateChange(this.obj)
   }
-  setStateProto(prototype) {
-    if (!prototype || prototype == this.curState) return
-    this.curState.onExit(this.obj)
-    this.prevState = this.curState
-    this.curState = prototype
-    this.curState.onEnter(this.obj)
-    this.onStateChange(this.obj)
-  }
+
+  /** @param {FSMState} state */
   setState(state) {
-    if (!state || state.prototype == this.curState) return
-    this.curState.onExit(this.obj)
+    if (!state || state.prototype == this.curState)
+      return
+    this.curState.onStateExit(this.obj)
     this.prevState = this.curState
     this.curState = state.prototype
-    this.curState.onEnter(this.obj)
+    this.curState.onStateEnter(this.obj)
     this.onStateChange(this.obj)
   }
 }

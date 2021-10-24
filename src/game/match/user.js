@@ -32,14 +32,10 @@ class UserInput {
       unitFaceToggle: 'f',
       unitTeleport: 'p',
     })
-    UserInput.cheatKeys.undo.on('down', () =>
-      MatchHist.undo())
-    UserInput.cheatKeys.unitTap.on('down', () =>
-      Cmd.permanentTapToggle(Match.selectedTile?.getPermanent()))
-    UserInput.cheatKeys.unitFaceToggle.on('down', () =>
-      Cmd.permanentFaceToggle(Match.selectedTile?.getPermanent()))
-    UserInput.cheatKeys.unitTeleport.on('down', () =>
-      Cmd.permanentPlanTeleport(Match.selectedTile?.getPermanent()))
+    UserInput.cheatKeys.undo.on('down', () => MatchHist.undo())
+    UserInput.cheatKeys.unitTap.on('down', () => Cmd.permanentTapToggle(Match.selectedTile?.getPermanent()))
+    UserInput.cheatKeys.unitFaceToggle.on('down', () => Cmd.permanentFaceToggle(Match.selectedTile?.getPermanent()))
+    UserInput.cheatKeys.unitTeleport.on('down', () => Cmd.permanentPlanTeleport(Match.selectedTile?.getPermanent()))
 
     // game input
     UserInput.keys = Game.scene.input.keyboard.addKeys({
@@ -49,13 +45,9 @@ class UserInput {
       unitMove: 'm',
       unitAttack: 'a',
     })
-    UserInput.keys.cancel.on('down', () =>
-      Cmd.cancel())
-    UserInput.keys.endTurn.on('down', () =>
-      Cmd.endTurn())
-    UserInput.keys.unitMove.on('down', () =>
-      Cmd.permanentPlanMove())
-    UserInput.keys.unitAttack.on('down', () =>
-      Cmd.permanentPlanAttack())
+    UserInput.keys.cancel.on('down', () => Cmd.cancel())
+    UserInput.keys.endTurn.on('down', () => Cmd.endTurn())
+    UserInput.keys.unitMove.on('down', () => Cmd.permanentPlanMove(Match.selectedTile?.getPermanent()))
+    UserInput.keys.unitAttack.on('down', () => Cmd.permanentPlanAttack(Match.selectedTile?.getPermanent()))
   }
 }

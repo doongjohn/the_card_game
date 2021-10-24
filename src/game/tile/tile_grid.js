@@ -34,7 +34,7 @@ tileGrid.coordToWorldPos = function (x, y) {
   }
 }
 
-tileGrid.setTileStateAll = function (state) {
+tileGrid.setStateAll = function (state) {
   for (const tile of tileGrid.tiles)
     tile.fsm.setState(state)
 }

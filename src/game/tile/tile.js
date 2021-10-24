@@ -31,7 +31,7 @@ class Tile {
     })
 
     // user action properties
-    this.canSummon = true
+    this.allowSummon = true
 
     // get cards
     this.getPermanent = () => CardZoneBoard.permanents.cards[this.index]

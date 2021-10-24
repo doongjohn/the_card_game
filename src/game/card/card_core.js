@@ -227,6 +227,9 @@ class CardPiece {
     this.pieceData.attack = this.card.data.attack
     this.pieceData.curMoveCount = 0
   }
+  isActiveTurn() {
+    return this.pieceData.owner.team == Match.turn
+  }
   resetTeam() {
     this.pieceData.owner = this.card.data.owner
   }
@@ -280,7 +283,7 @@ class CardPiece {
 
     // update ui
     if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
-      CardInfoUI.updateInfo(this.card)
+      CardInfoUI.update(this.card)
     }
   }
   faceUp() {
@@ -289,7 +292,7 @@ class CardPiece {
 
     // update ui
     if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
-      CardInfoUI.updateInfo(this.card)
+      CardInfoUI.update(this.card)
     }
   }
   setFaceDown(bool) {
@@ -308,7 +311,7 @@ class CardPiece {
 
     // update ui
     if (Match.selectedTile && this.card == Match.selectedTile.getPermanent()) {
-      CardInfoUI.updateInfo(this.card)
+      CardInfoUI.update(this.card)
     }
   }
   faceUpSummon() {

@@ -1,51 +1,51 @@
 class TileState extends FSMState {
-  onHoverEnter(self) {
-    self.tileFg.setFillStyle(TileColor.FG.hover.rgb, TileColor.FG.hover.alpha)
+  onHoverEnter(tile) {
+    tile.tileFg.setFillStyle(TileColor.FG.hover.rgb, TileColor.FG.hover.alpha)
   }
-  onHoverExit(self) {
-    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
+  onHoverExit(tile) {
+    tile.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
   }
-  onClick(self) { }
+  onClick(tile) { }
 }
 
 class TileStateNoInteraction extends TileState {
-  onEnter(self) {
-    self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
-    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
+  onStateEnter(tile) {
+    tile.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
+    tile.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
   }
-  onHoverEnter(self) { }
-  onHoverExit(self) { }
+  onHoverEnter(tile) { }
+  onHoverExit(tile) { }
 }
 
 class TileStateSelected extends TileState {
-  onEnter(self) {
-    self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
-    self.tileFg.setFillStyle(0xffbe0d, 0.25)
+  onStateEnter(tile) {
+    tile.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
+    tile.tileFg.setFillStyle(0xffbe0d, 0.25)
 
-    const permanent = self.getPermanent()
+    const permanent = tile.getPermanent()
     if (permanent) {
-      CardInfoUI.updateInfo(permanent)
+      CardInfoUI.update(permanent)
       CardInfoUI.show()
     }
   }
-  onExit(self) {
+  onStateExit(tile) {
     CardInfoUI.hide()
   }
-  onHoverEnter(self) { }
-  onHoverExit(self) { }
+  onHoverEnter(tile) { }
+  onHoverExit(tile) { }
 }
 
 class TileStateNormal extends TileState {
-  onEnter(self) {
-    self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
-    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
+  onStateEnter(tile) {
+    tile.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
+    tile.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
   }
-  onClick(self) {
+  onClick(tile) {
     // update tile state
     tileGrid.tiles.forEach(tile => tile.fsm.setState(TileStateNormal))
 
     // select this tile
-    Match.selectedTile = self
+    Match.selectedTile = tile
     Match.selectedTile.fsm.setState(TileStateSelected)
 
     // update match action state
@@ -54,47 +54,47 @@ class TileStateNormal extends TileState {
 }
 
 class TileStateSpawnPermanentSelection extends TileState {
-  onEnter(self) {
-    self.tileBg.setFillStyle(0x259c51, 0.4)
-    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
+  onStateEnter(tile) {
+    tile.tileBg.setFillStyle(0x259c51, 0.4)
+    tile.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
 
     // show card info
-    CardInfoUI.updateInfo(Match.selectedCard)
+    CardInfoUI.update(Match.selectedCard)
     CardInfoUI.show()
   }
-  onClick(self) {
-    Cmd.permanentDeclareSummon(self)
+  onClick(tile) {
+    Cmd.permanentDeclareSummon(tile)
   }
 }
 
 class TileStateChangePosSelection extends TileState {
-  onEnter(self) {
-    self.tileBg.setFillStyle(0x2b5dff, 0.4)
-    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
+  onStateEnter(tile) {
+    tile.tileBg.setFillStyle(0x2b5dff, 0.4)
+    tile.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
   }
-  onExit(self) {
-    self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
+  onStateExit(tile) {
+    tile.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
   }
-  onClick(self) {
-    Cmd.permanentTeleport(self)
+  onClick(tile) {
+    Cmd.permanentTeleport(tile)
   }
 }
 
 class TileStateMoveSelection extends TileStateChangePosSelection {
-  onClick(self) {
-    Cmd.permanentMove(self)
+  onClick(tile) {
+    Cmd.permanentMove(tile)
   }
 }
 
 class TileStateAttackSelection extends TileState {
-  onEnter(self) {
-    self.tileBg.setFillStyle(0xff2b2b, 0.4)
-    self.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
+  onStateEnter(tile) {
+    tile.tileBg.setFillStyle(0xff2b2b, 0.4)
+    tile.tileFg.setFillStyle(TileColor.FG.rgb, TileColor.FG.alpha)
   }
-  onExit(self) {
-    self.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
+  onStateExit(tile) {
+    tile.tileBg.setFillStyle(TileColor.BG.rgb, TileColor.BG.alpha)
   }
-  onClick(self) {
-    Cmd.permanentAttack(self.getPermanent())
+  onClick(tile) {
+    Cmd.permanentAttack(tile.getPermanent())
   }
 }
